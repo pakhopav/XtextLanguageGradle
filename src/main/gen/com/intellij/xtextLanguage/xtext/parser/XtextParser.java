@@ -1,15 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.parser;
 
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.LightPsiParser;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilder.Marker;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
-import static com.intellij.xtextLanguage.xtext.psi.impl.XtextParserUtilBase.*;
-import com.intellij.psi.tree.IElementType;
-import com.intellij.lang.ASTNode;
-import com.intellij.psi.tree.TokenSet;
 import com.intellij.lang.PsiParser;
-import com.intellij.lang.LightPsiParser;
+import com.intellij.psi.tree.IElementType;
+
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import static com.intellij.xtextLanguage.xtext.psi.impl.parserUtil.ParserUtilBase.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class XtextParser implements PsiParser, LightPsiParser {

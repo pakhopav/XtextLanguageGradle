@@ -1,19 +1,12 @@
 package com.intellij.xtextLanguage.xtext.psi.impl;
 
-import com.intellij.codeInsight.completion.CompletionInitializationContext;
-import com.intellij.lang.PsiBuilder;
-import com.intellij.lang.PsiBuilderFactory;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.xtextLanguage.xtext.XtextParserDefinition;
-import com.intellij.xtextLanguage.xtext.grammar.XtextLexer;
-import com.intellij.xtextLanguage.xtext.parser.XtextParser;
 import com.intellij.xtextLanguage.xtext.psi.XtextElementType;
 import com.intellij.xtextLanguage.xtext.psi.XtextTokenType;
 import com.intellij.xtextLanguage.xtext.psi.XtextTypes;
 
 import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collection;
 
 public class XtextTypesUtil {
     public static final ArrayList<XtextElementType> myTypes = new ArrayList<>();
@@ -93,14 +86,6 @@ public class XtextTypesUtil {
         }
         return null;
     }
-//    public static ArrayList<XtextTokenType> findKeywords(XtextElementType type){
-//        PsiBuilderFactory factory = PsiBuilderFactory.getInstance();
-//        PsiBuilder psiBuilder = factory.createBuilder(new XtextParserDefinition(), new XtextLexer(), CompletionInitializationContext.DUMMY_IDENTIFIER);
-//        XtextParser parser = new XtextParser();
-//        parser.parseLight(type, psiBuilder);
-//        ArrayList<XtextTokenType> list = (ArrayList<XtextTokenType>) XtextParserUtilBase.ErrorStateExt.expectedKeywords.clone();
-//        return list;
-//    }
     public static ArrayList<XtextTokenType> findKeywords(XtextElementType type){
         ArrayList<XtextTokenType> keywords = new ArrayList<>();
         switch (type.getDebugName()){

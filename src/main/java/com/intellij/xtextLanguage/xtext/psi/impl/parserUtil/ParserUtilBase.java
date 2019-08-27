@@ -1,22 +1,22 @@
-package com.intellij.xtextLanguage.xtext.psi.impl;
+package com.intellij.xtextLanguage.xtext.psi.impl.parserUtil;
 
-import com.intellij.codeInsight.completion.CompletionInitializationContext;
 import com.intellij.lang.PsiBuilder;
-import com.intellij.lang.PsiBuilderFactory;
 import com.intellij.lang.PsiParser;
-import com.intellij.openapi.vfs.ex.dummy.DummyFileIdGenerator;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.intellij.xtextLanguage.xtext.XtextParserDefinition;
-import com.intellij.xtextLanguage.xtext.grammar.XtextLexer;
-import com.intellij.xtextLanguage.xtext.parser.XtextParser;
 import com.intellij.xtextLanguage.xtext.psi.XtextElementType;
 import com.intellij.xtextLanguage.xtext.psi.XtextTokenType;
+import com.intellij.xtextLanguage.xtext.psi.impl.XtextTypesUtil;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 
-public class XtextParserUtilBase extends GeneratedParserUtilBaseCopy {
+public class ParserUtilBase extends GeneratedParserUtilBaseCopy {
+    private static ArrayList<XtextTokenType> expectedKeywords = new ArrayList<>();
+
+    public ArrayList<XtextTokenType> getExpectedKeywords() {
+        return expectedKeywords;
+    }
     public static PsiBuilder adapt_builder_(IElementType root, PsiBuilder builder, PsiParser parser) {
         return adapt_builder_(root, builder, parser, null);
     }
@@ -27,7 +27,6 @@ public class XtextParserUtilBase extends GeneratedParserUtilBaseCopy {
     }
 
     public static class ErrorStateExt extends GeneratedParserUtilBaseCopy.ErrorState{
-        public static ArrayList<XtextTokenType> expectedKeywords = new ArrayList<>();
         @Override
         public void appendExpected(@NotNull StringBuilder sb, int position, boolean expected) {
             super.appendExpected(sb, position, expected);

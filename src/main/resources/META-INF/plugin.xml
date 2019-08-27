@@ -30,7 +30,8 @@
     <lang.parserDefinition language="Xtext" implementationClass="com.intellij.xtextLanguage.xtext.XtextParserDefinition"/>
     <lang.syntaxHighlighterFactory language="Xtext" implementationClass="com.intellij.xtextLanguage.xtext.XtextSyntaxHighlighterFactory"/>
     <psi.referenceContributor implementation="com.intellij.xtextLanguage.xtext.XtextReferenceContributor"/>
-    <completion.contributor language="Xtext" implementationClass="com.intellij.xtextLanguage.xtext.XtextCompletionContributor"/>
+    <completion.contributor language="Xtext"
+                            implementationClass="com.intellij.xtextLanguage.xtext.keywords.XtextCompletionContributor"/>
   </extensions>
 
   <actions>

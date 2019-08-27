@@ -71,7 +71,7 @@
   elementTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextElementType"
   tokenTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextTokenType"
   psiImplUtilClass="com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil"
-  parserUtilClass= "com.intellij.xtextLanguage.xtext.psi.impl.XtextParserUtilBase"
+  parserUtilClass= "com.intellij.xtextLanguage.xtext.psi.impl.parserUtil.ParserUtilBase"
   generateTokenAccessors=true
   generateTokens=true
 
