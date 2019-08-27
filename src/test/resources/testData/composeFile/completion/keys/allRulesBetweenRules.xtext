@@ -1,0 +1,4 @@
+grammar a
+terminal b : a;
+<caret>
+enum c : d;

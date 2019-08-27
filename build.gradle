@@ -1,0 +1,39 @@
+plugins {
+    id 'java'
+    id 'org.jetbrains.intellij' version '0.4.10'
+}
+def genRoot = file("src/main/gen")
+sourceSets {
+    main {
+        java.srcDirs project.files("src/main/java", genRoot)
+    }
+    test {
+        // both source roots below are not included into IDEA distribution,
+        // so we have to copy them as sources, but only in the gradle version
+        java.srcDirs "src/test/java"
+    }
+}
+group 'com.intellij'
+version '1.0-SNAPSHOT'
+
+sourceCompatibility = 1.8
+
+repositories {
+    mavenCentral()
+}
+
+dependencies {
+    testCompile group: 'junit', name: 'junit', version: '4.12'
+}
+
+// See https://github.com/JetBrains/gradle-intellij-plugin/
+intellij {
+    version '2019.2'
+    
+}
+
+patchPluginXml {
+    changeNotes """
+      Add change notes here.<br>
+      <em>most HTML tags may be used</em>"""
+}

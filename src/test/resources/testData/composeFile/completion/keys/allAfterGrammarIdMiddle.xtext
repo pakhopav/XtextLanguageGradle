@@ -1,0 +1,4 @@
+grammar a <caret>
+
+generate bb "string"
+a : a;

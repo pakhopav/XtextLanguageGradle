@@ -1,0 +1,16 @@
+grammar a
+
+import "asd"
+generate cc "a"
+import "str"
+
+PackageDeclaration:
+    'package' name=QualifiedName '{'
+        elements+=AbstractElement*
+    '}';
+
+fragment RULE <caret>
+
+enum rule :a ;
+terminal c : c;
+fragment y returns ref : name=ValidID ':' type=JvmTypeReference;

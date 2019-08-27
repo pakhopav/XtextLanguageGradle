@@ -1,0 +1,367 @@
+{
+    tokens = [
+        ID =  'regexp:^?[a-zA-Z_][a-zA-Z0-9_]*'
+        STRING = "regexp:(\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*')"
+        INT = 'regexp:[0-9]+'
+        ML_COMMENT = 'regexp:/\*(?s).*\*/'
+        SL_COMMENT = 'regexp: //.*'
+        WS = 'regexp:\s+'
+        ANY_OTHER ='regexp:.'
+        GRAMMAR = "grammar"
+        WITH = "with"
+        HIDDEN = "hidden"
+        GENERATE = "generate"
+        IMPORT = "import"
+        RETURNS = "returns"
+        COMMA = ","
+        L_BRACKET = "("
+        R_BRACKET = ")"
+        AT_SIGN = "@"
+        FRAGMENT = "fragment"
+        SEMICOLON = ";"
+        L_ANGLE_BRACKET = "<"
+        R_ANGLE_BRACKET = ">"
+        L_BRACE = "{"
+        R_BRACE = "}"
+        L_SQUARE_BRACKET = "["
+        R_SQUARE_BRACKET = "]"
+        AMPERSAND = "&"
+        ACX_MARK = "!"
+        AS = "as"
+        COLON =":"
+        ASTERISK ="*"
+        TRUE = "true"
+        FALCE = "false"
+        EQUALS = "="
+        TERMINAL = "terminal"
+        ENUM = "enum"
+        PRED = "=>"
+        WEAK_PRED = "->"
+        PIPE = "|"
+        PLUS = "+"
+        QUES_MARK = "?"
+        RANGE = ".."
+        DOT = "."
+        PLUS_EQUALS = "+="
+        QUES_EQUALS = "?="
+        CURRENT = "current"
+        EOF_KEY = "EOF"
+        COLONS = "::"
+
+
+
+
+
+
+    ]
+
+
+
+
+
+  parserClass="com.intellij.xtextLanguage.xtext.parser.XtextParser"
+
+  extends="com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl"
+  psiClassPrefix="Xtext"
+  psiImplClassSuffix="Impl"
+  psiPackage="com.intellij.xtextLanguage.xtext.psi"
+  psiImplPackage="com.intellij.xtextLanguage.xtext.impl"
+
+  elementTypeHolderClass="com.intellij.xtextLanguage.xtext.psi.XtextTypes"
+  elementTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextElementType"
+  tokenTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextTokenType"
+  psiImplUtilClass="com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil"
+  parserUtilClass= "com.intellij.xtextLanguage.xtext.psi.impl.XtextParserUtilBase"
+  generateTokenAccessors=true
+  generateTokens=true
+
+}
+Grammar::=
+	"grammar" GrammarID ('with' REFERENCE_Grammar_GrammarID/* usedGrammars+=[Grammar|GrammarID]*/ (',' REFERENCE_Grammar_GrammarID)*)?
+	('hidden' '(' (REFERENCE_AbstractRule_RuleID/* usedGrammars+=[Grammar|GrammarID]*/ (',' REFERENCE_AbstractRule_RuleID)*)? ')')?
+	AbstractMetamodelDeclaration*
+	(AbstractRule)+
+{
+pin=1
+}
+
+GrammarID::=
+	ValidID ('.' ValidID)*
+
+
+
+private AbstractRule::= ParserRule | TerminalRule | EnumRule
+{
+mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextNamedElementImpl"
+implements="com.intellij.xtextLanguage.xtext.psi.XtextNamedElement"
+methods=[getName setName getNameIdentifier]
+}
+//test ::= '*' ID ID* 'returns'?
+
+
+AbstractMetamodelDeclaration::=
+	GeneratedMetamodel | ReferencedMetamodel
+
+
+GeneratedMetamodel::=
+	'generate' ValidID REFERENCE_ecoreEPackage_STRING/*ePackage=[ecore::EPackage|STRING]*/ ('as' ValidID)?
+
+
+ReferencedMetamodel::=
+	'import' REFERENCE_ecoreEPackage_STRING ('as' ValidID)?
+
+//fragment Alias returns AbstractMetamodelDeclaration:
+//	'as' alias=ValidID
+//;
+
+Annotation::=
+	'@' ID
+
+ParserRule ::=
+	(Annotation)*
+	(
+	  'fragment' RuleNameAndParams ('*' | ('returns' TypeRef)?)
+	| RuleNameAndParams ('returns' TypeRef)?
+	)
+	('hidden' '(' (REFERENCE_AbstractRule_RuleID/*hiddenTokens+=[AbstractRule|RuleID]*/ (',' REFERENCE_AbstractRule_RuleID)*)? ')')? ':'
+		Alternatives
+	';'
+{
+mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
+implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
+methods=[getName setName getNameIdentifier]
+}
+
+RuleNameAndParams::=
+	ValidID ('<' (Parameter (',' Parameter)*)? '>')?
+
+
+Parameter::=
+	ID
+
+
+TypeRef ::=
+	(REFERENCE_AbstractMetamodelDeclaration/*metamodel=[AbstractMetamodelDeclaration]*/ '::')? REFERENCE_ecoreEClassifier/*classifier=[ecore::EClassifier]*/
+
+
+Alternatives::=
+	ConditionalBranch ( ('|' ConditionalBranch)+)?
+
+
+ConditionalBranch::=
+	  UnorderedGroup
+	| '<' Disjunction '>' (AbstractToken)+
+
+
+UnorderedGroup ::=
+	Group ( ('&' Group)+)?
+
+
+Group::=
+	AbstractToken ( (AbstractToken)+)?
+
+
+AbstractToken ::=
+	AbstractTokenWithCardinality |
+	Action
+
+
+AbstractTokenWithCardinality::=
+	(Assignment | AbstractTerminal) ('?'|'*'|'+')?
+
+
+Action::=
+	'{' TypeRef ('.' ValidID ('='|'+=') 'current')? '}'
+
+
+AbstractTerminal::=
+	Keyword |
+	RuleCall |
+	ParenthesizedElement |
+	PredicatedKeyword |
+	PredicatedRuleCall |
+	PredicatedGroup
+
+
+Keyword::=
+	STRING
+
+
+RuleCall::=
+	REFERENCE_AbstractRule_RuleID/*rule=[AbstractRule|RuleID]*/ ('<' NamedArgument (',' NamedArgument)* '>')?
+
+
+NamedArgument::=
+	( REFERENCE_Parameter_ID /*parameter=[Parameter|ID]*/  '=')?
+	( Disjunction )
+
+
+LiteralCondition::=
+	('true' | 'false')
+
+
+Disjunction::=
+	Conjunction ( '|'Conjunction)*
+
+
+Conjunction::=
+	Negation ('&' Negation)*
+
+
+Negation ::=
+	Atom | '!' Negation
+
+
+Atom ::=
+	ParameterReference | ParenthesizedCondition | LiteralCondition
+
+
+ParenthesizedCondition ::=
+	'(' Disjunction ')'
+
+
+ParameterReference::=
+	[Parameter|ID]
+
+
+TerminalRuleCall::=
+	REFERENCE_AbstractRule_RuleID/*rule=[AbstractRule|RuleID]*/
+
+
+RuleID::=
+	ValidID ('::' ValidID)*
+
+
+ValidID::=
+	ID | 'true' | 'false'
+
+
+PredicatedKeyword::=
+	('=>' | '->') STRING
+
+
+PredicatedRuleCall::=
+	('=>' | '->') REFERENCE_AbstractRule_RuleID ('<' NamedArgument (',' NamedArgument)* '>')?
+
+
+Assignment::=
+	('=>' | '->')? ValidID ('+='|'='|'?=') AssignableTerminal
+
+
+AssignableTerminal::=
+	Keyword | RuleCall | ParenthesizedAssignableElement | CrossReference
+
+
+ParenthesizedAssignableElement::=
+	'(' AssignableAlternatives ')'
+
+
+AssignableAlternatives::=
+	AssignableTerminal ( ('|' AssignableTerminal)+)?
+
+
+CrossReference ::=
+	'[' TypeRef ('|' CrossReferenceableTerminal )? ']'
+
+
+CrossReferenceableTerminal::=
+	Keyword | RuleCall
+
+
+ParenthesizedElement::=
+	'(' Alternatives ')'
+
+
+PredicatedGroup::=
+	('=>' | '->') '(' Alternatives ')'
+
+
+TerminalRule ::=
+	(Annotation)*
+	'terminal' ('fragment' ValidID | ValidID ('returns' TypeRef)?) ':'
+		TerminalAlternatives
+	';'
+{
+    pin=2
+	mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
+    implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
+    methods=[getName setName getNameIdentifier]
+}
+
+
+TerminalAlternatives::=
+	TerminalGroup ( ('|' TerminalGroup)+)?
+
+
+TerminalGroup::=
+	TerminalToken ( (TerminalToken)+)?
+
+
+/* SuppressWarnings[potentialOverride]: Handled in CardinalityAwareEcoreFactory */
+TerminalToken::=
+	TerminalTokenElement ('?'|'*'|'+')?
+
+
+TerminalTokenElement::=
+	CharacterRange | TerminalRuleCall | ParenthesizedTerminalElement | AbstractNegatedToken | Wildcard | /*^*/EOF
+
+
+ParenthesizedTerminalElement::=
+	'(' TerminalAlternatives ')'
+
+
+AbstractNegatedToken::=
+	NegatedToken | UntilToken
+
+
+NegatedToken::=
+	'!' TerminalTokenElement
+
+
+UntilToken::=
+	'->' TerminalTokenElement
+
+
+Wildcard::=
+	 '.'
+
+
+/*^*/EOF::=
+	 'EOF'
+
+
+CharacterRange ::=
+	Keyword (  '..' Keyword)?
+
+
+EnumRule::=
+	( Annotation)*
+	'enum' ValidID ('returns' TypeRef)? ':'
+		EnumLiterals
+	';'
+{
+    mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
+    implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
+    methods=[getName setName getNameIdentifier]
+}
+
+EnumLiterals::=
+	EnumLiteralDeclaration ( ('|' EnumLiteralDeclaration)+)?
+
+
+EnumLiteralDeclaration::=
+	REFERENCE_ecoreEEnumLiteral/*enumLiteral=[ecore::EEnumLiteral]*/ ('=' Keyword)?
+
+
+//REFERENCE
+REFERENCE_Grammar_GrammarID::= GrammarID
+REFERENCE_AbstractRule_RuleID::= RuleID
+REFERENCE_ecoreEPackage_STRING::=STRING
+REFERENCE_Parameter_ID::=ID
+REFERENCE_AbstractMetamodelDeclaration::=ID
+REFERENCE_ecoreEClassifier::=ID
+REFERENCE_ecoreEEnumLiteral::=ID
+
+//SetName helper rules
+
+RULE_IDENTIFIER ::= ValidID
