@@ -70,9 +70,9 @@ class XtextKeywordCompletionProvider extends CompletionProvider<CompletionParame
             }
 
             public boolean XtextPrefixMathches(@NotNull PsiBuilder builder, @NotNull String text, String prefix) {
-                if (GeneratedParserUtilBase.ErrorState.get(builder).currentFrame.errorReportedAt != -1) {
-                    return false;
-                }
+//                if (GeneratedParserUtilBase.ErrorState.get(builder).currentFrame.errorReportedAt != -1) {
+//                    return false;
+//                }
                 int builderOffset = builder.getCurrentOffset();
 
                 int diff = offset - builderOffset;
@@ -151,7 +151,7 @@ class XtextKeywordCompletionProvider extends CompletionProvider<CompletionParame
     protected void addCompletions(@NotNull CompletionParameters parameters,
                                   @NotNull ProcessingContext context,
                                   @NotNull CompletionResultSet result) {
-        for (String keyword : getKeywordsUsingErrorReport(parameters.getPosition(), parameters)) {
+        for (String keyword : getKeywords(parameters.getPosition(), parameters)) {
             result.addElement(createKeywordLookupElement(keyword));
         }
     }

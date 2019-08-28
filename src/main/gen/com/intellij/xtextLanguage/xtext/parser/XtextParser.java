@@ -8,8 +8,8 @@ import com.intellij.lang.PsiBuilder.Marker;
 import com.intellij.lang.PsiParser;
 import com.intellij.psi.tree.IElementType;
 
+import static com.intellij.lang.parser.GeneratedParserUtilBase.*;
 import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
-import static com.intellij.xtextLanguage.xtext.psi.impl.parserUtil.ParserUtilBase.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
 public class XtextParser implements PsiParser, LightPsiParser {

@@ -2,7 +2,9 @@ package com.intellij.xtext;
 
 import com.intellij.testFramework.TestDataPath;
 
-@TestDataPath("$CONTENT_ROOT/testData//completion/keys")
+import java.util.List;
+
+@TestDataPath("$CONTENT_ROOT/testData/completion/keys")
 public class XtextCompletionTest extends XtextCompletionTestBase {
     public XtextCompletionTest() {
         super("/completion/keys");
@@ -36,5 +38,10 @@ public class XtextCompletionTest extends XtextCompletionTestBase {
         checkHasCompletions("enum", "terminal", "fragment");
     }
 
+    public void testNoKeywordsFromErrorState() {
+        List<String> variants = getCompletionVariants();
+
+        assertDoesntContain(variants, "enum");
+    }
 
 }

@@ -7,7 +7,7 @@ import junit.framework.TestSuite;
 import org.jetbrains.annotations.NotNull;
 
 public class AllComposeTests {
-    private static final String TEST_DATA_FOLDER = "testData/composeFile";
+    private static final String TEST_DATA_FOLDER = "testData";
 
     public static Test suite() {
         TestSuite result = new TestSuite();
