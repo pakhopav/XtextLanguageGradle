@@ -20,7 +20,7 @@ abstract class XtextCompletionTestBase extends LightPlatformCodeInsightFixtureTe
 
     @Override
     protected final String getBasePath() {
-        return AllComposeTests.getTestDataRoot() + myDataFolder;
+        return AllTests.getTestDataRoot() + myDataFolder;
     }
 
     protected String getCurrentInputFileName() {
@@ -37,5 +37,17 @@ abstract class XtextCompletionTestBase extends LightPlatformCodeInsightFixtureTe
     protected void checkHasCompletions(String... completions) {
         List<String> variants = getCompletionVariants();
         assertContainsElements(variants, completions);
+    }
+
+    protected void checkDoesnotContain(String... completions) {
+        List<String> variants = getCompletionVariants();
+
+        assertDoesntContain(variants, completions);
+    }
+
+    protected void checkEmptyResolve() {
+        String input = getCurrentInputFileName();
+        List<String> variants = myFixture.getCompletionVariants(input);
+        assertEmpty(variants);
     }
 }

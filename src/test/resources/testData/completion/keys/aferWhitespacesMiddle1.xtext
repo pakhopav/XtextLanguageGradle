@@ -1,0 +1,4 @@
+grammar e                                                <caret>
+import "abc"
+Property:
+    name=ValidID ':' type=JvmTypeReference;

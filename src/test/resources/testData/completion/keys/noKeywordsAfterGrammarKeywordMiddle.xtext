@@ -1,0 +1,7 @@
+grammar <caret>
+
+generate domainmodel "http://www.example.org/domainmodel/Domainmodel"
+
+Domainmodel:
+    importSection=XImportSection?
+    elements+=AbstractElement*;

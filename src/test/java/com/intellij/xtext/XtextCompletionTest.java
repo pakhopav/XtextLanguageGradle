@@ -2,8 +2,6 @@ package com.intellij.xtext;
 
 import com.intellij.testFramework.TestDataPath;
 
-import java.util.List;
-
 @TestDataPath("$CONTENT_ROOT/testData/completion/keys")
 public class XtextCompletionTest extends XtextCompletionTestBase {
     public XtextCompletionTest() {
@@ -14,14 +12,16 @@ public class XtextCompletionTest extends XtextCompletionTestBase {
 
     public void testAllAfterGrammarIdEnd() {
         checkHasCompletions("with", "hidden (", "enum", "terminal", "fragment", "generate", "import");
+        checkDoesnotContain("returns");
     }
 
-    public void testAllRulesBetweenRules() {
+    public void testAfterRuledeclarationMiddle() {
         checkHasCompletions("enum", "terminal", "fragment");
     }
 
     public void testAllAfterGrammarIdMiddle() {
         checkHasCompletions("with", "hidden (", "enum", "terminal", "fragment", "generate", "import");
+        checkDoesnotContain("returns");
     }
 
     public void testAfterRuleIdEnd() {
@@ -40,19 +40,46 @@ public class XtextCompletionTest extends XtextCompletionTestBase {
         checkHasCompletions("hidden (");
     }
 
-    public void testNoKeywordsFromErrorState() {
-        List<String> variants = getCompletionVariants();
+    public void testNoKeywordsAfterGrammarKeyword() {
+        checkDoesnotContain("with", "hidden (", "enum", "terminal", "fragment", "generate", "import");
+    }
 
-        assertDoesntContain(variants, "enum");
+    public void testNoKeywordsAfterGrammarKeywordMiddle() {
+        checkDoesnotContain("with", "hidden (", "enum", "terminal", "fragment", "generate", "import");
     }
 
     public void testExcessiveInnerKeywords() {
-        List<String> variants = getCompletionVariants();
-
-        assertDoesntContain(variants, "enum", "generete");
+        checkDoesnotContain("enum", "generate");
     }
 
-    public void testAfterMultilineComment() {
+    public void testAfterMultilineCommentEnd() {
         checkHasCompletions("enum", "terminal", "hidden (", "fragment", "generate", "import");
+    }
+
+    public void testAfterSinglelineCommentEnd() {
+        checkHasCompletions("enum", "terminal", "fragment");
+    }
+
+    public void testAfterMultilineCommentMiddle() {
+        checkHasCompletions("enum", "terminal", "fragment");
+        checkDoesnotContain("generate", "import", "returns", "hidden (");
+
+
+    }
+
+    public void testAferWhitespacesEnd1() {
+        checkHasCompletions("enum", "terminal", "hidden (", "fragment", "generate", "import");
+    }
+
+    public void testAferWhitespacesEnd2() {
+        checkHasCompletions("enum", "terminal", "fragment");
+    }
+
+    public void testAferWhitespacesMiddle1() {
+        checkHasCompletions("enum", "terminal", "fragment");
+    }
+
+    public void testAferWhitespacesMiddle2() {
+        checkHasCompletions("enum", "terminal", "fragment");
     }
 }
