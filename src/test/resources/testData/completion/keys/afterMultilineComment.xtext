@@ -1,0 +1,8 @@
+grammar Id /*asdas
+as
+ggggggggggggggggggggggggggggggggggggggggggggggggggggggggg
+
+
+*/
+<caret>
+enum r : c;

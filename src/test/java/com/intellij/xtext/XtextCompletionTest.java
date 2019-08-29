@@ -10,12 +10,10 @@ public class XtextCompletionTest extends XtextCompletionTestBase {
         super("/completion/keys");
     }
 
-    public void testKwWithAfterGrammarId() {
-        checkHasCompletions("with");
-    }
+
 
     public void testAllAfterGrammarIdEnd() {
-        checkHasCompletions("with", "hidden", "enum", "terminal", "fragment", "generate", "import");
+        checkHasCompletions("with", "hidden (", "enum", "terminal", "fragment", "generate", "import");
     }
 
     public void testAllRulesBetweenRules() {
@@ -23,19 +21,23 @@ public class XtextCompletionTest extends XtextCompletionTestBase {
     }
 
     public void testAllAfterGrammarIdMiddle() {
-        checkHasCompletions("with", "hidden", "enum", "terminal", "fragment", "generate", "import");
+        checkHasCompletions("with", "hidden (", "enum", "terminal", "fragment", "generate", "import");
     }
 
-    public void testKwHiddenKwReturnsEnd() {
-        checkHasCompletions("returns", "hidden");
+    public void testAfterRuleIdEnd() {
+        checkHasCompletions("returns", "hidden (");
     }
 
-    public void testKwHiddenKwReturnsMiddle() {
-        checkHasCompletions("returns", "hidden");
+    public void testAfterRuleIdMiddle() {
+        checkHasCompletions("returns", "hidden (");
     }
 
     public void testAllRulesAfterRulesEnd() {
         checkHasCompletions("enum", "terminal", "fragment");
+    }
+
+    public void testhiddenKeyword() {
+        checkHasCompletions("hidden (");
     }
 
     public void testNoKeywordsFromErrorState() {
@@ -44,4 +46,13 @@ public class XtextCompletionTest extends XtextCompletionTestBase {
         assertDoesntContain(variants, "enum");
     }
 
+    public void testExcessiveInnerKeywords() {
+        List<String> variants = getCompletionVariants();
+
+        assertDoesntContain(variants, "enum", "generete");
+    }
+
+    public void testAfterMultilineComment() {
+        checkHasCompletions("enum", "terminal", "hidden (", "fragment", "generate", "import");
+    }
 }

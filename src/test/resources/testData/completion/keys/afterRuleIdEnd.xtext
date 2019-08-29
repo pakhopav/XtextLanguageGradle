@@ -1,4 +1,4 @@
-grammar grammar
+grammar gramma
 import "abc"
 Property:
     name=ValidID ':' type=JvmTypeReference;

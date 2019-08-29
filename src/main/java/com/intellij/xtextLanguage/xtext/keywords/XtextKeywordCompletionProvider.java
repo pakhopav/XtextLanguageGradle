@@ -33,8 +33,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Collection;
 
-import static com.intellij.lang.parser.GeneratedParserUtilBase.isWhitespaceOrComment;
-
 class XtextKeywordCompletionProvider extends CompletionProvider<CompletionParameters> {
     private static final ArrayList<String> XtextKeywords = new ArrayList<>(Arrays.asList(
             "grammar",
@@ -46,7 +44,8 @@ class XtextKeywordCompletionProvider extends CompletionProvider<CompletionParame
             "fragment",
             "as",
             "terminal",
-            "enum"
+            "enum",
+            "hidden ("
 
     ));
     private static String myPrefix;
@@ -61,55 +60,78 @@ class XtextKeywordCompletionProvider extends CompletionProvider<CompletionParame
         PsiFile file = PsiFileFactory.getInstance(xFile.getProject()).createFileFromText("xtext.xtext", XtextLanguage.INSTANCE, text, true, false);
         int completionOffset = empty ? 0 : fragment.length();
         GeneratedParserUtilBase.CompletionState state = new GeneratedParserUtilBase.CompletionState(completionOffset) {
+            boolean errorOccured = false;
 
             @Override
             public boolean prefixMatches(@NotNull PsiBuilder builder, @NotNull String text) {
-
-                return XtextPrefixMathches(builder, text, myPrefix);
-
-            }
-
-            public boolean XtextPrefixMathches(@NotNull PsiBuilder builder, @NotNull String text, String prefix) {
-//                if (GeneratedParserUtilBase.ErrorState.get(builder).currentFrame.errorReportedAt != -1) {
-//                    return false;
-//                }
-                int builderOffset = builder.getCurrentOffset();
-
-                int diff = offset - builderOffset;
-                int length = text.length();
-                if (diff == 0) {
-                    return prefixMatches(prefix, text);
-                } else if (diff > 0 && diff <= length) {
-
-                    return prefixMatches(prefix, text);
-                } else if (diff < 0) {
-                    for (int i = -1; ; i--) {
-                        IElementType type = builder.rawLookup(i);
-                        int tokenStart = builder.rawTokenTypeStart(i);
-                        if (isWhitespaceOrComment(builder, type)) {
-                            diff = offset - tokenStart;
-                        } else if (type != null && tokenStart < offset) {
-                            CharSequence fragment = builder.getOriginalText().subSequence(tokenStart, offset);
-                            if (prefixMatches(fragment.toString(), text)) {
-                                diff = offset - tokenStart;
-                            }
-                            break;
-                        } else break;
+                if (!errorOccured && XtextKeywords.contains(text)) {
+                    if (GeneratedParserUtilBase.ErrorState.get(builder).currentFrame.errorReportedAt != -1) {
+                        errorOccured = true;
+                        return false;
                     }
-                    return diff >= 0 && diff < length;
+                    if (text.startsWith(myPrefix)) {
+                        return super.prefixMatches(builder, text);
+                    }
+
+
                 }
                 return false;
             }
 
-            @Override
-            public boolean prefixMatches(@NotNull String prefix, @NotNull String variant) {
-                return variant.startsWith(prefix);
-            }
+
+            //            @Override
+//            public boolean prefixMatches(@NotNull PsiBuilder builder, @NotNull String text) {
+//
+//                return XtextPrefixMathches(builder, text, myPrefix);
+//
+//            }
+//
+//            public boolean XtextPrefixMathches(@NotNull PsiBuilder builder, @NotNull String text, String prefix) {
+//                if(!errorOccured){
+//                    if (GeneratedParserUtilBase.ErrorState.get(builder).currentFrame.errorReportedAt != -1) {
+//                        errorOccured =true;
+//                        return false;
+//                    }
+//                    int builderOffset = builder.getCurrentOffset();
+//
+//                    int diff = offset - builderOffset;
+//                    int length = text.length();
+//                    if (diff == 0) {
+//
+//                        return prefixMatches(prefix, text);
+//                    } else if (diff > 0 && diff <= length) {
+//
+//                        return prefixMatches(prefix, text);
+//                    } else if (diff < 0) {
+//                        for (int i = -1; ; i--) {
+//                            IElementType type = builder.rawLookup(i);
+//                            int tokenStart = builder.rawTokenTypeStart(i);
+//                            if (isWhitespaceOrComment(builder, type)) {
+//                                diff = offset - tokenStart;
+//                            } else if (type != null && tokenStart < offset) {
+//                                CharSequence fragment = builder.getOriginalText().subSequence(tokenStart, offset);
+//                                if (prefixMatches(fragment.toString(), text)) {
+//                                    diff = offset - tokenStart;
+//                                }
+//                                break;
+//                            } else break;
+//                        }
+//                        return diff >= 0 && diff < length;
+//                    }
+//                    return false;
+//                }
+//                return false;
+//            }
+//
+//            @Override
+//            public boolean prefixMatches(@NotNull String prefix, @NotNull String variant) {
+//                return variant.startsWith(prefix);
+//            }
 
             @Nullable
             @Override
             public String convertItem(Object o) {
-//                    if (o instanceof IElementType[]) return super.convertItem(o);
+                if (o instanceof IElementType[]) return super.convertItem(o);
                 String text = o instanceof XtextTokenType ? ((XtextTokenType) o).getDebugName() : null;
                 return text != null && text.length() > 0 ? text : null;
             }
@@ -142,6 +164,7 @@ class XtextKeywordCompletionProvider extends CompletionProvider<CompletionParame
     }
 
     private static LookupElement createKeywordLookupElement(String keyword) {
+
         LookupElementBuilder builder = LookupElementBuilder.create(keyword).bold();
 
         return TailTypeDecorator.withTail(builder.withCaseSensitivity(true), TailType.SPACE);
