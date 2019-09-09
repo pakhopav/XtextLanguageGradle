@@ -64,7 +64,8 @@ class KeywordCompletionProvider<T extends PsiFile, F extends IElementType> exten
                 if (o instanceof IElementType[]) return super.convertItem(o);
 
                 String text = fClass.isInstance(o) ? o.toString() : null;
-                return text != null && text.length() > 0 ? text : null;
+
+                return text != null && text.length() > 0 && !text.startsWith("regexp_") ? text : null;
             }
         };
         file.putUserData(GeneratedParserUtilBaseCopy.COMPLETION_STATE_KEY, state);

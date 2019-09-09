@@ -565,6 +565,7 @@ public class GeneratedParserUtilBaseCopy {
                 errorReported = reportError(builder, state, frame, false, true, false);
             } else if (!result && pinned && frame.errorReportedAt < 0) {
                 errorReported = reportError(builder, state, frame, elementType != null, false, false);
+                reportErrorForCompletion(state);
             }
             // whitespace prefix makes the very first frame offset bigger than marker start offset which is always 0
             if (latestDoneMarker != null &&
@@ -584,6 +585,8 @@ public class GeneratedParserUtilBaseCopy {
             if (lastErrorPos == initialPos) {
                 // do not force, inner recoverRoot might have skipped some tokens
                 reportError(builder, state, frame, elementType != null, false, false);
+                reportErrorForCompletion(state);
+
             } else if (lastErrorPos > initialPos) {
                 // set error pos here as if it is reported for future reference
                 frame.errorReportedAt = lastErrorPos;
@@ -606,6 +609,11 @@ public class GeneratedParserUtilBaseCopy {
         }
     }
 
+    public static void reportErrorForCompletion(ErrorState state) {
+        if (state.completionState != null) {
+            state.completionState.errorOccured = true;
+        }
+    }
     protected static void close_frame_impl_(ErrorState state,
                                             Frame frame,
                                             PsiBuilder builder,
@@ -723,6 +731,8 @@ public class GeneratedParserUtilBaseCopy {
         int position = builder.rawTokenIndex();
         if (frame.errorReportedAt < position && frame.lastVariantAt > -1 && frame.lastVariantAt <= position) {
             reportError(builder, state, frame, false, true, advance);
+            reportErrorForCompletion(state);
+
         }
     }
 
@@ -769,9 +779,9 @@ public class GeneratedParserUtilBaseCopy {
             builder.error(message);
         }
         builder.eof(); // skip whitespaces
-        if (state.completionState != null) {
-            state.completionState.errorOccured = true;
-        }
+//        if (state.completionState != null) {
+//            state.completionState.errorOccured = true;
+//        }
         frame.errorReportedAt = builder.rawTokenIndex();
         return true;
     }
