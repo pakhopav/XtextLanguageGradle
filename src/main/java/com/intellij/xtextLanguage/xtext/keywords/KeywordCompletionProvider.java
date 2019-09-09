@@ -10,7 +10,6 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.codeInsight.lookup.TailTypeDecorator;
 import com.intellij.lang.Language;
 import com.intellij.lang.PsiBuilder;
-import com.intellij.lang.parser.GeneratedParserUtilBase;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.text.StringUtil;
 import com.intellij.psi.PsiElement;
@@ -20,6 +19,7 @@ import com.intellij.psi.impl.source.tree.TreeUtil;
 import com.intellij.psi.impl.source.tree.injected.InjectedLanguageUtil;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.ProcessingContext;
+import com.intellij.xtextLanguage.xtext.parserUtilBase.GeneratedParserUtilBaseCopy;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -45,20 +45,14 @@ class KeywordCompletionProvider<T extends PsiFile, F extends IElementType> exten
         String text = empty ? CompletionInitializationContext.DUMMY_IDENTIFIER : fragment;
         PsiFile file = PsiFileFactory.getInstance(xFile.getProject()).createFileFromText("name." + fileType.getDefaultExtension(), language, text, true, false);
         int completionOffset = empty ? 0 : fragment.length();
-        GeneratedParserUtilBase.CompletionState state = new GeneratedParserUtilBase.CompletionState(completionOffset) {
-            boolean errorOccured = false;
+        GeneratedParserUtilBaseCopy.CompletionState state = new GeneratedParserUtilBaseCopy.CompletionState(completionOffset) {
 
             @Override
             public boolean prefixMatches(@NotNull PsiBuilder builder, @NotNull String text) {
                 if (!errorOccured) {
-                    if (GeneratedParserUtilBase.ErrorState.get(builder).currentFrame.errorReportedAt != -1) {
-                        errorOccured = true;
-                        return false;
-                    }
                     if (text.startsWith(prefix)) {
                         return super.prefixMatches(builder, text);
                     }
-
 
                 }
                 return false;
@@ -73,7 +67,7 @@ class KeywordCompletionProvider<T extends PsiFile, F extends IElementType> exten
                 return text != null && text.length() > 0 ? text : null;
             }
         };
-        file.putUserData(GeneratedParserUtilBase.COMPLETION_STATE_KEY, state);
+        file.putUserData(GeneratedParserUtilBaseCopy.COMPLETION_STATE_KEY, state);
         TreeUtil.ensureParsed(file.getNode());
 
         return state.items;

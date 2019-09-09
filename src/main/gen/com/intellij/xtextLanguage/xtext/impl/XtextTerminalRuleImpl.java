@@ -1,18 +1,20 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl;
 import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class XtextTerminalRuleImpl extends XtextAbstractRuleImpl implements XtextTerminalRule {
+import java.util.List;
+
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+
+public class XtextTerminalRuleImpl extends XtextPsiCompositeElementImpl implements XtextTerminalRule {
 
   public XtextTerminalRuleImpl(@NotNull ASTNode node) {
     super(node);
@@ -70,30 +72,15 @@ public class XtextTerminalRuleImpl extends XtextAbstractRuleImpl implements Xtex
   }
 
   @Override
-  @Nullable
+  @NotNull
   public PsiElement getSemicolon() {
-    return findChildByType(SEMICOLON);
+      return findNotNullChildByType(SEMICOLON);
   }
 
   @Override
   @NotNull
   public PsiElement getTerminal() {
     return findNotNullChildByType(TERMINAL);
-  }
-
-  @Override
-  public String getName() {
-    return XtextPsiImplUtil.getName(this);
-  }
-
-  @Override
-  public PsiElement setName(String newName) {
-    return XtextPsiImplUtil.setName(this, newName);
-  }
-
-  @Override
-  public PsiElement getNameIdentifier() {
-    return XtextPsiImplUtil.getNameIdentifier(this);
   }
 
 }

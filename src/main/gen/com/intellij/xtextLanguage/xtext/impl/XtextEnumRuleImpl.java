@@ -1,18 +1,20 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl;
 import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class XtextEnumRuleImpl extends XtextAbstractRuleImpl implements XtextEnumRule {
+import java.util.List;
+
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+
+public class XtextEnumRuleImpl extends XtextPsiCompositeElementImpl implements XtextEnumRule {
 
   public XtextEnumRuleImpl(@NotNull ASTNode node) {
     super(node);
@@ -34,9 +36,9 @@ public class XtextEnumRuleImpl extends XtextAbstractRuleImpl implements XtextEnu
   }
 
   @Override
-  @NotNull
+  @Nullable
   public XtextEnumLiterals getEnumLiterals() {
-    return findNotNullChildByClass(XtextEnumLiterals.class);
+      return findChildByClass(XtextEnumLiterals.class);
   }
 
   @Override
@@ -46,15 +48,15 @@ public class XtextEnumRuleImpl extends XtextAbstractRuleImpl implements XtextEnu
   }
 
   @Override
-  @NotNull
+  @Nullable
   public XtextValidID getValidID() {
-    return findNotNullChildByClass(XtextValidID.class);
+      return findChildByClass(XtextValidID.class);
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PsiElement getColon() {
-    return findNotNullChildByType(COLON);
+      return findChildByType(COLON);
   }
 
   @Override
@@ -73,21 +75,6 @@ public class XtextEnumRuleImpl extends XtextAbstractRuleImpl implements XtextEnu
   @NotNull
   public PsiElement getSemicolon() {
     return findNotNullChildByType(SEMICOLON);
-  }
-
-  @Override
-  public String getName() {
-    return XtextPsiImplUtil.getName(this);
-  }
-
-  @Override
-  public PsiElement setName(String newName) {
-    return XtextPsiImplUtil.setName(this, newName);
-  }
-
-  @Override
-  public PsiElement getNameIdentifier() {
-    return XtextPsiImplUtil.getNameIdentifier(this);
   }
 
 }

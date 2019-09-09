@@ -9,6 +9,8 @@
         ANY_OTHER ='regexp:.'
         GRAMMAR = "grammar"
         WITH = "with"
+
+
         HIDDEN = "hidden"
         GENERATE = "generate"
         IMPORT = "import"
@@ -71,7 +73,7 @@
   elementTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextElementType"
   tokenTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextTokenType"
   psiImplUtilClass="com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil"
-//  parserUtilClass= "com.intellij.xtextLanguage.xtext.psi.impl.parserUtil.ParserUtilBase"
+  parserUtilClass= "com.intellij.xtextLanguage.xtext.parserUtilBase.GeneratedParserUtilBaseCopy"
   generateTokenAccessors=true
   generateTokens=true
 
@@ -117,7 +119,9 @@ ReferencedMetamodel::=
 Annotation::=
 	'@' ID
 
-ParserRule ::=
+ParserRule ::= AbstractParserRule ';'
+
+private AbstractParserRule ::=
 	(Annotation)*
 	(
 	  'fragment' RuleNameAndParams ('*' | ('returns' TypeRef)?)
@@ -125,13 +129,15 @@ ParserRule ::=
 	)
 	('hidden' '(' (REFERENCE_AbstractRule_RuleID/*hiddenTokens+=[AbstractRule|RuleID]*/ (',' REFERENCE_AbstractRule_RuleID)*)? ')')? ':'
 		Alternatives
-	';'
+
 {
+pin=2
+recoverWhile= rule_recovery
 mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
 implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
 methods=[getName setName getNameIdentifier]
 }
-
+rule_recovery ::= !(';')
 RuleNameAndParams::=
 	ValidID ('<' (Parameter (',' Parameter)*)? '>')?
 
@@ -275,14 +281,16 @@ ParenthesizedElement::=
 PredicatedGroup::=
 	('=>' | '->') '(' Alternatives ')'
 
-
-TerminalRule ::=
+TerminalRule ::= AbstractTerminalRule ';'
+private AbstractTerminalRule::=
 	(Annotation)*
 	'terminal' ('fragment' ValidID | ValidID ('returns' TypeRef)?) ':'
 		TerminalAlternatives
-	';'
+
 {
     pin=2
+    recoverWhile = rule_recovery
+
 	mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
     implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
     methods=[getName setName getNameIdentifier]
@@ -333,13 +341,16 @@ Wildcard::=
 CharacterRange ::=
 	Keyword (  '..' Keyword)?
 
+EnumRule::= AbstractEnumRule ';'
 
-EnumRule::=
+private AbstractEnumRule::=
 	( Annotation)*
 	'enum' ValidID ('returns' TypeRef)? ':'
 		EnumLiterals
-	';'
+
 {
+    pin=2
+    recoverWhile=rule_recovery
     mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
     implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
     methods=[getName setName getNameIdentifier]

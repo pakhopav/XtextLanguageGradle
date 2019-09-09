@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import org.jetbrains.annotations.*;
-import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiElementVisitor;
+import org.jetbrains.annotations.NotNull;
 
 public class XtextVisitor extends PsiElementVisitor {
 
@@ -92,7 +92,7 @@ public class XtextVisitor extends PsiElementVisitor {
   }
 
   public void visitEnumRule(@NotNull XtextEnumRule o) {
-    visitAbstractRule(o);
+      visitPsiElement(o);
   }
 
   public void visitGeneratedMetamodel(@NotNull XtextGeneratedMetamodel o) {
@@ -152,7 +152,7 @@ public class XtextVisitor extends PsiElementVisitor {
   }
 
   public void visitParserRule(@NotNull XtextParserRule o) {
-    visitAbstractRule(o);
+      visitPsiElement(o);
   }
 
   public void visitPredicatedGroup(@NotNull XtextPredicatedGroup o) {
@@ -224,7 +224,7 @@ public class XtextVisitor extends PsiElementVisitor {
   }
 
   public void visitTerminalRule(@NotNull XtextTerminalRule o) {
-    visitAbstractRule(o);
+      visitPsiElement(o);
   }
 
   public void visitTerminalRuleCall(@NotNull XtextTerminalRuleCall o) {
@@ -259,7 +259,7 @@ public class XtextVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitAbstractRule(@NotNull XtextAbstractRule o) {
+    public void visitRuleRecovery(@NotNull XtextRuleRecovery o) {
     visitPsiElement(o);
   }
 

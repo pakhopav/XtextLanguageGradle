@@ -1,13 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public interface XtextParserRule extends XtextAbstractRule {
+import java.util.List;
 
-  @NotNull
+public interface XtextParserRule extends PsiElement {
+
+    @Nullable
   XtextAlternatives getAlternatives();
 
   @NotNull
@@ -25,7 +27,7 @@ public interface XtextParserRule extends XtextAbstractRule {
   @Nullable
   PsiElement getAsterisk();
 
-  @NotNull
+    @Nullable
   PsiElement getColon();
 
   @Nullable
@@ -45,11 +47,5 @@ public interface XtextParserRule extends XtextAbstractRule {
 
   @NotNull
   PsiElement getSemicolon();
-
-  String getName();
-
-  PsiElement setName(String newName);
-
-  PsiElement getNameIdentifier();
 
 }

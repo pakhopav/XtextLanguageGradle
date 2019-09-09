@@ -1,11 +1,13 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public interface XtextTerminalRule extends XtextAbstractRule {
+import java.util.List;
+
+public interface XtextTerminalRule extends PsiElement {
 
   @NotNull
   List<XtextAnnotation> getAnnotationList();
@@ -28,16 +30,10 @@ public interface XtextTerminalRule extends XtextAbstractRule {
   @Nullable
   PsiElement getReturns();
 
-  @Nullable
+    @NotNull
   PsiElement getSemicolon();
 
   @NotNull
   PsiElement getTerminal();
-
-  String getName();
-
-  PsiElement setName(String newName);
-
-  PsiElement getNameIdentifier();
 
 }

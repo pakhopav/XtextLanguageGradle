@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import com.intellij.psi.tree.IElementType;
-import com.intellij.psi.PsiElement;
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.tree.IElementType;
 import com.intellij.xtextLanguage.xtext.impl.*;
 
 public interface XtextTypes {
@@ -60,6 +60,7 @@ public interface XtextTypes {
   IElementType RULE_ID = new XtextElementType("RULE_ID");
   IElementType RULE_IDENTIFIER = new XtextElementType("RULE_IDENTIFIER");
   IElementType RULE_NAME_AND_PARAMS = new XtextElementType("RULE_NAME_AND_PARAMS");
+    IElementType RULE_RECOVERY = new XtextElementType("RULE_RECOVERY");
   IElementType TERMINAL_ALTERNATIVES = new XtextElementType("TERMINAL_ALTERNATIVES");
   IElementType TERMINAL_GROUP = new XtextElementType("TERMINAL_GROUP");
   IElementType TERMINAL_RULE = new XtextElementType("TERMINAL_RULE");
@@ -277,39 +278,30 @@ public interface XtextTypes {
       }
       else if (type == RULE_NAME_AND_PARAMS) {
         return new XtextRuleNameAndParamsImpl(node);
-      }
-      else if (type == TERMINAL_ALTERNATIVES) {
-        return new XtextTerminalAlternativesImpl(node);
-      }
-      else if (type == TERMINAL_GROUP) {
-        return new XtextTerminalGroupImpl(node);
-      }
-      else if (type == TERMINAL_RULE) {
-        return new XtextTerminalRuleImpl(node);
-      }
-      else if (type == TERMINAL_RULE_CALL) {
-        return new XtextTerminalRuleCallImpl(node);
-      }
-      else if (type == TERMINAL_TOKEN) {
-        return new XtextTerminalTokenImpl(node);
-      }
-      else if (type == TERMINAL_TOKEN_ELEMENT) {
-        return new XtextTerminalTokenElementImpl(node);
-      }
-      else if (type == TYPE_REF) {
-        return new XtextTypeRefImpl(node);
-      }
-      else if (type == UNORDERED_GROUP) {
-        return new XtextUnorderedGroupImpl(node);
-      }
-      else if (type == UNTIL_TOKEN) {
-        return new XtextUntilTokenImpl(node);
-      }
-      else if (type == VALID_ID) {
-        return new XtextValidIDImpl(node);
-      }
-      else if (type == WILDCARD) {
-        return new XtextWildcardImpl(node);
+      } else if (type == RULE_RECOVERY) {
+          return new XtextRuleRecoveryImpl(node);
+      } else if (type == TERMINAL_ALTERNATIVES) {
+          return new XtextTerminalAlternativesImpl(node);
+      } else if (type == TERMINAL_GROUP) {
+          return new XtextTerminalGroupImpl(node);
+      } else if (type == TERMINAL_RULE) {
+          return new XtextTerminalRuleImpl(node);
+      } else if (type == TERMINAL_RULE_CALL) {
+          return new XtextTerminalRuleCallImpl(node);
+      } else if (type == TERMINAL_TOKEN) {
+          return new XtextTerminalTokenImpl(node);
+      } else if (type == TERMINAL_TOKEN_ELEMENT) {
+          return new XtextTerminalTokenElementImpl(node);
+      } else if (type == TYPE_REF) {
+          return new XtextTypeRefImpl(node);
+      } else if (type == UNORDERED_GROUP) {
+          return new XtextUnorderedGroupImpl(node);
+      } else if (type == UNTIL_TOKEN) {
+          return new XtextUntilTokenImpl(node);
+      } else if (type == VALID_ID) {
+          return new XtextValidIDImpl(node);
+      } else if (type == WILDCARD) {
+          return new XtextWildcardImpl(node);
       }
       throw new AssertionError("Unknown element type: " + type);
     }

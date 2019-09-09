@@ -1,18 +1,20 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl;
 import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class XtextParserRuleImpl extends XtextAbstractRuleImpl implements XtextParserRule {
+import java.util.List;
+
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+
+public class XtextParserRuleImpl extends XtextPsiCompositeElementImpl implements XtextParserRule {
 
   public XtextParserRuleImpl(@NotNull ASTNode node) {
     super(node);
@@ -28,9 +30,9 @@ public class XtextParserRuleImpl extends XtextAbstractRuleImpl implements XtextP
   }
 
   @Override
-  @NotNull
+  @Nullable
   public XtextAlternatives getAlternatives() {
-    return findNotNullChildByClass(XtextAlternatives.class);
+      return findChildByClass(XtextAlternatives.class);
   }
 
   @Override
@@ -64,9 +66,9 @@ public class XtextParserRuleImpl extends XtextAbstractRuleImpl implements XtextP
   }
 
   @Override
-  @NotNull
+  @Nullable
   public PsiElement getColon() {
-    return findNotNullChildByType(COLON);
+      return findChildByType(COLON);
   }
 
   @Override
@@ -103,21 +105,6 @@ public class XtextParserRuleImpl extends XtextAbstractRuleImpl implements XtextP
   @NotNull
   public PsiElement getSemicolon() {
     return findNotNullChildByType(SEMICOLON);
-  }
-
-  @Override
-  public String getName() {
-    return XtextPsiImplUtil.getName(this);
-  }
-
-  @Override
-  public PsiElement setName(String newName) {
-    return XtextPsiImplUtil.setName(this, newName);
-  }
-
-  @Override
-  public PsiElement getNameIdentifier() {
-    return XtextPsiImplUtil.getNameIdentifier(this);
   }
 
 }

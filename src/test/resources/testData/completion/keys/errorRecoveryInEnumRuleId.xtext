@@ -1,0 +1,18 @@
+grammar org.example.domainmodel.Domainmodel with
+                                      org.eclipse.xtext.xbase.Xbase
+
+generate domainmodel "http://www.example.org/domainmodel/Domainmodel"
+
+enum 2Domainmodel :
+    importSection=XImportSection?
+    elements+=AbstractElement*; <caret>
+
+AbstractElement:
+    PackageDeclaration | Entity  ;
+
+
+JvmWildcardTypeReference:
+        {JvmWildcardTypeReference} '?' (
+          constraints+=JvmUpperBound (constraints+=JvmUpperBoundAnded)*
+        | constraints+=JvmLowerBound (constraints+=JvmLowerBoundAnded)*
+        )?;
