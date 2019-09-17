@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface XtextEnumRule extends PsiElement {
+public interface XtextEnumRule extends XtextAbstractRule {
 
   @NotNull
   List<XtextAnnotation> getAnnotationList();
@@ -32,5 +32,11 @@ public interface XtextEnumRule extends PsiElement {
 
   @NotNull
   PsiElement getSemicolon();
+
+    String getName();
+
+    PsiElement setName(String newName);
+
+    PsiElement getNameIdentifier();
 
 }

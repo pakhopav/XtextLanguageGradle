@@ -1,0 +1,29 @@
+grammar org.example.domainmodel.Domainmodel with
+                                      org.eclipse.xtext.xbase.Xbase
+
+generate domainmodel "http://www.example.org/domainmodel/Domainmodel"
+
+
+JvmArgumentTypeReference returns JvmTypeReference:
+	JvmTypeReference | JvmWildcardTypeReference;
+
+JvmWildcardTypeReference:
+	{JvmWildcardTypeReference} '?' (
+	  constraints+=JvmUpperBound (constraints+=JvmUpperBoundAnded)*
+	| constraints+=JvmLowerBound (constraints+=JvmLowerBoundAnded)*
+	)?;
+
+JvmUpperBound :
+	'extends' typeReference=JvmTypeReference;
+
+JvmUpperBoundAnded returns JvmUpperBound:
+	'&' typeReference=JvmTypeReference;
+
+JvmLowerBound :
+	'super' typeReference=JvmTypeReference;
+
+JvmLowerBoundAnded returns JvmLowerBound:
+	'&' typeReference=JvmTypeReference;
+
+fragment A : 'asda' B;
+terminal fragment B : ('a'..'z'|'0'..'9');

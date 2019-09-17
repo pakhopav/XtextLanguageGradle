@@ -92,7 +92,7 @@ public class XtextVisitor extends PsiElementVisitor {
   }
 
   public void visitEnumRule(@NotNull XtextEnumRule o) {
-      visitPsiElement(o);
+      visitAbstractRule(o);
   }
 
   public void visitGeneratedMetamodel(@NotNull XtextGeneratedMetamodel o) {
@@ -152,7 +152,7 @@ public class XtextVisitor extends PsiElementVisitor {
   }
 
   public void visitParserRule(@NotNull XtextParserRule o) {
-      visitPsiElement(o);
+      visitAbstractRule(o);
   }
 
   public void visitPredicatedGroup(@NotNull XtextPredicatedGroup o) {
@@ -224,7 +224,7 @@ public class XtextVisitor extends PsiElementVisitor {
   }
 
   public void visitTerminalRule(@NotNull XtextTerminalRule o) {
-      visitPsiElement(o);
+      visitAbstractRule(o);
   }
 
   public void visitTerminalRuleCall(@NotNull XtextTerminalRuleCall o) {
@@ -262,6 +262,10 @@ public class XtextVisitor extends PsiElementVisitor {
     public void visitRuleRecovery(@NotNull XtextRuleRecovery o) {
     visitPsiElement(o);
   }
+
+    public void visitAbstractRule(@NotNull XtextAbstractRule o) {
+        visitPsiElement(o);
+    }
 
   public void visitPsiElement(@NotNull PsiElement o) {
     visitElement(o);

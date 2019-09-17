@@ -6,7 +6,8 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
+import com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl;
+import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,7 +15,7 @@ import java.util.List;
 
 import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
 
-public class XtextTerminalRuleImpl extends XtextPsiCompositeElementImpl implements XtextTerminalRule {
+public class XtextTerminalRuleImpl extends XtextAbstractRuleImpl implements XtextTerminalRule {
 
   public XtextTerminalRuleImpl(@NotNull ASTNode node) {
     super(node);
@@ -82,5 +83,20 @@ public class XtextTerminalRuleImpl extends XtextPsiCompositeElementImpl implemen
   public PsiElement getTerminal() {
     return findNotNullChildByType(TERMINAL);
   }
+
+    @Override
+    public String getName() {
+        return XtextPsiImplUtil.getName(this);
+    }
+
+    @Override
+    public PsiElement setName(String newName) {
+        return XtextPsiImplUtil.setName(this, newName);
+    }
+
+    @Override
+    public PsiElement getNameIdentifier() {
+        return XtextPsiImplUtil.getNameIdentifier(this);
+    }
 
 }

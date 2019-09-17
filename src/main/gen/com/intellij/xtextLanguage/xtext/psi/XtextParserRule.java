@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface XtextParserRule extends PsiElement {
+public interface XtextParserRule extends XtextAbstractRule {
 
     @Nullable
   XtextAlternatives getAlternatives();
@@ -47,5 +47,11 @@ public interface XtextParserRule extends PsiElement {
 
   @NotNull
   PsiElement getSemicolon();
+
+    String getName();
+
+    PsiElement setName(String newName);
+
+    PsiElement getNameIdentifier();
 
 }

@@ -45,9 +45,6 @@ public class XtextCompletionTest extends XtextCompletionTestBase {
 
     }
 
-    public void testhiddenKeyword() {
-        checkHasCompletions("hidden (");
-    }
 
     public void testNoKeywordsAfterGrammarKeyword() {
         checkDoesnotContain("with", "hidden (", "enum", "terminal", "fragment", "generate", "import", "ID");
@@ -181,4 +178,8 @@ public class XtextCompletionTest extends XtextCompletionTestBase {
 
     }
 
+    public void testAfterRuleKeyword() {
+        checkHasCompletions("true", "false", "fragment");
+        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
+    }
 }

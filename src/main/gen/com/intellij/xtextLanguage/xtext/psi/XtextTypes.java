@@ -116,9 +116,52 @@ public interface XtextTypes {
   IElementType SL_COMMENT = new XtextTokenType("SL_COMMENT");
   IElementType STRING = new XtextTokenType("STRING");
   IElementType TERMINAL = new XtextTokenType("terminal");
+    IElementType TEST = new XtextTokenType("TEST");
   IElementType TRUE = new XtextTokenType("true");
   IElementType WEAK_PRED = new XtextTokenType("->");
   IElementType WITH = new XtextTokenType("with");
+
+    class TokenMetaInfo {
+
+        public static boolean isRegexpToken(IElementType token) {
+
+            String debugName = token.toString();
+            if (debugName.equals("ID")) {
+
+                return true;
+
+            }
+            if (debugName.equals("STRING")) {
+
+                return true;
+
+            }
+            if (debugName.equals("INT")) {
+
+                return true;
+
+            }
+            if (debugName.equals("ML_COMMENT")) {
+
+                return true;
+
+            }
+            if (debugName.equals("SL_COMMENT")) {
+
+                return true;
+
+            }
+            if (debugName.equals("ANY_OTHER")) {
+
+                return true;
+
+            }
+
+            return false;
+
+        }
+
+    }
 
   class Factory {
     public static PsiElement createElement(ASTNode node) {
