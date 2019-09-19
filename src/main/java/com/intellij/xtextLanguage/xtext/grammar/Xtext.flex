@@ -73,7 +73,6 @@ ML_COMMENT=("/*"{COMMENT_TAIL})|"/*"
 "EOF" {return EOF_KEY;}
 "::" {return COLONS;}
 
-
 {ID} {return ID; }
 {STRING} {return STRING;}
 {INT} {return INT;}

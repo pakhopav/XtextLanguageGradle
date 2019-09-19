@@ -8,8 +8,8 @@ import com.intellij.psi.PsiManager;
 import com.intellij.psi.search.FileTypeIndex;
 import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.xtextLanguage.xtext.psi.XtextFile;
 import com.intellij.xtextLanguage.xtext.psi.XtextNamedElement;
+import com.intellij.xtextLanguage.xtext.psi.impl.XtextFileImpl;
 
 import java.util.ArrayList;
 import java.util.Collection;
@@ -23,7 +23,7 @@ public class XtextUtil {
         Collection<VirtualFile> virtualFiles =
                 FileTypeIndex.getFiles(XtextFileType.INSTANCE, GlobalSearchScope.allScope(project));
         for (VirtualFile virtualFile : virtualFiles) {
-            XtextFile simpleFile = (XtextFile) PsiManager.getInstance(project).findFile(virtualFile);
+            XtextFileImpl simpleFile = (XtextFileImpl) PsiManager.getInstance(project).findFile(virtualFile);
             if (simpleFile != null) {
                 T[] elements = PsiTreeUtil.getChildrenOfType(simpleFile, tClass);
                 if (elements != null) {
@@ -43,9 +43,9 @@ public class XtextUtil {
 
     public static <T extends XtextNamedElement> List<T> findElementsInCurrentFile(PsiFile file, Class<T> tClass, String Id) {
         List<T> result = null;
-        XtextFile xtextFile = (XtextFile) file;
-        if (xtextFile != null) {
-            T[] elements = PsiTreeUtil.getChildrenOfType(xtextFile, tClass);
+        XtextFileImpl xtextFileImpl = (XtextFileImpl) file;
+        if (xtextFileImpl != null) {
+            T[] elements = PsiTreeUtil.getChildrenOfType(xtextFileImpl, tClass);
             if (elements != null) {
                 for (T property : elements) {
                     if (Id.equals(property.getName())) {
@@ -66,7 +66,7 @@ public class XtextUtil {
         Collection<VirtualFile> virtualFiles =
                 FileTypeIndex.getFiles(XtextFileType.INSTANCE, GlobalSearchScope.allScope(project));
         for (VirtualFile virtualFile : virtualFiles) {
-            XtextFile simpleFile = (XtextFile) PsiManager.getInstance(project).findFile(virtualFile);
+            XtextFileImpl simpleFile = (XtextFileImpl) PsiManager.getInstance(project).findFile(virtualFile);
             if (simpleFile != null) {
                 T[] elements = PsiTreeUtil.getChildrenOfType(simpleFile, tClass);
                 if (elements != null) {
@@ -79,9 +79,9 @@ public class XtextUtil {
 
     public static <T extends PsiElement> List<T> findElementsInCurrentFile(PsiFile file, Class<T> tClass) {
         List<T> result = new ArrayList<>();
-        XtextFile xtextFile = (XtextFile) file;
-        if (xtextFile != null) {
-            T[] elements = PsiTreeUtil.getChildrenOfType(xtextFile, tClass);
+        XtextFileImpl xtextFileImpl = (XtextFileImpl) file;
+        if (xtextFileImpl != null) {
+            T[] elements = PsiTreeUtil.getChildrenOfType(xtextFileImpl, tClass);
             if (elements != null) {
                 Collections.addAll(result, elements);
             }

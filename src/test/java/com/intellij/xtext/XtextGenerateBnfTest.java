@@ -3,6 +3,7 @@ package com.intellij.xtext;
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.TestDataPath;
 import com.intellij.xtextLanguage.xtext.generator.BnfGenerator;
+import com.intellij.xtextLanguage.xtext.generator.BnfGeneratorOld;
 import com.intellij.xtextLanguage.xtext.generator.XtextFileModel;
 import com.intellij.xtextLanguage.xtext.psi.XtextFile;
 
@@ -42,10 +43,10 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         XtextFile xtextFile = (XtextFile) file;
 
         XtextFileModel model = new XtextFileModel(xtextFile);
-
-        assertEquals("^?([a-z]|[A-Z]|$|_)([a-z]|[A-Z]|$|_|[0-9])*", model.getTerminalRuleByName("ID").regexp);
-        assertEquals(".", model.getTerminalRuleByName("ANY_OTHER").regexp);
-        assertEquals("( |\\t|\\r|\\n)ref_STRING.", model.getTerminalRuleByName("WITH_REF").regexp);
+        BnfGeneratorOld generator = new BnfGeneratorOld("newGrammar", model);
+        assertEquals("^?([a-z]|[A-Z]|$|_)([a-z]|[A-Z]|$|_|[0-9])*", generator.getRegexpAsString(model.getTerminalRuleByName("ID").getMyRule()));
+        assertEquals(".", generator.getRegexpAsString(model.getTerminalRuleByName("ANY_OTHER").getMyRule()));
+        assertEquals("( |\\t|\\r|\\n)ref_STRING.", generator.getRegexpAsString(model.getTerminalRuleByName("WITH_REF").getMyRule()));
     }
 
     public void testParserRules() {
@@ -53,8 +54,9 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         XtextFile xtextFile = (XtextFile) file;
 
         XtextFileModel model = new XtextFileModel(xtextFile);
+        BnfGeneratorOld generator = new BnfGeneratorOld("newGrammar", model);
 
-        assertEquals("'term' | C | REFERENCE_RUL ", model.getParserRuleByName("B").alternatives);
+        assertEquals("'term' | C | REFERENCE_RUL ", generator.getRuleAlternativesAsString(model.getParserRuleByName("B").getMyRule()));
     }
 
     public void testParserRules2() {
@@ -62,16 +64,17 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         XtextFile xtextFile = (XtextFile) file;
 
         XtextFileModel model = new XtextFileModel(xtextFile);
+        BnfGeneratorOld generator = new BnfGeneratorOld("newGrammar", model);
 
-        assertEquals("XImportSection ? AbstractElement * ", model.getParserRuleByName("Domainmodel").alternatives);
+        assertEquals("XImportSection ? AbstractElement * ", generator.getRuleAlternativesAsString(model.getParserRuleByName("Domainmodel").getMyRule()));
 
-        assertEquals("PackageDeclaration | Entity ", model.getParserRuleByName("AbstractElement").alternatives);
+        assertEquals("PackageDeclaration | Entity ", generator.getRuleAlternativesAsString(model.getParserRuleByName("AbstractElement").getMyRule()));
 
-        assertEquals("'entity' ValidID ('extends' JvmTypeReference ) ? '{' Feature * '}' ", model.getParserRuleByName("Entity").alternatives);
+        assertEquals("'entity' ValidID ('extends' JvmTypeReference ) ? '{' Feature * '}' ", generator.getRuleAlternativesAsString(model.getParserRuleByName("Entity").getMyRule()));
 
-        assertEquals("ValidID ':' JvmTypeReference ", model.getParserRuleByName("Property").alternatives);
+        assertEquals("ValidID ':' JvmTypeReference ", generator.getRuleAlternativesAsString(model.getParserRuleByName("Property").getMyRule()));
 
-        assertEquals("'op' ValidID '(' (FullJvmFormalParameter (',' FullJvmFormalParameter ) * ) ? ')' ':' JvmTypeReference XBlockExpression ", model.getParserRuleByName("Operation").alternatives);
+        assertEquals("'op' ValidID '(' (FullJvmFormalParameter (',' FullJvmFormalParameter ) * ) ? ')' ':' JvmTypeReference XBlockExpression ", generator.getRuleAlternativesAsString(model.getParserRuleByName("Operation").getMyRule()));
 
     }
 
@@ -93,12 +96,12 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         PsiFile file = getXtextFile();
         XtextFile xtextFile = (XtextFile) file;
         XtextFileModel model = new XtextFileModel(xtextFile);
-        assertEquals("JvmTypeReference", model.getParserRuleByName("JvmArgumentTypeReference").returnType);
-        assertEquals(null, model.getParserRuleByName("JvmWildcardTypeReference").returnType);
-        assertEquals("JvmLowerBound", model.getParserRuleByName("JvmLowerBoundAnded").returnType);
-        assertTrue(model.getParserRuleByName("A").isFragment);
-        assertTrue(model.getTerminalRuleByName("B").isFragment);
-        assertFalse(model.getParserRuleByName("JvmWildcardTypeReference").isFragment);
+        assertEquals("JvmTypeReference", model.getParserRuleByName("JvmArgumentTypeReference").getReturnType());
+        assertEquals(null, model.getParserRuleByName("JvmWildcardTypeReference").getReturnType());
+        assertEquals("JvmLowerBound", model.getParserRuleByName("JvmLowerBoundAnded").getReturnType());
+        assertTrue(model.getParserRuleByName("A").isFragment());
+        assertTrue(model.getTerminalRuleByName("B").isFragment());
+        assertFalse(model.getParserRuleByName("JvmWildcardTypeReference").isFragment());
 
     }
 

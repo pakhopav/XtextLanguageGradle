@@ -49,12 +49,6 @@
         CURRENT = "current"
         EOF_KEY = "EOF"
         COLONS = "::"
-
-
-
-
-
-
     ]
 
 
@@ -120,7 +114,11 @@ Annotation::=
 	'@' ID
 
 ParserRule ::= AbstractParserRule ';'
-
+{
+mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
+implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
+methods=[getName setName getNameIdentifier]
+}
 private AbstractParserRule ::=
 	(Annotation)*
 	(
@@ -133,9 +131,7 @@ private AbstractParserRule ::=
 {
 pin=2
 recoverWhile= rule_recovery
-mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
-implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
-methods=[getName setName getNameIdentifier]
+
 }
 rule_recovery ::= !(';')
 RuleNameAndParams::=
@@ -282,6 +278,11 @@ PredicatedGroup::=
 	('=>' | '->') '(' Alternatives ')'
 
 TerminalRule ::= AbstractTerminalRule ';'
+{
+mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
+implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
+methods=[getName setName getNameIdentifier]
+}
 private AbstractTerminalRule::=
 	(Annotation)*
 	'terminal' ('fragment' ValidID | ValidID ('returns' TypeRef)?) ':'
@@ -290,10 +291,6 @@ private AbstractTerminalRule::=
 {
     pin=2
     recoverWhile = rule_recovery
-
-	mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
-    implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
-    methods=[getName setName getNameIdentifier]
 }
 
 
@@ -342,6 +339,11 @@ CharacterRange ::=
 	Keyword (  '..' Keyword)?
 
 EnumRule::= AbstractEnumRule ';'
+{
+mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
+implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
+methods=[getName setName getNameIdentifier]
+}
 
 private AbstractEnumRule::=
 	( Annotation)*
@@ -351,9 +353,6 @@ private AbstractEnumRule::=
 {
     pin=2
     recoverWhile=rule_recovery
-    mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
-    implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
-    methods=[getName setName getNameIdentifier]
 }
 
 EnumLiterals::=
@@ -362,7 +361,6 @@ EnumLiterals::=
 
 EnumLiteralDeclaration::=
 	REFERENCE_ecoreEEnumLiteral/*enumLiteral=[ecore::EEnumLiteral]*/ ('=' Keyword)?
-
 
 //REFERENCE
 REFERENCE_Grammar_GrammarID::= GrammarID

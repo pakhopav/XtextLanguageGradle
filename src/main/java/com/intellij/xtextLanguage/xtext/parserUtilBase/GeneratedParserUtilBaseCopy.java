@@ -779,9 +779,6 @@ public class GeneratedParserUtilBaseCopy {
             builder.error(message);
         }
         builder.eof(); // skip whitespaces
-//        if (state.completionState != null) {
-//            state.completionState.errorOccured = true;
-//        }
         frame.errorReportedAt = builder.rawTokenIndex();
         return true;
     }
