@@ -23,8 +23,8 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
 
     @Throws(IOException::class)
     fun generate() {
-        out = PrintWriter(FileOutputStream(myBnfFile))
 
+        out = PrintWriter(FileOutputStream(myBnfFile))
         out.print("{\n")
 
         generateTerminalRules()
@@ -33,7 +33,7 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
         out.print("}\n")
 
         generateRules()
-//        generateEnumRules()
+        generateEnumRules()
         generateReferences()
 
         out.close()
@@ -44,7 +44,28 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
     }
 
     private fun generateEnumRules() {
-        TODO("not implemented") //To change body of created functions use File | Settings | File Templates.
+        fileModel.myEnumRules.forEach { out.print("${it.name} ::= ${getEnumRuleDeclarationsAsString(it.myRule)}\n") }
+
+    }
+
+    fun getEnumRuleDeclarationsAsString(rule: XtextEnumRule): String {
+        val sb = java.lang.StringBuilder()
+        val leteralDclarations = rule.enumLiterals?.enumLiteralDeclarationList
+        if (leteralDclarations != null) {
+            for (declaration in leteralDclarations) {
+                if (declaration.keyword != null) {
+                    sb.append(declaration.keyword?.text)
+                } else {
+                    sb.append(declaration.referenceEcoreEEnumLiteral.id.text)
+                }
+                sb.append("${if (declaration != leteralDclarations.last()) {
+                    "| "
+                } else {
+                    ""
+                }} ")
+            }
+        }
+        return sb.toString()
     }
 
     private fun generateRules() {
@@ -60,7 +81,7 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
           |    psiImplClassSuffix="Impl"
           |    psiPackage="com.intellij.xtextLanguage.xtext.psi"
           |    psiImplPackage="com.intellij.xtextLanguage.xtext.impl"
-        
+
           |    elementTypeHolderClass="com.intellij.xtextLanguage.xtext.psi.XtextTypes"
           |    elementTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextElementType"
           |    tokenTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextTokenType"
