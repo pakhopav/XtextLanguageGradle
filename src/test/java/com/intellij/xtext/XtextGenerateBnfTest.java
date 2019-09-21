@@ -46,7 +46,7 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         BnfGeneratorOld generator = new BnfGeneratorOld("newGrammar", model);
         assertEquals("^?([a-z]|[A-Z]|$|_)([a-z]|[A-Z]|$|_|[0-9])*", generator.getRegexpAsString(model.getTerminalRuleByName("ID").getMyRule()));
         assertEquals(".", generator.getRegexpAsString(model.getTerminalRuleByName("ANY_OTHER").getMyRule()));
-        assertEquals("( |\\t|\\r|\\n)ref_STRING.", generator.getRegexpAsString(model.getTerminalRuleByName("WITH_REF").getMyRule()));
+        assertEquals("( |\\t|\\r|\\n)+ref_STRING.", generator.getRegexpAsString(model.getTerminalRuleByName("WITH_REF").getMyRule()));
     }
 
     public void testParserRules() {
@@ -102,6 +102,25 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         assertTrue(model.getParserRuleByName("A").isFragment());
         assertTrue(model.getTerminalRuleByName("B").isFragment());
         assertFalse(model.getParserRuleByName("JvmWildcardTypeReference").isFragment());
+
+    }
+
+    public void testNegatedTerminalRules() {
+        PsiFile file = getXtextFile();
+        XtextFile xtextFile = (XtextFile) file;
+        XtextFileModel model = new XtextFileModel(xtextFile);
+        BnfGenerator generator = new BnfGenerator("newGrammar", model);
+//
+        assertEquals("[^l]", generator.getRegexpAsString(model.getTerminalRuleByName("NEG1").getMyRule()));
+        assertEquals("", generator.getRegexpAsString(model.getTerminalRuleByName("NEG2").getMyRule()));
+        assertEquals("[^l-d]", generator.getRegexpAsString(model.getTerminalRuleByName("NEG3").getMyRule()));
+        assertEquals("", generator.getRegexpAsString(model.getTerminalRuleByName("NEG4").getMyRule()));
+        assertEquals("", generator.getRegexpAsString(model.getTerminalRuleByName("NEG5").getMyRule()));
+        assertEquals("[^a\\na-z]", generator.getRegexpAsString(model.getTerminalRuleByName("NEG6").getMyRule()));
+        assertEquals("", generator.getRegexpAsString(model.getTerminalRuleByName("NEG7").getMyRule()));
+        assertEquals("[^l]string", generator.getRegexpAsString(model.getTerminalRuleByName("NEG8").getMyRule()));
+        assertEquals("[^l]( |\\t|\\r|\\n)+[^l-d]", generator.getRegexpAsString(model.getTerminalRuleByName("NEG9").getMyRule()));
+        assertEquals("", generator.getRegexpAsString(model.getTerminalRuleByName("NEG10").getMyRule()));
 
     }
 

@@ -40,9 +40,11 @@ terminal ID:
 
 terminal ML_COMMENT: '/*' -> '*/';
 
+terminal NEG : !'1a';
 
 terminal WS: (' '|'\t'|'\r'|'\n')+;
 
 terminal ANY_OTHER: .;
+
 
 terminal WITH_REF : (' '|'\t'|'\r'|'\n') STRING  . ;
