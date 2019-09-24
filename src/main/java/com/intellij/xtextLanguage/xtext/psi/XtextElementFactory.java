@@ -35,4 +35,14 @@ public class XtextElementFactory {
         }
         return ruleId.getValidID();
     }
+
+    public static XtextParserRule createParserRule(String text) {
+        XtextParserRuleHolder rule =
+                parseFromString(text, XtextTypes.PARSER_RULE_HOLDER, XtextParserRuleHolder.class);
+        if (rule == null) {
+            throw new IllegalStateException("Can't parse to XtextParserRuleHolder declaration: " + text);
+        }
+        return rule.getParserRule();
+    }
+
 }

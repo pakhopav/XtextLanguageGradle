@@ -371,6 +371,10 @@ REFERENCE_AbstractMetamodelDeclaration::=ID
 REFERENCE_ecoreEClassifier::=ID
 REFERENCE_ecoreEEnumLiteral::=ID
 
-//SetName helper rules
+// helper rules
 
 RULE_IDENTIFIER ::= ValidID
+
+PARSER_RULE_HOLDER ::= ParserRule{
+extraRoot=true
+}

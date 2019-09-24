@@ -45,6 +45,7 @@ public interface XtextTypes {
   IElementType PARENTHESIZED_ELEMENT = new XtextElementType("PARENTHESIZED_ELEMENT");
   IElementType PARENTHESIZED_TERMINAL_ELEMENT = new XtextElementType("PARENTHESIZED_TERMINAL_ELEMENT");
   IElementType PARSER_RULE = new XtextElementType("PARSER_RULE");
+    IElementType PARSER_RULE_HOLDER = new XtextElementType("PARSER_RULE_HOLDER");
   IElementType PREDICATED_GROUP = new XtextElementType("PREDICATED_GROUP");
   IElementType PREDICATED_KEYWORD = new XtextElementType("PREDICATED_KEYWORD");
   IElementType PREDICATED_RULE_CALL = new XtextElementType("PREDICATED_RULE_CALL");
@@ -116,7 +117,6 @@ public interface XtextTypes {
   IElementType SL_COMMENT = new XtextTokenType("SL_COMMENT");
   IElementType STRING = new XtextTokenType("STRING");
   IElementType TERMINAL = new XtextTokenType("terminal");
-    IElementType TEST = new XtextTokenType("TEST");
   IElementType TRUE = new XtextTokenType("true");
   IElementType WEAK_PRED = new XtextTokenType("->");
   IElementType WITH = new XtextTokenType("with");
@@ -276,51 +276,38 @@ public interface XtextTypes {
       }
       else if (type == PARSER_RULE) {
         return new XtextParserRuleImpl(node);
-      }
-      else if (type == PREDICATED_GROUP) {
-        return new XtextPredicatedGroupImpl(node);
-      }
-      else if (type == PREDICATED_KEYWORD) {
-        return new XtextPredicatedKeywordImpl(node);
-      }
-      else if (type == PREDICATED_RULE_CALL) {
-        return new XtextPredicatedRuleCallImpl(node);
-      }
-      else if (type == REFERENCED_METAMODEL) {
-        return new XtextReferencedMetamodelImpl(node);
-      }
-      else if (type == REFERENCE_ABSTRACT_METAMODEL_DECLARATION) {
-        return new XtextREFERENCEAbstractMetamodelDeclarationImpl(node);
-      }
-      else if (type == REFERENCE_ABSTRACT_RULE_RULE_ID) {
-        return new XtextREFERENCEAbstractRuleRuleIDImpl(node);
-      }
-      else if (type == REFERENCE_ECORE_E_CLASSIFIER) {
-        return new XtextREFERENCEEcoreEClassifierImpl(node);
-      }
-      else if (type == REFERENCE_ECORE_E_ENUM_LITERAL) {
-        return new XtextREFERENCEEcoreEEnumLiteralImpl(node);
-      }
-      else if (type == REFERENCE_ECORE_E_PACKAGE_STRING) {
-        return new XtextREFERENCEEcoreEPackageSTRINGImpl(node);
-      }
-      else if (type == REFERENCE_GRAMMAR_GRAMMAR_ID) {
-        return new XtextREFERENCEGrammarGrammarIDImpl(node);
-      }
-      else if (type == REFERENCE_PARAMETER_ID) {
-        return new XtextREFERENCEParameterIDImpl(node);
-      }
-      else if (type == RULE_CALL) {
-        return new XtextRuleCallImpl(node);
-      }
-      else if (type == RULE_ID) {
-        return new XtextRuleIDImpl(node);
-      }
-      else if (type == RULE_IDENTIFIER) {
-        return new XtextRuleIdentifierImpl(node);
-      }
-      else if (type == RULE_NAME_AND_PARAMS) {
-        return new XtextRuleNameAndParamsImpl(node);
+      } else if (type == PARSER_RULE_HOLDER) {
+          return new XtextParserRuleHolderImpl(node);
+      } else if (type == PREDICATED_GROUP) {
+          return new XtextPredicatedGroupImpl(node);
+      } else if (type == PREDICATED_KEYWORD) {
+          return new XtextPredicatedKeywordImpl(node);
+      } else if (type == PREDICATED_RULE_CALL) {
+          return new XtextPredicatedRuleCallImpl(node);
+      } else if (type == REFERENCED_METAMODEL) {
+          return new XtextReferencedMetamodelImpl(node);
+      } else if (type == REFERENCE_ABSTRACT_METAMODEL_DECLARATION) {
+          return new XtextREFERENCEAbstractMetamodelDeclarationImpl(node);
+      } else if (type == REFERENCE_ABSTRACT_RULE_RULE_ID) {
+          return new XtextREFERENCEAbstractRuleRuleIDImpl(node);
+      } else if (type == REFERENCE_ECORE_E_CLASSIFIER) {
+          return new XtextREFERENCEEcoreEClassifierImpl(node);
+      } else if (type == REFERENCE_ECORE_E_ENUM_LITERAL) {
+          return new XtextREFERENCEEcoreEEnumLiteralImpl(node);
+      } else if (type == REFERENCE_ECORE_E_PACKAGE_STRING) {
+          return new XtextREFERENCEEcoreEPackageSTRINGImpl(node);
+      } else if (type == REFERENCE_GRAMMAR_GRAMMAR_ID) {
+          return new XtextREFERENCEGrammarGrammarIDImpl(node);
+      } else if (type == REFERENCE_PARAMETER_ID) {
+          return new XtextREFERENCEParameterIDImpl(node);
+      } else if (type == RULE_CALL) {
+          return new XtextRuleCallImpl(node);
+      } else if (type == RULE_ID) {
+          return new XtextRuleIDImpl(node);
+      } else if (type == RULE_IDENTIFIER) {
+          return new XtextRuleIdentifierImpl(node);
+      } else if (type == RULE_NAME_AND_PARAMS) {
+          return new XtextRuleNameAndParamsImpl(node);
       } else if (type == RULE_RECOVERY) {
           return new XtextRuleRecoveryImpl(node);
       } else if (type == TERMINAL_ALTERNATIVES) {

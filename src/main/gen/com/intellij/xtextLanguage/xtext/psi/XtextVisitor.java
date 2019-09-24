@@ -127,6 +127,10 @@ public class XtextVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+    public void visitParserRuleHolder(@NotNull XtextParserRuleHolder o) {
+        visitPsiElement(o);
+    }
+
   public void visitParameter(@NotNull XtextParameter o) {
     visitPsiElement(o);
   }

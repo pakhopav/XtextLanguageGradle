@@ -31,9 +31,11 @@ public class XtextParser implements PsiParser, LightPsiParser {
     return parse_root_(t, b, 0);
   }
 
-  static boolean parse_root_(IElementType t, PsiBuilder b, int l) {
-    return Grammar(b, l + 1);
-  }
+    static final Parser rule_recovery_parser_ = new Parser() {
+        public boolean parse(PsiBuilder b, int l) {
+            return rule_recovery(b, l + 1);
+        }
+    };
 
   /* ********************************************************** */
   // ( Annotation)*
@@ -82,11 +84,15 @@ public class XtextParser implements PsiParser, LightPsiParser {
     return true;
   }
 
-    static final Parser rule_recovery_parser_ = new Parser() {
-        public boolean parse(PsiBuilder b, int l) {
-            return rule_recovery(b, l + 1);
+    static boolean parse_root_(IElementType t, PsiBuilder b, int l) {
+        boolean r;
+        if (t == PARSER_RULE_HOLDER) {
+            r = PARSER_RULE_HOLDER(b, l + 1);
+        } else {
+            r = Grammar(b, l + 1);
         }
-    };
+        return r;
+    }
 
   /* ********************************************************** */
   // GeneratedMetamodel | ReferencedMetamodel
@@ -411,14 +417,13 @@ public class XtextParser implements PsiParser, LightPsiParser {
   }
 
     /* ********************************************************** */
-    // ParserRule | TerminalRule | EnumRule |TEST
+    // ParserRule | TerminalRule | EnumRule
     static boolean AbstractRule(PsiBuilder b, int l) {
         if (!recursion_guard_(b, l, "AbstractRule")) return false;
         boolean r;
         r = ParserRule(b, l + 1);
         if (!r) r = TerminalRule(b, l + 1);
         if (!r) r = EnumRule(b, l + 1);
-        if (!r) r = consumeToken(b, TEST);
         return r;
     }
 
@@ -486,13 +491,6 @@ public class XtextParser implements PsiParser, LightPsiParser {
         return r;
     }
 
-    // ('.' ValidID ('='|'+=') 'current')?
-    private static boolean Action_2(PsiBuilder b, int l) {
-        if (!recursion_guard_(b, l, "Action_2")) return false;
-        Action_2_0(b, l + 1);
-        return true;
-    }
-
   /* ********************************************************** */
   // '{' TypeRef ('.' ValidID ('='|'+=') 'current')? '}'
   public static boolean Action(PsiBuilder b, int l) {
@@ -508,6 +506,13 @@ public class XtextParser implements PsiParser, LightPsiParser {
     exit_section_(b, m, ACTION, r);
     return r;
   }
+
+    // ('.' ValidID ('='|'+=') 'current')?
+    private static boolean Action_2(PsiBuilder b, int l) {
+        if (!recursion_guard_(b, l, "Action_2")) return false;
+        Action_2_0(b, l + 1);
+        return true;
+    }
 
   // '='|'+='
   private static boolean Action_2_0_2(PsiBuilder b, int l) {
@@ -1381,6 +1386,17 @@ public class XtextParser implements PsiParser, LightPsiParser {
     return r;
   }
 
+    /* ********************************************************** */
+    // ParserRule
+    public static boolean PARSER_RULE_HOLDER(PsiBuilder b, int l) {
+        if (!recursion_guard_(b, l, "PARSER_RULE_HOLDER")) return false;
+        boolean r;
+        Marker m = enter_section_(b, l, _NONE_, PARSER_RULE_HOLDER, "<parser rule holder>");
+        r = ParserRule(b, l + 1);
+        exit_section_(b, l, m, r, false, null);
+        return r;
+    }
+
   /* ********************************************************** */
   // [Parameter|ID]
   public static boolean ParameterReference(PsiBuilder b, int l) {
@@ -1486,17 +1502,6 @@ public class XtextParser implements PsiParser, LightPsiParser {
     return r;
   }
 
-    // '=>' | '->'
-    private static boolean PredicatedGroup_0(PsiBuilder b, int l) {
-        if (!recursion_guard_(b, l, "PredicatedGroup_0")) return false;
-        boolean r;
-        Marker m = enter_section_(b);
-        r = consumeToken(b, PRED);
-        if (!r) r = consumeToken(b, WEAK_PRED);
-        exit_section_(b, m, null, r);
-        return r;
-    }
-
   /* ********************************************************** */
   // ('=>' | '->') '(' Alternatives ')'
   public static boolean PredicatedGroup(PsiBuilder b, int l) {
@@ -1512,6 +1517,17 @@ public class XtextParser implements PsiParser, LightPsiParser {
     exit_section_(b, l, m, r, false, null);
     return r;
   }
+
+    // '=>' | '->'
+    private static boolean PredicatedGroup_0(PsiBuilder b, int l) {
+        if (!recursion_guard_(b, l, "PredicatedGroup_0")) return false;
+        boolean r;
+        Marker m = enter_section_(b);
+        r = consumeToken(b, PRED);
+        if (!r) r = consumeToken(b, WEAK_PRED);
+        exit_section_(b, m, null, r);
+        return r;
+    }
 
   // '=>' | '->'
   private static boolean PredicatedKeyword_0(PsiBuilder b, int l) {
