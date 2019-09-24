@@ -13,7 +13,9 @@ public class XtextFileModel {
     private List<ParserRule> myParserRules = new ArrayList<>();
     private List<TerminalRule> myTerminalRules = new ArrayList<>();
     private List<EnumRule> myEnumRules = new ArrayList<>();
+    private XtextREFERENCEGrammarGrammarID[] myImportedGrammars = null;
     private XtextFile myFile;
+    private BnfGeneratorUtil generatorUtil = new BnfGeneratorUtil(this);
     private XtextGeneratedMetamodel[] myGeneratedMetamodels;
     private XtextReferencedMetamodel[] myReferencedMetamodels;
 
@@ -22,12 +24,9 @@ public class XtextFileModel {
         this.myFile = myFile;
         myGeneratedMetamodels = PsiTreeUtil.getChildrenOfType(myFile, XtextGeneratedMetamodel.class);
         myReferencedMetamodels = PsiTreeUtil.getChildrenOfType(myFile, XtextReferencedMetamodel.class);
+        myImportedGrammars = PsiTreeUtil.getChildrenOfType(myFile, XtextREFERENCEGrammarGrammarID.class);
         XtextParserRule[] parserRules = PsiTreeUtil.getChildrenOfType(myFile, XtextParserRule.class);
-        if (parserRules != null) {
-            for (XtextParserRule rule : parserRules) {
-                myParserRules.add(new ParserRule(rule));
-            }
-        }
+        myParserRules = generatorUtil.culParserRules(parserRules);
         XtextTerminalRule[] terminalRules = PsiTreeUtil.getChildrenOfType(myFile, XtextTerminalRule.class);
         if (terminalRules != null) {
             for (XtextTerminalRule rule : terminalRules) {
@@ -46,6 +45,10 @@ public class XtextFileModel {
 
     }
 
+    public XtextREFERENCEGrammarGrammarID[] getMyImportedGrammars() {
+        return myImportedGrammars;
+    }
+
     public XtextFile getMyFile() {
         return myFile;
     }
@@ -61,6 +64,7 @@ public class XtextFileModel {
     public List<ReferenceElement> getMyReferences() {
         return myReferences;
     }
+
     public List<TerminalRule> getMyTerminalRules() {
         return myTerminalRules;
     }
