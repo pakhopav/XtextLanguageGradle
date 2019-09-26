@@ -87,7 +87,7 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
             }
             sb.append(")")
         }
-        pKeyword?.let { sb.append("${it.text} ") }
+        pKeyword?.let { sb.append("${it.string.text} ") }
         pRuleCall?.let { sb.append("${it.referenceAbstractRuleRuleID.text} ") }
         pParenthesizedElement?.let {
             val branches = it.alternatives.conditionalBranchList

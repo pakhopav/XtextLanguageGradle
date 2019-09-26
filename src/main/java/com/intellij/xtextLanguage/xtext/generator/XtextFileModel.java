@@ -1,5 +1,6 @@
 package com.intellij.xtextLanguage.xtext.generator;
 
+import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.xtextLanguage.xtext.psi.*;
 
@@ -18,6 +19,7 @@ public class XtextFileModel {
     private BnfGeneratorUtil generatorUtil = new BnfGeneratorUtil(this);
     private XtextGeneratedMetamodel[] myGeneratedMetamodels;
     private XtextReferencedMetamodel[] myReferencedMetamodels;
+    public List<PsiFile> myImportedGrammarsFiles = new ArrayList<>();
 
 
     public XtextFileModel(XtextFile myFile) {
@@ -44,6 +46,7 @@ public class XtextFileModel {
         }
 
     }
+
 
     public XtextREFERENCEGrammarGrammarID[] getMyImportedGrammars() {
         return myImportedGrammars;
@@ -82,12 +85,18 @@ public class XtextFileModel {
                 .findFirst().orElse(null);
     }
 
-    private void registerReferences(XtextParserRule rule) {
-        if (rule == null) return;
-        List<XtextConditionalBranch> branches = rule.getAlternatives().getConditionalBranchList();
-        for (XtextConditionalBranch b : branches) {
-            if (b == null) return;
-            XtextUnorderedGroup unorderedGroup = b.getUnorderedGroup();
+    public PsiFile getImportedGrammarFileByName(String name) {
+        return myImportedGrammarsFiles.stream()
+                .filter(it -> name.equals(it.getName()))
+                .findFirst().orElse(null);
+    }
+
+    private void registerReferences(XtextAlternatives alternatives) {
+        if (alternatives == null) return;
+        List<XtextConditionalBranch> branches = alternatives.getConditionalBranchList();
+        for (XtextConditionalBranch branch : branches) {
+            if (branch == null) return;
+            XtextUnorderedGroup unorderedGroup = branch.getUnorderedGroup();
             if (unorderedGroup == null) return;
             List<XtextGroup> groups = unorderedGroup.getGroupList();
             if (groups.size() == 0) return;
@@ -117,11 +126,19 @@ public class XtextFileModel {
                         }
                         myReferences.add(new ReferenceElement(referenceName, referenseType));
                     }
+                } else if (element.getAbstractTerminal() != null) {
+                    if (element.getAbstractTerminal().getParenthesizedElement() != null) {
+                        registerReferences(element.getAbstractTerminal().getParenthesizedElement().getAlternatives());
+                    } else if (element.getAbstractTerminal().getPredicatedGroup() != null) {
+                        registerReferences(element.getAbstractTerminal().getPredicatedGroup().getAlternatives());
+                    }
                 }
             }
         }
-
-
+    }
+    private void registerReferences(XtextParserRule rule) {
+        if (rule == null) return;
+        registerReferences(rule.getAlternatives());
     }
 
 }

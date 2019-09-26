@@ -5,6 +5,9 @@ import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
+import com.intellij.xtextLanguage.xtext.generator.XtextFileModel;
+import com.intellij.xtextLanguage.xtext.psi.XtextFile;
+import com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEGrammarGrammarID;
 import org.jetbrains.annotations.NotNull;
 
 public class XtextGenerateBnfTestBase extends LightPlatformCodeInsightFixtureTestCase {
@@ -36,6 +39,31 @@ public class XtextGenerateBnfTestBase extends LightPlatformCodeInsightFixtureTes
         return file;
     }
 
+    protected PsiFile getXtextFile(String fileName) {
+        PsiFile file = myFixture.configureByFile(fileName + ".xtext");
+        return file;
+    }
+
+    protected void BuildModelWithImports(XtextFileModel mainModel, XtextFileModel importedModel) {
+        XtextREFERENCEGrammarGrammarID[] grammars = importedModel.getMyImportedGrammars();
+        if (grammars != null) {
+            for (XtextREFERENCEGrammarGrammarID name : grammars) {
+                XtextFile file = (XtextFile) getXtextFile(name.getText());
+                if (file != null) {
+                    XtextFileModel newModel = new XtextFileModel(file);
+                    BuildModelWithImports(mainModel, newModel);
+                }
+            }
+        }
+        if (mainModel != importedModel) {
+            mainModel.getMyEnumRules().addAll(importedModel.getMyEnumRules());
+            mainModel.getMyParserRules().addAll(importedModel.getMyParserRules());
+            mainModel.getMyTerminalRules().addAll(importedModel.getMyTerminalRules());
+            mainModel.getMyReferences().addAll(importedModel.getMyReferences());
+        }
+
+
+    }
     protected static class MyErrorFinder extends PsiRecursiveElementVisitor {
         private static final MyErrorFinder INSTANCE = new MyErrorFinder();
         public boolean wasError = false;
@@ -47,5 +75,6 @@ public class XtextGenerateBnfTestBase extends LightPlatformCodeInsightFixtureTes
         }
 
     }
+
 
 }

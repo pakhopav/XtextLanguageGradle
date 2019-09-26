@@ -1,0 +1,20 @@
+grammar myNewGrammar with Xtype
+
+
+Domainmodel:
+    importSection=XImportSection?
+    elements+=Entity*;
+
+Entity:
+    'entity' name=ValidID ('extends' superType=JvmTypeReference)? '{'
+        features+=Feature*
+    '}';
+
+Feature:
+    Property;
+Property:
+    name=ValidID ':' type=JvmTypeReference;
+
+
+terminal myID:
+    '^'? ('a'..'z'|'A'..'Z'|'$'|'_'|'3') ('a'..'z'|'A'..'Z'|'$'|'_'|'0'..'9')*;

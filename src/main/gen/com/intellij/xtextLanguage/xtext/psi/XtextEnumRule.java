@@ -12,16 +12,16 @@ public interface XtextEnumRule extends XtextAbstractRule {
   @NotNull
   List<XtextAnnotation> getAnnotationList();
 
-    @Nullable
+  @Nullable
   XtextEnumLiterals getEnumLiterals();
 
   @Nullable
   XtextTypeRef getTypeRef();
 
-    @Nullable
+  @Nullable
   XtextValidID getValidID();
 
-    @Nullable
+  @Nullable
   PsiElement getColon();
 
   @NotNull
@@ -33,10 +33,10 @@ public interface XtextEnumRule extends XtextAbstractRule {
   @NotNull
   PsiElement getSemicolon();
 
-    String getName();
+  String getName();
 
-    PsiElement setName(String newName);
+  PsiElement setName(String newName);
 
-    PsiElement getNameIdentifier();
+  PsiElement getNameIdentifier();
 
 }

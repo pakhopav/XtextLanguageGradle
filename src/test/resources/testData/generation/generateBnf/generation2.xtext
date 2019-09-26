@@ -20,7 +20,7 @@ Entity:
     '}';
 
 Feature:
-    Property | {OPERATION} Operation;
+    Property | Operation;
 
 Property:
     name=ValidID ':' type=JvmTypeReference;
@@ -32,6 +32,16 @@ Operation:
         ':' type=JvmTypeReference
     body=XBlockExpression;
 
+enum ChangeKind:
+    ADD | MOVE | REMOVE;
+
+enum ChangeKind2:
+    ADD = 'add' | ADD = '+' |
+    MOVE = 'move' | MOVE = '->' |
+    REMOVE = 'remove' | REMOVE = '-';
+
+
+
 myNewRef : asd super=[Operation];
 myNewRef2 : '2' super=[Entity|WS];
 myNewRef3 : '3a' super=[Entity|blabla];
@@ -42,12 +52,9 @@ terminal ML_COMMENT: '/*' -> '*/';
 
 terminal NEG : !'1a';
 
-terminal WS: (' '|'\t'|'\r'|'\n')+;
+terminal WS: (' '|'\t'|/* this is comment */'\r'|'\n')+;
 
 terminal ANY_OTHER: .;
 
-terminal STRING:
-			'"' ( '\\' .  | !('\\'|'"') )* '"'? |
-			"'" ( '\\' .  | !('\\'|"'") )* "'"?;
 
 terminal WITH_REF : (' '|'\t'|'\r'|'\n') STRING  . ;

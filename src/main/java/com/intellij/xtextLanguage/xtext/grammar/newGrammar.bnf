@@ -1,0 +1,52 @@
+{
+    tokens = [
+      myID ="regexp:^?([a-z]|[A-Z]|$|_|3)([a-z]|[A-Z]|$|_|[0-9])*"
+      ID ="regexp:^?([a-z]|[A-Z]|$|_)([a-z]|[A-Z]|$|_|[0-9])*"
+      STRING ="regexp:\"(\\.|[^\\\"])*\"?|'(\\.|[^\\'])*'?"
+      ML_COMMENT ="regexp:/\*(?s).*\*/"
+      SL_COMMENT ="regexp://[^\n\r](\r?\n)?"
+      WS ="regexp:( |\t|\r|\n)+"
+      ANY_OTHER ="regexp:."
+    ]
+    parserClass="com.intellij.xtextLanguage.xtext.parser.XtextParser"
+        
+    extends="com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl"
+    psiClassPrefix="Xtext"
+    psiImplClassSuffix="Impl"
+    psiPackage="com.intellij.xtextLanguage.xtext.psi"
+    psiImplPackage="com.intellij.xtextLanguage.xtext.impl"
+
+    elementTypeHolderClass="com.intellij.xtextLanguage.xtext.psi.XtextTypes"
+    elementTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextElementType"
+    tokenTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextTokenType"
+    psiImplUtilClass="com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil"
+    parserUtilClass= "com.intellij.xtextLanguage.xtext.parserUtilBase.GeneratedParserUtilBaseCopy"
+    generateTokenAccessors=true
+    generateTokens=true
+}
+Domainmodel ::= XImportSection ? Entity *  
+Entity ::= 'entity' ValidID ('extends' JvmTypeReference  )? '{' Feature * '}'  
+Feature ::= Property  
+Property ::= ValidID ':' JvmTypeReference  
+JvmTypeReference ::= JvmParameterizedTypeReference (ArrayBrackets  ) * |  XFunctionTypeRef  
+ArrayBrackets ::= '[' ']'  
+XFunctionTypeRef ::= ('(' (JvmTypeReference (',' JvmTypeReference  )*  )? ')'  )? '=>' JvmTypeReference  
+JvmParameterizedTypeReference ::= REFERENCE_JvmType_QualifiedName ('<' JvmArgumentTypeReference (',' JvmArgumentTypeReference  )* '>' (('.'  ) REFERENCE_JvmType_ValidID ('<' JvmArgumentTypeReference (',' JvmArgumentTypeReference  )* '>'  )?  )*  )?  
+JvmArgumentTypeReference ::= JvmTypeReference |  JvmWildcardTypeReference  
+RuleFromJvmWildcardTypeReference_JvmWildcardTypeReference ::= '?' (JvmUpperBound (JvmUpperBoundAnded  )* |  JvmLowerBound (JvmLowerBoundAnded  )*  )?  
+JvmWildcardTypeReference ::= RuleFromJvmWildcardTypeReference_JvmWildcardTypeReference  
+JvmUpperBound ::= 'extends' JvmTypeReference  
+JvmUpperBoundAnded ::= '&' JvmTypeReference  
+JvmLowerBound ::= 'super' JvmTypeReference  
+JvmLowerBoundAnded ::= '&' JvmTypeReference  
+JvmTypeParameter ::= ValidID (JvmUpperBound (JvmUpperBoundAnded  )*  )?  
+QualifiedName ::= ValidID ('.' ValidID  )*  
+QualifiedNameWithWildcard ::= QualifiedName '.' '*'  
+ValidID ::= ID  
+XImportSection ::= XImportDeclaration +  
+XImportDeclaration ::= 'import' (('static' 'extension' ? REFERENCE_JvmDeclaredType_QualifiedNameInStaticImport ('*' |  ValidID  ) )|  REFERENCE_JvmDeclaredType_QualifiedName |  QualifiedNameWithWildcard  )';' ?  
+QualifiedNameInStaticImport ::= (ValidID '.'  )+  
+REFERENCE_JvmType_QualifiedName ::= QualifiedName
+REFERENCE_JvmType_ValidID ::= ValidID
+REFERENCE_JvmDeclaredType_QualifiedNameInStaticImport ::= QualifiedNameInStaticImport
+REFERENCE_JvmDeclaredType_QualifiedName ::= QualifiedName

@@ -4,8 +4,11 @@ import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.TestDataPath;
 import com.intellij.xtextLanguage.xtext.generator.BnfGenerator;
 import com.intellij.xtextLanguage.xtext.generator.BnfGeneratorOld;
+import com.intellij.xtextLanguage.xtext.generator.ParserRule;
 import com.intellij.xtextLanguage.xtext.generator.XtextFileModel;
+import com.intellij.xtextLanguage.xtext.psi.XtextElementFactory;
 import com.intellij.xtextLanguage.xtext.psi.XtextFile;
+import com.intellij.xtextLanguage.xtext.psi.XtextParserRule;
 
 import java.io.IOException;
 
@@ -83,6 +86,24 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         XtextFile xtextFile = (XtextFile) file;
         XtextFileModel model = new XtextFileModel(xtextFile);
         BnfGenerator generator = new BnfGenerator("newGrammar", model);
+        XtextParserRule r = XtextElementFactory.createParserRule("A : B ;");
+        try {
+            generator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+//        assertEquals("Operation", model.getParserRuleByName("RuleFromFeature_OPERATION").getReturnType());
+
+
+    }
+
+    public void testGeneration2() {
+        PsiFile file = getXtextFile();
+        XtextFile xtextFile = (XtextFile) file;
+        XtextFileModel model = new XtextFileModel(xtextFile);
+        BnfGenerator generator = new BnfGenerator("newGrammar", model);
         try {
             generator.generate();
         } catch (IOException e) {
@@ -111,16 +132,34 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         XtextFileModel model = new XtextFileModel(xtextFile);
         BnfGenerator generator = new BnfGenerator("newGrammar", model);
 //
-        assertEquals("[^l]", generator.getRegexpAsString(model.getTerminalRuleByName("NEG1").getMyRule()));
-        assertEquals("", generator.getRegexpAsString(model.getTerminalRuleByName("NEG2").getMyRule()));
-        assertEquals("[^l-d]", generator.getRegexpAsString(model.getTerminalRuleByName("NEG3").getMyRule()));
-        assertEquals("", generator.getRegexpAsString(model.getTerminalRuleByName("NEG4").getMyRule()));
-        assertEquals("", generator.getRegexpAsString(model.getTerminalRuleByName("NEG5").getMyRule()));
-        assertEquals("[^a\\na-z]", generator.getRegexpAsString(model.getTerminalRuleByName("NEG6").getMyRule()));
-        assertEquals("", generator.getRegexpAsString(model.getTerminalRuleByName("NEG7").getMyRule()));
-        assertEquals("[^l]string", generator.getRegexpAsString(model.getTerminalRuleByName("NEG8").getMyRule()));
-        assertEquals("[^l]( |\\t|\\r|\\n)+[^l-d]", generator.getRegexpAsString(model.getTerminalRuleByName("NEG9").getMyRule()));
-        assertEquals("", generator.getRegexpAsString(model.getTerminalRuleByName("NEG10").getMyRule()));
+        assertEquals("[^l]", generator.getGeneratorUtil().getRegexpAsString(model.getTerminalRuleByName("NEG1").getMyRule()));
+        assertEquals("", generator.getGeneratorUtil().getRegexpAsString(model.getTerminalRuleByName("NEG2").getMyRule()));
+        assertEquals("[^l-d]", generator.getGeneratorUtil().getRegexpAsString(model.getTerminalRuleByName("NEG3").getMyRule()));
+        assertEquals("", generator.getGeneratorUtil().getRegexpAsString(model.getTerminalRuleByName("NEG4").getMyRule()));
+        assertEquals("", generator.getGeneratorUtil().getRegexpAsString(model.getTerminalRuleByName("NEG5").getMyRule()));
+        assertEquals("[^a\\na-z]", generator.getGeneratorUtil().getRegexpAsString(model.getTerminalRuleByName("NEG6").getMyRule()));
+        assertEquals("", generator.getGeneratorUtil().getRegexpAsString(model.getTerminalRuleByName("NEG7").getMyRule()));
+        assertEquals("[^l]string", generator.getGeneratorUtil().getRegexpAsString(model.getTerminalRuleByName("NEG8").getMyRule()));
+        assertEquals("[^l]( |\\t|\\r|\\n)+[^l-d]", generator.getGeneratorUtil().getRegexpAsString(model.getTerminalRuleByName("NEG9").getMyRule()));
+        assertEquals("", generator.getGeneratorUtil().getRegexpAsString(model.getTerminalRuleByName("NEG10").getMyRule()));
+
+    }
+
+    public void testGenerationImportedGrammar() {
+        PsiFile file = getXtextFile();
+        XtextFile xtextFile = (XtextFile) file;
+        XtextFileModel model = new XtextFileModel(xtextFile);
+        BuildModelWithImports(model, model);
+        for (ParserRule rule : model.getMyParserRules()) {
+            System.out.println(rule.getName());
+        }
+        BnfGenerator generator = new BnfGenerator("newGrammar", model);
+        try {
+            generator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
 
     }
 
