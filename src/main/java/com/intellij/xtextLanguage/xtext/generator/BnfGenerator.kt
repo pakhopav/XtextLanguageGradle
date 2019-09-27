@@ -7,6 +7,8 @@ import java.io.PrintWriter
 
 class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
     internal val myGenDir = "src/main/java/com/intellij/xtextLanguage/xtext/grammar/"
+    internal val myTestGenDir = "src/test/resources/testData/generation/generateBnf/"
+
     internal val myBnfFile = File("$myGenDir$extention.bnf")
     internal var out = PrintWriter(FileOutputStream(myBnfFile))
     val generatorUtil = BnfGeneratorUtil(fileModel)
@@ -79,7 +81,7 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
     }
 
     private fun generateRules() {
-        fileModel.myParserRules.forEach { out.print("${it.name} ::= ${generatorUtil.getRuleAlternativesAsString(it.myRule)}\n") }
+        fileModel.myParserRules.forEach { out.print("${generatorUtil.nameWithCaret(it.name)} ::= ${generatorUtil.getRuleAlternativesAsString(it.myRule)}\n") }
     }
 
 

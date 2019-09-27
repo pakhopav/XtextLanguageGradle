@@ -28,6 +28,9 @@ public class XtextFileModel {
         myReferencedMetamodels = PsiTreeUtil.getChildrenOfType(myFile, XtextReferencedMetamodel.class);
         myImportedGrammars = PsiTreeUtil.getChildrenOfType(myFile, XtextREFERENCEGrammarGrammarID.class);
         XtextParserRule[] parserRules = PsiTreeUtil.getChildrenOfType(myFile, XtextParserRule.class);
+        if (parserRules == null) {
+            parserRules = new XtextParserRule[0];
+        }
         myParserRules = generatorUtil.culParserRules(parserRules);
         XtextTerminalRule[] terminalRules = PsiTreeUtil.getChildrenOfType(myFile, XtextTerminalRule.class);
         if (terminalRules != null) {
@@ -118,13 +121,14 @@ public class XtextFileModel {
                     XtextAssignableTerminal terminal = assignment.getAssignableTerminal();
                     if (terminal.getCrossReference() != null) {
                         XtextCrossReference crossReference = terminal.getCrossReference();
-                        String referenceName = "REFERENCE_" + crossReference.getTypeRef().getText();
+                        String referenceName = "REFERENCE_" + crossReference.getTypeRef().getText().replace("::", "-");
                         String referenseType = "ID";
                         if (crossReference.getCrossReferenceableTerminal() != null) {
                             referenceName += "_" + crossReference.getCrossReferenceableTerminal().getText();
                             referenseType = crossReference.getCrossReferenceableTerminal().getText();
                         }
-                        myReferences.add(new ReferenceElement(referenceName, referenseType));
+                        ReferenceElement newReferece = new ReferenceElement(referenceName, referenseType);
+                        if (!existsAlready(newReferece)) myReferences.add(newReferece);
                     }
                 } else if (element.getAbstractTerminal() != null) {
                     if (element.getAbstractTerminal().getParenthesizedElement() != null) {
@@ -135,6 +139,13 @@ public class XtextFileModel {
                 }
             }
         }
+    }
+
+    private boolean existsAlready(ReferenceElement element) {
+        for (ReferenceElement referenceElement : myReferences) {
+            if (referenceElement.equals(element)) return true;
+        }
+        return false;
     }
     private void registerReferences(XtextParserRule rule) {
         if (rule == null) return;

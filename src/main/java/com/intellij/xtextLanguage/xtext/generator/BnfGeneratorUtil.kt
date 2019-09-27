@@ -6,6 +6,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.xtextLanguage.xtext.psi.*
 
 class BnfGeneratorUtil(val fileModel: XtextFileModel) {
+    private val BANNED_SYMBOLS = arrayOf('*', '.', '"', '+', '?', '^')
     fun getEnumRuleDeclarationsAsString(rule: XtextEnumRule): String {
         val sb = java.lang.StringBuilder()
         val leteralDclarations = rule.enumLiterals?.enumLiteralDeclarationList
@@ -72,8 +73,8 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
         val pKeyword = abstractTerminal.predicatedKeyword
         val pRuleCall = abstractTerminal.predicatedRuleCall
         val pParenthesizedElement = abstractTerminal.predicatedGroup
-        keyword?.let { sb.append("${it.text} ") }
-        ruleCall?.let { sb.append("${it.referenceAbstractRuleRuleID.text} ") }
+        keyword?.let { sb.append("${nameWithCaret(it.text)} ") }
+        ruleCall?.let { sb.append("${nameWithCaret(it.referenceAbstractRuleRuleID.text)} ") }
         parenthesizedElement?.let {
             val branches = it.alternatives.conditionalBranchList
             sb.append("(")
@@ -87,8 +88,8 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
             }
             sb.append(")")
         }
-        pKeyword?.let { sb.append("${it.string.text} ") }
-        pRuleCall?.let { sb.append("${it.referenceAbstractRuleRuleID.text} ") }
+        pKeyword?.let { sb.append("${nameWithCaret(it.text)} ") }
+        pRuleCall?.let { sb.append("${nameWithCaret(it.referenceAbstractRuleRuleID.text)} ") }
         pParenthesizedElement?.let {
             val branches = it.alternatives.conditionalBranchList
             sb.append("(")
@@ -128,7 +129,7 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
             sb.append(") ")
         }
         crossReference?.let {
-            sb.append("REFERENCE_${it.typeRef.text}")
+            sb.append("REFERENCE_${it.typeRef.text.replace("::", "-")}")
             it.crossReferenceableTerminal?.let { sb.append("_${it.text}") }
             sb.append(" ")
         }
@@ -266,9 +267,8 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
 
     private fun avoidRegexpSymbols(string: String): String {
         var sb = StringBuilder()
-        val bannedSymbols = arrayOf('*', '.', '"')
         string.toCharArray().forEach {
-            if (it in bannedSymbols) sb.append("\\$it")
+            if (it in BANNED_SYMBOLS) sb.append("\\$it")
             else sb.append(it)
         }
         return sb.toString()
@@ -311,8 +311,8 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
     }
 
     fun reconstructBranchWithAction(rule: XtextParserRule, branch: XtextConditionalBranch, action: XtextAction): Pair<XtextParserRule, XtextParserRule> {
-        val ruleName = rule.ruleNameAndParams.text
-        val newRuleName = "RuleFrom${ruleName}_${action.typeRef.text}"
+        val ruleName = nameWithCaret(rule.ruleNameAndParams.text)
+        val newRuleName = "RuleFrom${ruleName}_${nameWithCaret(action.typeRef.text)}"
         val newRule = XtextElementFactory.createParserRule("$newRuleName returns ${action.typeRef.text} : ${branchToString(branch)};")
         val changedMainRule = createRuleWithChangedBranch(rule, branch, newRuleName)
         return Pair(changedMainRule, newRule)
@@ -358,5 +358,13 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
         }
         return sb.toString()
 
+    }
+
+    fun nameWithCaret(name: String?): String {
+
+        if (name?.first() == '^') {
+            return "caret${name.substring(1, name.length)}"
+        }
+        return name ?: ""
     }
 }
