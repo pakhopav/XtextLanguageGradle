@@ -7,6 +7,48 @@ import com.intellij.xtextLanguage.xtext.psi.*
 
 class BnfGeneratorUtil(val fileModel: XtextFileModel) {
     private val BANNED_SYMBOLS = arrayOf('*', '.', '"', '+', '?', '^')
+    private val KEYWORDS = mapOf(
+            "grammar" to "GRAMMAR",
+            "with" to "WITH",
+            "hidden" to "HIDDEN",
+            "generate" to "GENERATE",
+            "import" to "IMPORT",
+            "returns" to "RETURNS",
+            "," to "COMMA",
+            "(" to "L_BRACKET",
+            ")" to "R_BRACKET",
+            "@" to "AT_SIGN",
+            "fragment" to "FRAGMENT",
+            ";" to "SEMICOLON",
+            "<" to "L_ANGLE_BRACKET",
+            ">" to "R_ANGLE_BRACKET",
+            "{" to "L_BRACE",
+            "}" to "R_BRACE",
+            "[" to "L_SQUARE_BRACKET",
+            "]" to "R_SQUARE_BRACKET",
+            "&" to "AMPERSAND",
+            "!" to "ACX_MARK",
+            "as" to "AS",
+            ":" to "COLON",
+            "*" to "ASTERISK",
+            "true" to "TRUE",
+            "false" to "FALSE",
+            "=" to "EQUALS",
+            "terminal" to "TERMINAL",
+            "enum" to "ENUM",
+            "=>" to "PRED",
+            "->" to "WEAK_PRED",
+            "|" to "PIPE",
+            "+" to "PLUS",
+            "?" to "QUES_MARK",
+            ".." to "RANGE",
+            "." to "DOT",
+            "+=" to "PLUS_EQUALS",
+            "?=" to "QUES_EQUALS",
+            "current" to "CURRENT",
+            "EOF" to "EOF_KEY",
+            "::" to "COLONS"
+    )
     fun getEnumRuleDeclarationsAsString(rule: XtextEnumRule): String {
         val sb = java.lang.StringBuilder()
         val leteralDclarations = rule.enumLiterals?.enumLiteralDeclarationList
@@ -274,7 +316,7 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
         return sb.toString()
     }
 
-    fun culParserRules(rules: Array<XtextParserRule>): List<ParserRule> {
+    fun culParserRules(rules: List<XtextParserRule>): List<ParserRule> {
         var listOfRules = ArrayList<ParserRule>()
         rules.forEach {
             var rule_tmp = it
@@ -366,5 +408,10 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
             return "caret${name.substring(1, name.length)}"
         }
         return name ?: ""
+    }
+
+    fun createToken(keyword: String): String {
+        return "${KEYWORDS.get(keyword.substring(1, keyword.length - 1))
+                ?: keyword.substring(1, keyword.length - 1)} = ${keyword}"
     }
 }

@@ -47,6 +47,7 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
             }
 
         }
+        generateKeywordTokens()
         out.print("    ]\n")
     }
 
@@ -67,8 +68,13 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
           |    parserUtilClass= "com.intellij.xtextLanguage.xtext.parserUtilBase.GeneratedParserUtilBaseCopy"
           |    generateTokenAccessors=true
           |    generateTokens=true
+          |    extraRoot(".*")= true
                 """.trimMargin("|"))
         out.print("\n")
+    }
+
+    private fun generateKeywordTokens() {
+        fileModel.myKeywords.forEach { out.print("      ${generatorUtil.createToken(it)}\n") }
     }
 
     private fun generateReferences() {

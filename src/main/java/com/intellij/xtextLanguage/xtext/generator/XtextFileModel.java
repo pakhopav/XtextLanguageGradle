@@ -5,6 +5,7 @@ import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.xtextLanguage.xtext.psi.*;
 
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
 
@@ -12,13 +13,16 @@ public class XtextFileModel {
 
     private List<ReferenceElement> myReferences = new ArrayList<>();
     private List<ParserRule> myParserRules = new ArrayList<>();
+    private List<XtextParserRule> xtextParserRules = new ArrayList<>();
     private List<TerminalRule> myTerminalRules = new ArrayList<>();
     private List<EnumRule> myEnumRules = new ArrayList<>();
+    private List<String> myKeywords = new ArrayList<>();
     private XtextREFERENCEGrammarGrammarID[] myImportedGrammars = null;
     private XtextFile myFile;
     private BnfGeneratorUtil generatorUtil = new BnfGeneratorUtil(this);
     private XtextGeneratedMetamodel[] myGeneratedMetamodels;
     private XtextReferencedMetamodel[] myReferencedMetamodels;
+    private XtextAbstractRule[] myAbstractRules;
     public List<PsiFile> myImportedGrammarsFiles = new ArrayList<>();
 
 
@@ -27,27 +31,34 @@ public class XtextFileModel {
         myGeneratedMetamodels = PsiTreeUtil.getChildrenOfType(myFile, XtextGeneratedMetamodel.class);
         myReferencedMetamodels = PsiTreeUtil.getChildrenOfType(myFile, XtextReferencedMetamodel.class);
         myImportedGrammars = PsiTreeUtil.getChildrenOfType(myFile, XtextREFERENCEGrammarGrammarID.class);
-        XtextParserRule[] parserRules = PsiTreeUtil.getChildrenOfType(myFile, XtextParserRule.class);
-        if (parserRules == null) {
-            parserRules = new XtextParserRule[0];
-        }
-        myParserRules = generatorUtil.culParserRules(parserRules);
-        XtextTerminalRule[] terminalRules = PsiTreeUtil.getChildrenOfType(myFile, XtextTerminalRule.class);
-        if (terminalRules != null) {
-            for (XtextTerminalRule rule : terminalRules) {
-                myTerminalRules.add(new TerminalRule(rule));
-            }
-        }
-        XtextEnumRule[] enumRules = PsiTreeUtil.getChildrenOfType(myFile, XtextEnumRule.class);
-        if (enumRules != null) {
-            for (XtextEnumRule rule : enumRules) {
-                myEnumRules.add(new EnumRule(rule));
-            }
-        }
+        myAbstractRules = PsiTreeUtil.getChildrenOfType(myFile, XtextAbstractRule.class);
+        findRules();
+
+        myParserRules = generatorUtil.culParserRules(xtextParserRules);
+
         for (ParserRule parserRule : myParserRules) {
             registerReferences(parserRule.getMyRule());
+            registerKeYWords(parserRule.getMyRule());
+
         }
 
+
+    }
+
+    private void findRules() {
+        for (XtextAbstractRule abstractRule : myAbstractRules) {
+            if (abstractRule.getEnumRule() != null) {
+                myEnumRules.add(new EnumRule(abstractRule.getEnumRule()));
+            } else if (abstractRule.getParserRule() != null) {
+                xtextParserRules.add(abstractRule.getParserRule());
+            } else if (abstractRule.getTerminalRule() != null) {
+                myTerminalRules.add(new TerminalRule(abstractRule.getTerminalRule()));
+            }
+        }
+    }
+
+    public List<String> getMyKeywords() {
+        return myKeywords;
     }
 
 
@@ -94,52 +105,101 @@ public class XtextFileModel {
                 .findFirst().orElse(null);
     }
 
-    private void registerReferences(XtextAlternatives alternatives) {
-        if (alternatives == null) return;
+    private List<XtextAbstractTokenWithCardinality> getAbstractTokensfromAlternative(XtextAlternatives alternatives) {
+        if (alternatives == null) return null;
         List<XtextConditionalBranch> branches = alternatives.getConditionalBranchList();
+        List<XtextAbstractTokenWithCardinality> abstractTokens = new LinkedList<>();
         for (XtextConditionalBranch branch : branches) {
-            if (branch == null) return;
+            if (branch == null) return null;
             XtextUnorderedGroup unorderedGroup = branch.getUnorderedGroup();
-            if (unorderedGroup == null) return;
+            if (unorderedGroup == null) return null;
             List<XtextGroup> groups = unorderedGroup.getGroupList();
-            if (groups.size() == 0) return;
+            if (groups.size() == 0) return null;
             List<XtextAbstractToken> tokens = new LinkedList<>();
             for (XtextGroup group : groups) {
                 tokens.addAll(group.getAbstractTokenList());
             }
-            if (tokens.size() == 0) return;
-            List<XtextAbstractTokenWithCardinality> abstractTokens = new LinkedList<>();
+            if (tokens.size() == 0) return null;
+
             for (XtextAbstractToken token : tokens) {
                 if (token.getAbstractTokenWithCardinality() != null) {
                     abstractTokens.add(token.getAbstractTokenWithCardinality());
                 }
             }
-            if (abstractTokens.size() == 0) return;
-            for (XtextAbstractTokenWithCardinality element : abstractTokens) {
-                if (element.getAssignment() != null) {
-                    XtextAssignment assignment = element.getAssignment();
-                    XtextAssignableTerminal terminal = assignment.getAssignableTerminal();
-                    if (terminal.getCrossReference() != null) {
-                        XtextCrossReference crossReference = terminal.getCrossReference();
-                        String referenceName = "REFERENCE_" + crossReference.getTypeRef().getText().replace("::", "-");
-                        String referenseType = "ID";
-                        if (crossReference.getCrossReferenceableTerminal() != null) {
-                            referenceName += "_" + crossReference.getCrossReferenceableTerminal().getText();
-                            referenseType = crossReference.getCrossReferenceableTerminal().getText();
-                        }
-                        ReferenceElement newReferece = new ReferenceElement(referenceName, referenseType);
-                        if (!existsAlready(newReferece)) myReferences.add(newReferece);
-                    }
-                } else if (element.getAbstractTerminal() != null) {
-                    if (element.getAbstractTerminal().getParenthesizedElement() != null) {
-                        registerReferences(element.getAbstractTerminal().getParenthesizedElement().getAlternatives());
-                    } else if (element.getAbstractTerminal().getPredicatedGroup() != null) {
-                        registerReferences(element.getAbstractTerminal().getPredicatedGroup().getAlternatives());
-                    }
+        }
+        return abstractTokens;
+
+
+    }
+
+    private void registerKeYWords(XtextParserRule rule) {
+        if (rule != null) {
+            String name = rule.getRuleNameAndParams().getText();
+            registerKeYWords(rule.getAlternatives());
+        }
+    }
+
+    private void registerKeYWords(XtextAlternatives alternatives) {
+        List<XtextAbstractTokenWithCardinality> abstractTokens = getAbstractTokensfromAlternative(alternatives);
+        if (abstractTokens == null) return;
+        for (XtextAbstractTokenWithCardinality element : abstractTokens) {
+            if (element.getAssignment() != null) {
+                registerKeYWords(new ArrayList<>(Arrays.asList(element.getAssignment().getAssignableTerminal())));
+            } else if (element.getAbstractTerminal() != null) {
+                if (element.getAbstractTerminal().getKeyword() != null) {
+                    String keyword = element.getAbstractTerminal().getKeyword().getText();
+                    if (!myKeywords.contains(keyword)) myKeywords.add(keyword);
+                } else if (element.getAbstractTerminal().getPredicatedKeyword() != null) {
+                    String keyword = element.getAbstractTerminal().getPredicatedKeyword().getText();
+                    if (!myKeywords.contains(keyword)) myKeywords.add(keyword);
+                } else if (element.getAbstractTerminal().getParenthesizedElement() != null) {
+                    registerKeYWords(element.getAbstractTerminal().getParenthesizedElement().getAlternatives());
+                } else if (element.getAbstractTerminal().getPredicatedGroup() != null) {
+                    registerKeYWords(element.getAbstractTerminal().getPredicatedGroup().getAlternatives());
                 }
             }
         }
     }
+
+    private void registerKeYWords(List<XtextAssignableTerminal> terminals) {
+        for (XtextAssignableTerminal terminal : terminals) {
+            if (terminal.getKeyword() != null) {
+                String keyword = terminal.getKeyword().getText();
+                if (!myKeywords.contains(keyword)) myKeywords.add(keyword);
+            } else if (terminal.getParenthesizedAssignableElement() != null) {
+                registerKeYWords(terminal.getParenthesizedAssignableElement().getAssignableAlternatives().getAssignableTerminalList());
+            }
+        }
+    }
+
+    private void registerReferences(XtextAlternatives alternatives) {
+        List<XtextAbstractTokenWithCardinality> abstractTokens = getAbstractTokensfromAlternative(alternatives);
+        if (abstractTokens == null) return;
+        for (XtextAbstractTokenWithCardinality element : abstractTokens) {
+            if (element.getAssignment() != null) {
+                XtextAssignment assignment = element.getAssignment();
+                XtextAssignableTerminal terminal = assignment.getAssignableTerminal();
+                if (terminal.getCrossReference() != null) {
+                    XtextCrossReference crossReference = terminal.getCrossReference();
+                    String referenceName = "REFERENCE_" + crossReference.getTypeRef().getText().replace("::", "-");
+                    String referenseType = "ID";
+                    if (crossReference.getCrossReferenceableTerminal() != null) {
+                        referenceName += "_" + crossReference.getCrossReferenceableTerminal().getText();
+                        referenseType = crossReference.getCrossReferenceableTerminal().getText();
+                    }
+                    ReferenceElement newReferece = new ReferenceElement(referenceName, referenseType);
+                    if (!existsAlready(newReferece)) myReferences.add(newReferece);
+                }
+            } else if (element.getAbstractTerminal() != null) {
+                if (element.getAbstractTerminal().getParenthesizedElement() != null) {
+                    registerReferences(element.getAbstractTerminal().getParenthesizedElement().getAlternatives());
+                } else if (element.getAbstractTerminal().getPredicatedGroup() != null) {
+                    registerReferences(element.getAbstractTerminal().getPredicatedGroup().getAlternatives());
+                }
+            }
+        }
+    }
+
 
     private boolean existsAlready(ReferenceElement element) {
         for (ReferenceElement referenceElement : myReferences) {
