@@ -4,9 +4,12 @@ package com.intellij.xtextLanguage.xtext.psi;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public interface XtextParserRuleHolder extends PsiElement {
+public interface XtextRuleFromNegationNegation extends PsiElement {
 
     @NotNull
-    XtextParserRule getParserRule();
+    XtextNegation getNegation();
+
+    @NotNull
+    PsiElement getAcxMark();
 
 }

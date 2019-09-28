@@ -56,7 +56,7 @@ ML_COMMENT=("/*"{COMMENT_TAIL})|"/*"
 ":" {return COLON;}
 "*" {return ASTERISK;}
 "true" {return TRUE;}
-"false" {return FALCE;}
+"false" {return FALSE;}
 "=" {return EQUALS;}
 "terminal" {return TERMINAL;}
 "enum" {return ENUM;}

@@ -7,21 +7,21 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface XtextTerminalRule extends XtextAbstractRule {
+public interface XtextTerminalRule extends PsiElement {
 
   @NotNull
   List<XtextAnnotation> getAnnotationList();
 
-  @Nullable
+    @NotNull
   XtextTerminalAlternatives getTerminalAlternatives();
 
   @Nullable
   XtextTypeRef getTypeRef();
 
-  @Nullable
+    @NotNull
   XtextValidID getValidID();
 
-  @Nullable
+    @NotNull
   PsiElement getColon();
 
   @Nullable
@@ -35,11 +35,5 @@ public interface XtextTerminalRule extends XtextAbstractRule {
 
   @NotNull
   PsiElement getTerminal();
-
-    String getName();
-
-    PsiElement setName(String newName);
-
-    PsiElement getNameIdentifier();
 
 }

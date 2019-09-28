@@ -3,20 +3,19 @@ package com.intellij.xtextLanguage.xtext.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.xtextLanguage.xtext.psi.XtextParserRule;
-import com.intellij.xtextLanguage.xtext.psi.XtextParserRuleHolder;
-import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
+import com.intellij.xtextLanguage.xtext.psi.*;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
 import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
-public class XtextParserRuleHolderImpl extends XtextPsiCompositeElementImpl implements XtextParserRuleHolder {
+public class XtextAbstractRuleImpl extends XtextPsiCompositeElementImpl implements XtextAbstractRule {
 
-    public XtextParserRuleHolderImpl(@NotNull ASTNode node) {
+    public XtextAbstractRuleImpl(@NotNull ASTNode node) {
         super(node);
     }
 
     public void accept(@NotNull XtextVisitor visitor) {
-        visitor.visitParserRuleHolder(this);
+        visitor.visitAbstractRule(this);
     }
 
     public void accept(@NotNull PsiElementVisitor visitor) {
@@ -25,9 +24,21 @@ public class XtextParserRuleHolderImpl extends XtextPsiCompositeElementImpl impl
     }
 
     @Override
-    @NotNull
+    @Nullable
+    public XtextEnumRule getEnumRule() {
+        return findChildByClass(XtextEnumRule.class);
+    }
+
+    @Override
+    @Nullable
     public XtextParserRule getParserRule() {
-        return findNotNullChildByClass(XtextParserRule.class);
+        return findChildByClass(XtextParserRule.class);
+    }
+
+    @Override
+    @Nullable
+    public XtextTerminalRule getTerminalRule() {
+        return findChildByClass(XtextTerminalRule.class);
     }
 
 }

@@ -4,10 +4,10 @@ package com.intellij.xtextLanguage.xtext;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.xtextLanguage.xtext.psi.XtextTypes;
-import static com.intellij.psi.TokenType.BAD_CHARACTER; // Pre-defined bad character token.
-import static com.intellij.psi.TokenType.WHITE_SPACE; // Pre-defined whitespace character token.
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*; // Note that is the class which is specified as `elementTypeHolderClass`
+
+import static com.intellij.psi.TokenType.BAD_CHARACTER;
+import static com.intellij.psi.TokenType.WHITE_SPACE;
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
 // in bnf grammar file. This will contain all other tokens which we will use.
 
 
@@ -792,8 +792,8 @@ public _XtextLexer(){
             } 
             // fall through
           case 85: break;
-          case 39: 
-            { return FALCE;
+          case 39: {
+            return FALSE;
             } 
             // fall through
           case 86: break;

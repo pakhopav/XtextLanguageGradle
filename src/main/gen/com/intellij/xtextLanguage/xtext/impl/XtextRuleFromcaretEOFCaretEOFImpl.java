@@ -1,25 +1,24 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromcaretEOFCaretEOF;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
 
-public class XtextEofImpl extends XtextPsiCompositeElementImpl implements XtextEof {
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.EOF_KEY;
 
-  public XtextEofImpl(@NotNull ASTNode node) {
+public class XtextRuleFromcaretEOFCaretEOFImpl extends XtextPsiCompositeElementImpl implements XtextRuleFromcaretEOFCaretEOF {
+
+    public XtextRuleFromcaretEOFCaretEOFImpl(@NotNull ASTNode node) {
     super(node);
   }
 
   public void accept(@NotNull XtextVisitor visitor) {
-    visitor.visitEof(this);
+      visitor.visitRuleFromcaretEOFCaretEOF(this);
   }
 
   public void accept(@NotNull PsiElementVisitor visitor) {

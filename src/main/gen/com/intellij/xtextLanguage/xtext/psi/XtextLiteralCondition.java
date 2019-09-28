@@ -1,16 +1,12 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
 
 public interface XtextLiteralCondition extends PsiElement {
 
-  @Nullable
-  PsiElement getFalce();
-
-  @Nullable
-  PsiElement getTrue();
+    @NotNull
+    XtextRuleFromLiteralConditionLiteralCondition getRuleFromLiteralConditionLiteralCondition();
 
 }

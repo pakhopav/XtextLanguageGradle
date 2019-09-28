@@ -6,8 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -15,7 +14,7 @@ import java.util.List;
 
 import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
 
-public class XtextParserRuleImpl extends XtextAbstractRuleImpl implements XtextParserRule {
+public class XtextParserRuleImpl extends XtextPsiCompositeElementImpl implements XtextParserRule {
 
   public XtextParserRuleImpl(@NotNull ASTNode node) {
     super(node);
@@ -31,9 +30,9 @@ public class XtextParserRuleImpl extends XtextAbstractRuleImpl implements XtextP
   }
 
   @Override
-  @Nullable
+  @NotNull
   public XtextAlternatives getAlternatives() {
-      return findChildByClass(XtextAlternatives.class);
+      return findNotNullChildByClass(XtextAlternatives.class);
   }
 
   @Override
@@ -67,9 +66,9 @@ public class XtextParserRuleImpl extends XtextAbstractRuleImpl implements XtextP
   }
 
   @Override
-  @Nullable
+  @NotNull
   public PsiElement getColon() {
-      return findChildByType(COLON);
+      return findNotNullChildByType(COLON);
   }
 
   @Override
@@ -107,20 +106,5 @@ public class XtextParserRuleImpl extends XtextAbstractRuleImpl implements XtextP
   public PsiElement getSemicolon() {
     return findNotNullChildByType(SEMICOLON);
   }
-
-    @Override
-    public String getName() {
-        return XtextPsiImplUtil.getName(this);
-    }
-
-    @Override
-    public PsiElement setName(String newName) {
-        return XtextPsiImplUtil.setName(this, newName);
-    }
-
-    @Override
-    public PsiElement getNameIdentifier() {
-        return XtextPsiImplUtil.getNameIdentifier(this);
-    }
 
 }

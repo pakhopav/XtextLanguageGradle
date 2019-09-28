@@ -1,6 +1,6 @@
 {
     tokens = [
-        ID =  'regexp:^?[a-zA-Z_][a-zA-Z0-9_]*'
+        ID =  'regexp:\^?[a-zA-Z_][a-zA-Z0-9_]*'
         STRING = "regexp:(\"([^\"\\]|\\.)*\"|'([^'\\]|\\.)*')"
         INT = 'regexp:[0-9]+'
         ML_COMMENT = 'regexp:/\*(?s).*\*/'
@@ -9,8 +9,6 @@
         ANY_OTHER ='regexp:.'
         GRAMMAR = "grammar"
         WITH = "with"
-
-
         HIDDEN = "hidden"
         GENERATE = "generate"
         IMPORT = "import"
@@ -33,7 +31,7 @@
         COLON =":"
         ASTERISK ="*"
         TRUE = "true"
-        FALCE = "false"
+        FALSE = "false"
         EQUALS = "="
         TERMINAL = "terminal"
         ENUM = "enum"
@@ -71,6 +69,7 @@
   generateTokenAccessors=true
   generateTokens=true
 
+   extraRoot(".*")= true
 }
 Grammar::=
 	"grammar" GrammarID ('with' REFERENCE_Grammar_GrammarID/* usedGrammars+=[Grammar|GrammarID]*/ (',' REFERENCE_Grammar_GrammarID)*)?
@@ -86,13 +85,8 @@ GrammarID::=
 
 
 
-private AbstractRule::= ParserRule | TerminalRule | EnumRule
-{
-mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextNamedElementImpl"
-implements="com.intellij.xtextLanguage.xtext.psi.XtextNamedElement"
-methods=[getName setName getNameIdentifier]
-}
-//test ::= '*' ID ID* 'returns'?
+ AbstractRule::= ParserRule | TerminalRule | EnumRule
+
 
 
 AbstractMetamodelDeclaration::=
@@ -114,11 +108,7 @@ Annotation::=
 	'@' ID
 
 ParserRule ::= AbstractParserRule ';'
-{
-mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
-implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
-methods=[getName setName getNameIdentifier]
-}
+
 private AbstractParserRule ::=
 	(Annotation)*
 	(
@@ -278,11 +268,7 @@ PredicatedGroup::=
 	('=>' | '->') '(' Alternatives ')'
 
 TerminalRule ::= AbstractTerminalRule ';'
-{
-mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
-implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
-methods=[getName setName getNameIdentifier]
-}
+
 private AbstractTerminalRule::=
 	(Annotation)*
 	'terminal' ('fragment' ValidID | ValidID ('returns' TypeRef)?) ':'
@@ -339,11 +325,6 @@ CharacterRange ::=
 	Keyword (  '..' Keyword)?
 
 EnumRule::= AbstractEnumRule ';'
-{
-mixin="com.intellij.xtextLanguage.xtext.psi.impl.XtextAbstractRuleImpl"
-implements="com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule"
-methods=[getName setName getNameIdentifier]
-}
 
 private AbstractEnumRule::=
 	( Annotation)*
@@ -374,7 +355,7 @@ REFERENCE_ecoreEEnumLiteral::=ID
 // helper rules
 
 RULE_IDENTIFIER ::= ValidID
-
-PARSER_RULE_HOLDER ::= ParserRule{
+{
 extraRoot=true
 }
+

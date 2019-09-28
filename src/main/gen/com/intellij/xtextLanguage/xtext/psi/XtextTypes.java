@@ -10,6 +10,7 @@ public interface XtextTypes {
 
   IElementType ABSTRACT_METAMODEL_DECLARATION = new XtextElementType("ABSTRACT_METAMODEL_DECLARATION");
   IElementType ABSTRACT_NEGATED_TOKEN = new XtextElementType("ABSTRACT_NEGATED_TOKEN");
+    IElementType ABSTRACT_RULE = new XtextElementType("ABSTRACT_RULE");
   IElementType ABSTRACT_TERMINAL = new XtextElementType("ABSTRACT_TERMINAL");
   IElementType ABSTRACT_TOKEN = new XtextElementType("ABSTRACT_TOKEN");
   IElementType ABSTRACT_TOKEN_WITH_CARDINALITY = new XtextElementType("ABSTRACT_TOKEN_WITH_CARDINALITY");
@@ -20,6 +21,7 @@ public interface XtextTypes {
   IElementType ASSIGNABLE_TERMINAL = new XtextElementType("ASSIGNABLE_TERMINAL");
   IElementType ASSIGNMENT = new XtextElementType("ASSIGNMENT");
   IElementType ATOM = new XtextElementType("ATOM");
+    IElementType CARET_EOF = new XtextElementType("CARET_EOF");
   IElementType CHARACTER_RANGE = new XtextElementType("CHARACTER_RANGE");
   IElementType CONDITIONAL_BRANCH = new XtextElementType("CONDITIONAL_BRANCH");
   IElementType CONJUNCTION = new XtextElementType("CONJUNCTION");
@@ -29,7 +31,6 @@ public interface XtextTypes {
   IElementType ENUM_LITERALS = new XtextElementType("ENUM_LITERALS");
   IElementType ENUM_LITERAL_DECLARATION = new XtextElementType("ENUM_LITERAL_DECLARATION");
   IElementType ENUM_RULE = new XtextElementType("ENUM_RULE");
-  IElementType EOF = new XtextElementType("EOF");
   IElementType GENERATED_METAMODEL = new XtextElementType("GENERATED_METAMODEL");
   IElementType GRAMMAR_ID = new XtextElementType("GRAMMAR_ID");
   IElementType GROUP = new XtextElementType("GROUP");
@@ -45,7 +46,6 @@ public interface XtextTypes {
   IElementType PARENTHESIZED_ELEMENT = new XtextElementType("PARENTHESIZED_ELEMENT");
   IElementType PARENTHESIZED_TERMINAL_ELEMENT = new XtextElementType("PARENTHESIZED_TERMINAL_ELEMENT");
   IElementType PARSER_RULE = new XtextElementType("PARSER_RULE");
-    IElementType PARSER_RULE_HOLDER = new XtextElementType("PARSER_RULE_HOLDER");
   IElementType PREDICATED_GROUP = new XtextElementType("PREDICATED_GROUP");
   IElementType PREDICATED_KEYWORD = new XtextElementType("PREDICATED_KEYWORD");
   IElementType PREDICATED_RULE_CALL = new XtextElementType("PREDICATED_RULE_CALL");
@@ -58,10 +58,13 @@ public interface XtextTypes {
   IElementType REFERENCE_GRAMMAR_GRAMMAR_ID = new XtextElementType("REFERENCE_GRAMMAR_GRAMMAR_ID");
   IElementType REFERENCE_PARAMETER_ID = new XtextElementType("REFERENCE_PARAMETER_ID");
   IElementType RULE_CALL = new XtextElementType("RULE_CALL");
+    IElementType RULE_FROMCARET_EOF_CARET_EOF = new XtextElementType("RULE_FROMCARET_EOF_CARET_EOF");
+    IElementType RULE_FROM_CONDITIONAL_BRANCH_GROUP = new XtextElementType("RULE_FROM_CONDITIONAL_BRANCH_GROUP");
+    IElementType RULE_FROM_LITERAL_CONDITION_LITERAL_CONDITION = new XtextElementType("RULE_FROM_LITERAL_CONDITION_LITERAL_CONDITION");
+    IElementType RULE_FROM_NEGATION_NEGATION = new XtextElementType("RULE_FROM_NEGATION_NEGATION");
+    IElementType RULE_FROM_WILDCARD_WILDCARD = new XtextElementType("RULE_FROM_WILDCARD_WILDCARD");
   IElementType RULE_ID = new XtextElementType("RULE_ID");
-  IElementType RULE_IDENTIFIER = new XtextElementType("RULE_IDENTIFIER");
   IElementType RULE_NAME_AND_PARAMS = new XtextElementType("RULE_NAME_AND_PARAMS");
-    IElementType RULE_RECOVERY = new XtextElementType("RULE_RECOVERY");
   IElementType TERMINAL_ALTERNATIVES = new XtextElementType("TERMINAL_ALTERNATIVES");
   IElementType TERMINAL_GROUP = new XtextElementType("TERMINAL_GROUP");
   IElementType TERMINAL_RULE = new XtextElementType("TERMINAL_RULE");
@@ -88,7 +91,7 @@ public interface XtextTypes {
   IElementType ENUM = new XtextTokenType("enum");
   IElementType EOF_KEY = new XtextTokenType("EOF");
   IElementType EQUALS = new XtextTokenType("=");
-  IElementType FALCE = new XtextTokenType("false");
+    IElementType FALSE = new XtextTokenType("false");
   IElementType FRAGMENT = new XtextTokenType("fragment");
   IElementType GENERATE = new XtextTokenType("generate");
   IElementType GRAMMAR = new XtextTokenType("grammar");
@@ -131,12 +134,12 @@ public interface XtextTypes {
                 return true;
 
             }
-            if (debugName.equals("STRING")) {
+            if (debugName.equals("INT")) {
 
                 return true;
 
             }
-            if (debugName.equals("INT")) {
+            if (debugName.equals("STRING")) {
 
                 return true;
 
@@ -171,113 +174,78 @@ public interface XtextTypes {
       }
       else if (type == ABSTRACT_NEGATED_TOKEN) {
         return new XtextAbstractNegatedTokenImpl(node);
-      }
-      else if (type == ABSTRACT_TERMINAL) {
-        return new XtextAbstractTerminalImpl(node);
-      }
-      else if (type == ABSTRACT_TOKEN) {
-        return new XtextAbstractTokenImpl(node);
-      }
-      else if (type == ABSTRACT_TOKEN_WITH_CARDINALITY) {
-        return new XtextAbstractTokenWithCardinalityImpl(node);
-      }
-      else if (type == ACTION) {
-        return new XtextActionImpl(node);
-      }
-      else if (type == ALTERNATIVES) {
-        return new XtextAlternativesImpl(node);
-      }
-      else if (type == ANNOTATION) {
-        return new XtextAnnotationImpl(node);
-      }
-      else if (type == ASSIGNABLE_ALTERNATIVES) {
-        return new XtextAssignableAlternativesImpl(node);
-      }
-      else if (type == ASSIGNABLE_TERMINAL) {
-        return new XtextAssignableTerminalImpl(node);
-      }
-      else if (type == ASSIGNMENT) {
-        return new XtextAssignmentImpl(node);
-      }
-      else if (type == ATOM) {
-        return new XtextAtomImpl(node);
-      }
-      else if (type == CHARACTER_RANGE) {
-        return new XtextCharacterRangeImpl(node);
-      }
-      else if (type == CONDITIONAL_BRANCH) {
-        return new XtextConditionalBranchImpl(node);
-      }
-      else if (type == CONJUNCTION) {
-        return new XtextConjunctionImpl(node);
-      }
-      else if (type == CROSS_REFERENCE) {
-        return new XtextCrossReferenceImpl(node);
-      }
-      else if (type == CROSS_REFERENCEABLE_TERMINAL) {
-        return new XtextCrossReferenceableTerminalImpl(node);
-      }
-      else if (type == DISJUNCTION) {
-        return new XtextDisjunctionImpl(node);
-      }
-      else if (type == ENUM_LITERALS) {
-        return new XtextEnumLiteralsImpl(node);
-      }
-      else if (type == ENUM_LITERAL_DECLARATION) {
-        return new XtextEnumLiteralDeclarationImpl(node);
-      }
-      else if (type == ENUM_RULE) {
-        return new XtextEnumRuleImpl(node);
-      }
-      else if (type == EOF) {
-        return new XtextEofImpl(node);
-      }
-      else if (type == GENERATED_METAMODEL) {
-        return new XtextGeneratedMetamodelImpl(node);
-      }
-      else if (type == GRAMMAR_ID) {
-        return new XtextGrammarIDImpl(node);
-      }
-      else if (type == GROUP) {
-        return new XtextGroupImpl(node);
-      }
-      else if (type == KEYWORD) {
-        return new XtextKeywordImpl(node);
-      }
-      else if (type == LITERAL_CONDITION) {
-        return new XtextLiteralConditionImpl(node);
-      }
-      else if (type == NAMED_ARGUMENT) {
-        return new XtextNamedArgumentImpl(node);
-      }
-      else if (type == NEGATED_TOKEN) {
-        return new XtextNegatedTokenImpl(node);
-      }
-      else if (type == NEGATION) {
-        return new XtextNegationImpl(node);
-      }
-      else if (type == PARAMETER) {
-        return new XtextParameterImpl(node);
-      }
-      else if (type == PARAMETER_REFERENCE) {
-        return new XtextParameterReferenceImpl(node);
-      }
-      else if (type == PARENTHESIZED_ASSIGNABLE_ELEMENT) {
-        return new XtextParenthesizedAssignableElementImpl(node);
-      }
-      else if (type == PARENTHESIZED_CONDITION) {
-        return new XtextParenthesizedConditionImpl(node);
-      }
-      else if (type == PARENTHESIZED_ELEMENT) {
-        return new XtextParenthesizedElementImpl(node);
-      }
-      else if (type == PARENTHESIZED_TERMINAL_ELEMENT) {
-        return new XtextParenthesizedTerminalElementImpl(node);
-      }
-      else if (type == PARSER_RULE) {
-        return new XtextParserRuleImpl(node);
-      } else if (type == PARSER_RULE_HOLDER) {
-          return new XtextParserRuleHolderImpl(node);
+      } else if (type == ABSTRACT_RULE) {
+          return new XtextAbstractRuleImpl(node);
+      } else if (type == ABSTRACT_TERMINAL) {
+          return new XtextAbstractTerminalImpl(node);
+      } else if (type == ABSTRACT_TOKEN) {
+          return new XtextAbstractTokenImpl(node);
+      } else if (type == ABSTRACT_TOKEN_WITH_CARDINALITY) {
+          return new XtextAbstractTokenWithCardinalityImpl(node);
+      } else if (type == ACTION) {
+          return new XtextActionImpl(node);
+      } else if (type == ALTERNATIVES) {
+          return new XtextAlternativesImpl(node);
+      } else if (type == ANNOTATION) {
+          return new XtextAnnotationImpl(node);
+      } else if (type == ASSIGNABLE_ALTERNATIVES) {
+          return new XtextAssignableAlternativesImpl(node);
+      } else if (type == ASSIGNABLE_TERMINAL) {
+          return new XtextAssignableTerminalImpl(node);
+      } else if (type == ASSIGNMENT) {
+          return new XtextAssignmentImpl(node);
+      } else if (type == ATOM) {
+          return new XtextAtomImpl(node);
+      } else if (type == CARET_EOF) {
+          return new XtextCaretEOFImpl(node);
+      } else if (type == CHARACTER_RANGE) {
+          return new XtextCharacterRangeImpl(node);
+      } else if (type == CONDITIONAL_BRANCH) {
+          return new XtextConditionalBranchImpl(node);
+      } else if (type == CONJUNCTION) {
+          return new XtextConjunctionImpl(node);
+      } else if (type == CROSS_REFERENCE) {
+          return new XtextCrossReferenceImpl(node);
+      } else if (type == CROSS_REFERENCEABLE_TERMINAL) {
+          return new XtextCrossReferenceableTerminalImpl(node);
+      } else if (type == DISJUNCTION) {
+          return new XtextDisjunctionImpl(node);
+      } else if (type == ENUM_LITERALS) {
+          return new XtextEnumLiteralsImpl(node);
+      } else if (type == ENUM_LITERAL_DECLARATION) {
+          return new XtextEnumLiteralDeclarationImpl(node);
+      } else if (type == ENUM_RULE) {
+          return new XtextEnumRuleImpl(node);
+      } else if (type == GENERATED_METAMODEL) {
+          return new XtextGeneratedMetamodelImpl(node);
+      } else if (type == GRAMMAR_ID) {
+          return new XtextGrammarIDImpl(node);
+      } else if (type == GROUP) {
+          return new XtextGroupImpl(node);
+      } else if (type == KEYWORD) {
+          return new XtextKeywordImpl(node);
+      } else if (type == LITERAL_CONDITION) {
+          return new XtextLiteralConditionImpl(node);
+      } else if (type == NAMED_ARGUMENT) {
+          return new XtextNamedArgumentImpl(node);
+      } else if (type == NEGATED_TOKEN) {
+          return new XtextNegatedTokenImpl(node);
+      } else if (type == NEGATION) {
+          return new XtextNegationImpl(node);
+      } else if (type == PARAMETER) {
+          return new XtextParameterImpl(node);
+      } else if (type == PARAMETER_REFERENCE) {
+          return new XtextParameterReferenceImpl(node);
+      } else if (type == PARENTHESIZED_ASSIGNABLE_ELEMENT) {
+          return new XtextParenthesizedAssignableElementImpl(node);
+      } else if (type == PARENTHESIZED_CONDITION) {
+          return new XtextParenthesizedConditionImpl(node);
+      } else if (type == PARENTHESIZED_ELEMENT) {
+          return new XtextParenthesizedElementImpl(node);
+      } else if (type == PARENTHESIZED_TERMINAL_ELEMENT) {
+          return new XtextParenthesizedTerminalElementImpl(node);
+      } else if (type == PARSER_RULE) {
+          return new XtextParserRuleImpl(node);
       } else if (type == PREDICATED_GROUP) {
           return new XtextPredicatedGroupImpl(node);
       } else if (type == PREDICATED_KEYWORD) {
@@ -302,14 +270,20 @@ public interface XtextTypes {
           return new XtextREFERENCEParameterIDImpl(node);
       } else if (type == RULE_CALL) {
           return new XtextRuleCallImpl(node);
+      } else if (type == RULE_FROMCARET_EOF_CARET_EOF) {
+          return new XtextRuleFromcaretEOFCaretEOFImpl(node);
+      } else if (type == RULE_FROM_CONDITIONAL_BRANCH_GROUP) {
+          return new XtextRuleFromConditionalBranchGroupImpl(node);
+      } else if (type == RULE_FROM_LITERAL_CONDITION_LITERAL_CONDITION) {
+          return new XtextRuleFromLiteralConditionLiteralConditionImpl(node);
+      } else if (type == RULE_FROM_NEGATION_NEGATION) {
+          return new XtextRuleFromNegationNegationImpl(node);
+      } else if (type == RULE_FROM_WILDCARD_WILDCARD) {
+          return new XtextRuleFromWildcardWildcardImpl(node);
       } else if (type == RULE_ID) {
           return new XtextRuleIDImpl(node);
-      } else if (type == RULE_IDENTIFIER) {
-          return new XtextRuleIdentifierImpl(node);
       } else if (type == RULE_NAME_AND_PARAMS) {
           return new XtextRuleNameAndParamsImpl(node);
-      } else if (type == RULE_RECOVERY) {
-          return new XtextRuleRecoveryImpl(node);
       } else if (type == TERMINAL_ALTERNATIVES) {
           return new XtextTerminalAlternativesImpl(node);
       } else if (type == TERMINAL_GROUP) {

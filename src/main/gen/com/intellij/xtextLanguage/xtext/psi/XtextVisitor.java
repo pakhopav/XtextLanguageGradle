@@ -15,6 +15,10 @@ public class XtextVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
+    public void visitAbstractRule(@NotNull XtextAbstractRule o) {
+        visitPsiElement(o);
+    }
+
   public void visitAbstractTerminal(@NotNull XtextAbstractTerminal o) {
     visitPsiElement(o);
   }
@@ -79,10 +83,6 @@ public class XtextVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitEof(@NotNull XtextEof o) {
-    visitPsiElement(o);
-  }
-
   public void visitEnumLiteralDeclaration(@NotNull XtextEnumLiteralDeclaration o) {
     visitPsiElement(o);
   }
@@ -92,7 +92,7 @@ public class XtextVisitor extends PsiElementVisitor {
   }
 
   public void visitEnumRule(@NotNull XtextEnumRule o) {
-      visitAbstractRule(o);
+      visitPsiElement(o);
   }
 
   public void visitGeneratedMetamodel(@NotNull XtextGeneratedMetamodel o) {
@@ -127,10 +127,6 @@ public class XtextVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-    public void visitParserRuleHolder(@NotNull XtextParserRuleHolder o) {
-        visitPsiElement(o);
-    }
-
   public void visitParameter(@NotNull XtextParameter o) {
     visitPsiElement(o);
   }
@@ -156,7 +152,7 @@ public class XtextVisitor extends PsiElementVisitor {
   }
 
   public void visitParserRule(@NotNull XtextParserRule o) {
-      visitAbstractRule(o);
+      visitPsiElement(o);
   }
 
   public void visitPredicatedGroup(@NotNull XtextPredicatedGroup o) {
@@ -199,10 +195,6 @@ public class XtextVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-  public void visitRuleIdentifier(@NotNull XtextRuleIdentifier o) {
-    visitPsiElement(o);
-  }
-
   public void visitReferencedMetamodel(@NotNull XtextReferencedMetamodel o) {
     visitPsiElement(o);
   }
@@ -210,6 +202,26 @@ public class XtextVisitor extends PsiElementVisitor {
   public void visitRuleCall(@NotNull XtextRuleCall o) {
     visitPsiElement(o);
   }
+
+    public void visitRuleFromConditionalBranchGroup(@NotNull XtextRuleFromConditionalBranchGroup o) {
+        visitPsiElement(o);
+    }
+
+    public void visitRuleFromLiteralConditionLiteralCondition(@NotNull XtextRuleFromLiteralConditionLiteralCondition o) {
+        visitPsiElement(o);
+    }
+
+    public void visitRuleFromNegationNegation(@NotNull XtextRuleFromNegationNegation o) {
+        visitPsiElement(o);
+    }
+
+    public void visitRuleFromWildcardWildcard(@NotNull XtextRuleFromWildcardWildcard o) {
+        visitPsiElement(o);
+    }
+
+    public void visitRuleFromcaretEOFCaretEOF(@NotNull XtextRuleFromcaretEOFCaretEOF o) {
+        visitPsiElement(o);
+    }
 
   public void visitRuleID(@NotNull XtextRuleID o) {
     visitPsiElement(o);
@@ -228,7 +240,7 @@ public class XtextVisitor extends PsiElementVisitor {
   }
 
   public void visitTerminalRule(@NotNull XtextTerminalRule o) {
-      visitAbstractRule(o);
+      visitPsiElement(o);
   }
 
   public void visitTerminalRuleCall(@NotNull XtextTerminalRuleCall o) {
@@ -263,11 +275,7 @@ public class XtextVisitor extends PsiElementVisitor {
     visitPsiElement(o);
   }
 
-    public void visitRuleRecovery(@NotNull XtextRuleRecovery o) {
-    visitPsiElement(o);
-  }
-
-    public void visitAbstractRule(@NotNull XtextAbstractRule o) {
+    public void visitCaretEOF(@NotNull XtextCaretEOF o) {
         visitPsiElement(o);
     }
 
