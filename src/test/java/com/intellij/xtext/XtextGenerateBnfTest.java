@@ -4,7 +4,6 @@ import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.TestDataPath;
 import com.intellij.xtextLanguage.xtext.generator.BnfGenerator;
 import com.intellij.xtextLanguage.xtext.generator.BnfGeneratorOld;
-import com.intellij.xtextLanguage.xtext.generator.ParserRule;
 import com.intellij.xtextLanguage.xtext.generator.XtextFileModel;
 import com.intellij.xtextLanguage.xtext.psi.XtextElementFactory;
 import com.intellij.xtextLanguage.xtext.psi.XtextFile;
@@ -150,10 +149,98 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         XtextFile xtextFile = (XtextFile) file;
         XtextFileModel model = new XtextFileModel(xtextFile);
         BuildModelWithImports(model, model);
-        for (ParserRule rule : model.getMyParserRules()) {
-            System.out.println(rule.getName());
-        }
         BnfGenerator generator = new BnfGenerator("newGrammar", model);
+        try {
+            generator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assertNotNull(model.getParserRuleByName("Domainmodel"));
+        assertNotNull(model.getParserRuleByName("Entity"));
+        assertNotNull(model.getParserRuleByName("Feature"));
+        assertNotNull(model.getParserRuleByName("Property"));
+
+        assertNotNull(model.getParserRuleByName("JvmTypeReference"));
+        assertNotNull(model.getParserRuleByName("ArrayBrackets"));
+        assertNotNull(model.getParserRuleByName("XFunctionTypeRef"));
+        assertNotNull(model.getParserRuleByName("JvmParameterizedTypeReference"));
+        assertNotNull(model.getParserRuleByName("JvmArgumentTypeReference"));
+        assertNotNull(model.getParserRuleByName("JvmWildcardTypeReference"));
+        assertNotNull(model.getParserRuleByName("JvmUpperBound"));
+        assertNotNull(model.getParserRuleByName("JvmUpperBoundAnded"));
+        assertNotNull(model.getParserRuleByName("JvmLowerBound"));
+        assertNotNull(model.getParserRuleByName("JvmLowerBoundAnded"));
+        assertNotNull(model.getParserRuleByName("JvmTypeParameter"));
+        assertNotNull(model.getParserRuleByName("QualifiedName"));
+        assertNotNull(model.getParserRuleByName("QualifiedNameWithWildcard"));
+        assertNotNull(model.getParserRuleByName("ValidID"));
+        assertNotNull(model.getParserRuleByName("XImportSection"));
+        assertNotNull(model.getParserRuleByName("XImportDeclaration"));
+        assertNotNull(model.getParserRuleByName("QualifiedNameInStaticImport"));
+
+
+    }
+
+    public void testGenerationImportedGrammar2() {
+        PsiFile file = getXtextFile();
+        XtextFile xtextFile = (XtextFile) file;
+        XtextFileModel model = new XtextFileModel(xtextFile);
+        BuildModelWithImports(model, model);
+        BnfGenerator generator = new BnfGenerator("newGrammar", model);
+        try {
+            generator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+        assertNotNull(model.getParserRuleByName("Domainmodel"));
+        assertNotNull(model.getParserRuleByName("Entity"));
+        assertNotNull(model.getParserRuleByName("Feature"));
+        assertNotNull(model.getParserRuleByName("Property"));
+        assertNotNull(model.getParserRuleByName("AbstractElement"));
+        assertNotNull(model.getParserRuleByName("PackageDeclaration"));
+        assertNotNull(model.getParserRuleByName("Operation"));
+        assertNotNull(model.getParserRuleByName("JvmParameterizedTypeReference"));
+        assertNotNull(model.getParserRuleByName("JvmArgumentTypeReference"));
+        assertNotNull(model.getParserRuleByName("JvmWildcardTypeReference"));
+        assertNotNull(model.getParserRuleByName("JvmUpperBound"));
+        assertNotNull(model.getParserRuleByName("JvmUpperBoundAnded"));
+        assertNotNull(model.getParserRuleByName("JvmLowerBound"));
+        assertNotNull(model.getParserRuleByName("JvmLowerBoundAnded"));
+        assertNotNull(model.getParserRuleByName("JvmTypeParameter"));
+        assertNotNull(model.getParserRuleByName("QualifiedName"));
+        assertNotNull(model.getParserRuleByName("QualifiedNameWithWildcard"));
+        assertNotNull(model.getParserRuleByName("ValidID"));
+        assertNotNull(model.getParserRuleByName("XImportSection"));
+        assertNotNull(model.getParserRuleByName("XImportDeclaration"));
+        assertNotNull(model.getParserRuleByName("QualifiedNameInStaticImport"));
+
+        assertNotNull(model.getParserRuleByName("XExpression"));
+        assertNotNull(model.getParserRuleByName("XAssignment"));
+        assertNotNull(model.getParserRuleByName("OpSingleAssign"));
+        assertNotNull(model.getParserRuleByName("OpMultiAssign"));
+        assertNotNull(model.getParserRuleByName("XOrExpression"));
+        assertNotNull(model.getParserRuleByName("OpOr"));
+        assertNotNull(model.getParserRuleByName("XAndExpression"));
+        assertNotNull(model.getParserRuleByName("OpAnd"));
+        assertNotNull(model.getParserRuleByName("XEqualityExpression"));
+        assertNotNull(model.getParserRuleByName("OpEquality"));
+        assertNotNull(model.getParserRuleByName("XRelationalExpression"));
+        assertNotNull(model.getParserRuleByName("OpCompare"));
+        assertNotNull(model.getParserRuleByName("XOtherOperatorExpression"));
+        assertNotNull(model.getParserRuleByName("OpOther"));
+
+    }
+
+    public void testXtext() {
+        PsiFile file = getXtextFile();
+        XtextFile xtextFile = (XtextFile) file;
+        XtextFileModel model = new XtextFileModel(xtextFile);
+        BuildModelWithImports(model, model);
+        System.out.println(model.getMyKeywords().size());
+        for (String s : model.getMyKeywords()) {
+            System.out.println(s);
+        }
+        BnfGenerator generator = new BnfGenerator("newXtext", model);
         try {
             generator.generate();
         } catch (IOException e) {
@@ -162,5 +249,4 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
 
 
     }
-
 }

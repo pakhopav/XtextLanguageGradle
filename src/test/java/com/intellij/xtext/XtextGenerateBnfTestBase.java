@@ -39,8 +39,18 @@ public class XtextGenerateBnfTestBase extends LightPlatformCodeInsightFixtureTes
         return file;
     }
 
-    protected PsiFile getXtextFile(String fileName) {
+    protected PsiFile getFile(String fileName) {
         PsiFile file = myFixture.configureByFile(fileName + ".xtext");
+        return file;
+    }
+
+    protected PsiFile getBnfFile(String fileName) {
+        PsiFile file = myFixture.configureByFile(fileName + ".bnf");
+        return file;
+    }
+
+    protected PsiFile getFileWithAbsolutePath(String path) {
+        PsiFile file = myFixture.configureByFile(path);
         return file;
     }
 
@@ -48,7 +58,7 @@ public class XtextGenerateBnfTestBase extends LightPlatformCodeInsightFixtureTes
         XtextREFERENCEGrammarGrammarID[] grammars = importedModel.getMyImportedGrammars();
         if (grammars != null) {
             for (XtextREFERENCEGrammarGrammarID name : grammars) {
-                XtextFile file = (XtextFile) getXtextFile(name.getText());
+                XtextFile file = (XtextFile) getFile(name.getText());
                 if (file != null) {
                     XtextFileModel newModel = new XtextFileModel(file);
                     BuildModelWithImports(mainModel, newModel);
