@@ -27,22 +27,22 @@ public class XtextElementFactory {
         return expectedClass.isInstance(psiResult) ? expectedClass.cast(psiResult) : null;
     }
 
-    public static PsiElement createValidID(String name) {
-        XtextRuleIdentifier ruleId =
-                parseFromString(name, XtextTypes.RULE_IDENTIFIER, XtextRuleIdentifier.class);
-        if (ruleId == null) {
-            throw new IllegalStateException("Can't parse to RULE_IDENTIFIER declaration: " + name);
-        }
-        return ruleId.getValidID();
-    }
-
+    //    public static PsiElement createValidID(String name) {
+//        XtextRuleIdentifier ruleId =
+//                parseFromString(name, XtextTypes.RULE_IDENTIFIER, XtextRuleIdentifier.class);
+//        if (ruleId == null) {
+//            throw new IllegalStateException("Can't parse to RULE_IDENTIFIER declaration: " + name);
+//        }
+//        return ruleId.getValidID();
+//    }
+//
     public static XtextParserRule createParserRule(String text) {
-        XtextParserRuleHolder rule =
-                parseFromString(text, XtextTypes.PARSER_RULE_HOLDER, XtextParserRuleHolder.class);
+        XtextParserRule rule =
+                parseFromString(text, XtextTypes.PARSER_RULE, XtextParserRule.class);
         if (rule == null) {
             throw new IllegalStateException("Can't parse to XtextParserRuleHolder declaration: " + text);
         }
-        return rule.getParserRule();
+        return rule;
     }
 
 }
