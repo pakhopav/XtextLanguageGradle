@@ -1,13 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator;
 
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.xtextLanguage.xtext.psi.*;
 
-import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 
 public class XtextFileModel {
 
@@ -17,6 +15,9 @@ public class XtextFileModel {
     private List<TerminalRule> myTerminalRules = new ArrayList<>();
     private List<EnumRule> myEnumRules = new ArrayList<>();
     private List<String> myKeywords = new ArrayList<>();
+    private List<String> myKeywordsForParserDefinition = new ArrayList<>();
+    private Map<String, String> myKeywordsWithNames = new HashMap<>();
+    private Map<String, List<String>> myModelObjects = new HashMap<>();
     private XtextREFERENCEGrammarGrammarID[] myImportedGrammars = null;
     private XtextFile myFile;
     private BnfGeneratorUtil generatorUtil = new BnfGeneratorUtil(this);
@@ -33,18 +34,47 @@ public class XtextFileModel {
         myImportedGrammars = PsiTreeUtil.getChildrenOfType(myFile, XtextREFERENCEGrammarGrammarID.class);
         myAbstractRules = PsiTreeUtil.getChildrenOfType(myFile, XtextAbstractRule.class);
         findRules();
-
         myParserRules = generatorUtil.culParserRules(xtextParserRules);
-
+        findModelObjects();
         for (ParserRule parserRule : myParserRules) {
             registerReferences(parserRule.getMyRule());
             registerKeYWords(parserRule.getMyRule());
 
         }
-
-
+        registerKeYWordsWithNames();
     }
 
+    private void registerKeYWordsWithNames() {
+        myKeywords.forEach(it -> {
+            int i = 1;
+            if (!generatorUtil.createToken(it).equals("")) {
+                myKeywordsWithNames.put(it, generatorUtil.createToken(it));
+                String str = "";
+                if (generatorUtil.createToken(it).endsWith("_KEYWORD")) {
+                    str = generatorUtil.createToken(it).replace("_KEYWORD", "");
+
+                }
+                if (it.substring(1, it.length() - 1).toUpperCase().equals(str))
+                    myKeywordsForParserDefinition.add(generatorUtil.createToken(it));
+            } else {
+                myKeywordsWithNames.put(it, generatorUtil.createToken("keyword_" + i));
+                i++;
+            }
+        });
+    }
+
+    private void findModelObjects() {
+        for (ParserRule rule : myParserRules) {
+            if (rule.getReturnType() != null) {
+                if (myModelObjects.containsKey(rule.getReturnType()))
+                    myModelObjects.get(rule.getReturnType()).add(rule.getName());
+                else myModelObjects.put(rule.getReturnType(), new ArrayList<>(Arrays.asList(rule.getName())));
+            } else {
+                myModelObjects.put(rule.getName(), new ArrayList<>(Arrays.asList(rule.getName())));
+            }
+
+        }
+    }
     private void findRules() {
         for (XtextAbstractRule abstractRule : myAbstractRules) {
             if (abstractRule.getEnumRule() != null) {
@@ -56,6 +86,21 @@ public class XtextFileModel {
             }
         }
     }
+
+
+    public List<String> getMyKeywordsForParserDefinition() {
+        return myKeywordsForParserDefinition;
+    }
+
+    public Map<String, String> getMyKeywordsWithNames() {
+        return myKeywordsWithNames;
+    }
+
+
+    public Map<String, List<String>> getMyModelObjects() {
+        return myModelObjects;
+    }
+
 
     public List<String> getMyKeywords() {
         return myKeywords;
@@ -87,10 +132,9 @@ public class XtextFileModel {
     }
 
     public ParserRule getParserRuleByName(String name) {
-        for (ParserRule rule : myParserRules) {
-            if (rule.getName().equals(name)) return rule;
-        }
-        return null;
+        return myParserRules.stream()
+                .filter(it -> name.equals(it.getName()))
+                .findFirst().orElse(null);
     }
 
     public TerminalRule getTerminalRuleByName(String name) {
@@ -181,13 +225,15 @@ public class XtextFileModel {
                 XtextAssignableTerminal terminal = assignment.getAssignableTerminal();
                 if (terminal.getCrossReference() != null) {
                     XtextCrossReference crossReference = terminal.getCrossReference();
+                    XtextTypeRef referenceTarget = crossReference.getTypeRef();
                     String referenceName = "REFERENCE_" + crossReference.getTypeRef().getText().replace("::", "-");
                     String referenseType = "ID";
                     if (crossReference.getCrossReferenceableTerminal() != null) {
                         referenceName += "_" + crossReference.getCrossReferenceableTerminal().getText();
                         referenseType = crossReference.getCrossReferenceableTerminal().getText();
                     }
-                    ReferenceElement newReferece = new ReferenceElement(referenceName, referenseType);
+                    ReferenceElement newReferece = new ReferenceElement(referenceName, referenseType, referenceTarget);
+                    setTargetsForReferenceElement(newReferece);
                     if (!existsAlready(newReferece)) myReferences.add(newReferece);
                 }
             } else if (element.getAbstractTerminal() != null) {
@@ -200,6 +246,16 @@ public class XtextFileModel {
         }
     }
 
+    private void setTargetsForReferenceElement(ReferenceElement referenceElement) {
+        List<Class<? extends PsiElement>> list = new ArrayList<>();
+        if (myModelObjects.get(referenceElement.getRefetenceTarget().getText()) != null) {
+            myModelObjects.get(referenceElement.getRefetenceTarget().getText())
+                    .stream()
+                    .forEach(x -> list.add(getParserRuleByName(x).getMyRule().getClass()));
+            referenceElement.setTargets(list);
+        }
+
+    }
 
     private boolean existsAlready(ReferenceElement element) {
         for (ReferenceElement referenceElement : myReferences) {

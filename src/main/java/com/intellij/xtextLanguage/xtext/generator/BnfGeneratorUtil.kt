@@ -8,17 +8,10 @@ import com.intellij.xtextLanguage.xtext.psi.*
 class BnfGeneratorUtil(val fileModel: XtextFileModel) {
     private val BANNED_SYMBOLS = arrayOf('*', '.', '"', '+', '?', '^')
     private val KEYWORDS = mapOf(
-            "grammar" to "GRAMMAR",
-            "with" to "WITH",
-            "hidden" to "HIDDEN",
-            "generate" to "GENERATE",
-            "import" to "IMPORT",
-            "returns" to "RETURNS",
             "," to "COMMA",
             "(" to "L_BRACKET",
             ")" to "R_BRACKET",
             "@" to "AT_SIGN",
-            "fragment" to "FRAGMENT",
             ";" to "SEMICOLON",
             "<" to "L_ANGLE_BRACKET",
             ">" to "R_ANGLE_BRACKET",
@@ -28,14 +21,9 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
             "]" to "R_SQUARE_BRACKET",
             "&" to "AMPERSAND",
             "!" to "ACX_MARK",
-            "as" to "AS",
             ":" to "COLON",
             "*" to "ASTERISK",
-            "true" to "TRUE",
-            "false" to "FALSE",
             "=" to "EQUALS",
-            "terminal" to "TERMINAL",
-            "enum" to "ENUM",
             "=>" to "PRED",
             "->" to "WEAK_PRED",
             "|" to "PIPE",
@@ -45,7 +33,6 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
             "." to "DOT",
             "+=" to "PLUS_EQUALS",
             "?=" to "QUES_EQUALS",
-            "current" to "CURRENT",
             "EOF" to "EOF_KEY",
             "::" to "COLONS"
     )
@@ -222,7 +209,10 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
                         return ""
                     } else {
                         val parent = leaf.parent?.parent?.parent?.parent
-                        if (parent != null) {
+                        if (parent != null && parent is XtextTerminalToken) {
+                            parent.asterisk?.let { sb.append('*') }
+                            parent.quesMark?.let { sb.append('?') }
+                            parent.plus?.let { sb.append('+') }
                             leaf = PsiTreeUtil.nextLeaf(parent)
                             continue@loop
                         } else return ""
@@ -411,7 +401,37 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
     }
 
     fun createToken(keyword: String): String {
-        return "${KEYWORDS.get(keyword.substring(1, keyword.length - 1))
-                ?: keyword.substring(1, keyword.length - 1)} = ${keyword}"
+        val keywordWithoutCommas = keyword.substring(1, keyword.length - 1)
+        var postfix = ""
+        if (hasSameElementTypeNames(keywordWithoutCommas)) postfix = "_KEYWORD"
+        KEYWORDS.get(keywordWithoutCommas)?.let { return it + postfix }
+        if (keywordWithoutCommas.matches(Regex("[a-zA-Z]+"))) return keywordWithoutCommas.toUpperCase() + postfix
+        else return ""
+
+    }
+
+    fun hasSameElementTypeNames(name: String): Boolean {
+        val str = fileModel.myParserRules
+                .stream()
+                .map { it.name.toUpperCase() }
+                .filter { it.equals(name.toUpperCase()) }
+                .findFirst()
+                .orElse(null)
+        return str != null
+    }
+
+    fun getFlexRegexp(regexp: String): String {
+        var sb = StringBuilder()
+        regexp.toCharArray().forEach {
+            if (it == '/') sb.append("\\$it")
+            else if (it == ' ') sb.append("\"$it\"")
+            else sb.append(it)
+        }
+        if (sb.toString().contains("(?s).*")) {
+            val newString = sb.toString().replace("(?s).*", "([^\"*\"]*(\"*\"+[^\"*\"\"/\"])?)*(\"*\"+\"/\")?");
+            sb.clear()
+            sb.append(newString)
+        }
+        return sb.toString()
     }
 }

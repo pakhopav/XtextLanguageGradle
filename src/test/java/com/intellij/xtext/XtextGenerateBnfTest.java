@@ -4,6 +4,7 @@ import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.TestDataPath;
 import com.intellij.xtextLanguage.xtext.generator.BnfGenerator;
 import com.intellij.xtextLanguage.xtext.generator.BnfGeneratorOld;
+import com.intellij.xtextLanguage.xtext.generator.ReferenceElement;
 import com.intellij.xtextLanguage.xtext.generator.XtextFileModel;
 import com.intellij.xtextLanguage.xtext.psi.XtextElementFactory;
 import com.intellij.xtextLanguage.xtext.psi.XtextFile;
@@ -236,11 +237,28 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         XtextFile xtextFile = (XtextFile) file;
         XtextFileModel model = new XtextFileModel(xtextFile);
         BuildModelWithImports(model, model);
-        System.out.println(model.getMyKeywords().size());
-        for (String s : model.getMyKeywords()) {
-            System.out.println(s);
+        for (ReferenceElement s : model.getMyReferences()) {
+            if (s.getTargets() != null) {
+                System.out.println(s.getTargets().toString());
+
+            }
         }
         BnfGenerator generator = new BnfGenerator("newXtext", model);
+        try {
+            generator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void testEntityExampleReferencesImplementation() {
+        PsiFile file = getXtextFile();
+        XtextFile xtextFile = (XtextFile) file;
+        XtextFileModel model = new XtextFileModel(xtextFile);
+        BuildModelWithImports(model, model);
+        BnfGenerator generator = new BnfGenerator("Entity", model);
         try {
             generator.generate();
         } catch (IOException e) {
