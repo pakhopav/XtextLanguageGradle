@@ -1,0 +1,69 @@
+grammar org.example.domainmodel.Domainmodel with
+                                      Terminals
+
+generate domainmodel "http://www.example.org/domainmodel/Domainmodel"
+
+Domainmodel :
+    (elements+=Choice)+;
+
+Choice:
+    AfterMany | ChoicesSimple | ChoicesSameName | LiteralAfterCall | ChoicesDeep | SequenceItem;
+
+AfterMany :
+	((items += SequenceItem)             )+
+	NamedElement
+;
+
+/*
+Choices_Any :
+    (
+        Whatever ',' (Whatever? | 'nothing') NamedElement
+    |
+        'oooo'+ NamedElement
+    )
+;
+*/
+
+ChoicesSimple :
+    (
+
+        'ChoicesSimple' NamedElement2 odkaz=[ChoicesSameName]
+    |
+        'ChoicesSimple2'? NamedElement3
+    )
+;
+
+ChoicesSameName :
+    (
+        Whatever NamedElement
+    |
+        'ChoicesSameName' NamedElement
+    )
+;
+ChoicesMultipleElementInBranch returns ChoicesSameName :
+    (
+        'MultipleElementI' Whatever NamedElement NamedElement
+    |
+        'ChoicesMultipleElementInBranch' NamedElement2
+    )
+;
+LiteralAfterCall :
+    (
+        NamedElement 'xxx' name=ID
+    |
+        'zzz' name=ID NamedElement
+    )
+;
+
+ChoicesDeep :
+    (
+        NamedElement odkaz=[LiteralAfterCall]
+    |
+        NamedElement Choice
+    )
+;
+SequenceItem : 'item' name=ID;
+Whatever : 'Whatever' what=STRING 'bbb';
+NamedElement : 'name' name=ID;
+NamedElement2 : 'name2' name=ID;
+NamedElement3 : 'name3' name=ID;
