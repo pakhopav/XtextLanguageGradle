@@ -56,12 +56,33 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
         return sb.toString()
     }
 
+    fun registerModelAtributes(parserRule: ParserRule) {
+        val rule = parserRule.myRule
+        val branches = rule.alternatives?.conditionalBranchList
+        if (branches == null) return
+        for (b in branches) {
+            val unorderedGroup = b.getUnorderedGroup() ?: return
+            val groups = unorderedGroup.getGroupList()
+            val tokens = ArrayList<XtextAbstractToken>()
+            groups.forEach { tokens.addAll(it.abstractTokenList) }
+            val abstractTokens = ArrayList<XtextAbstractTokenWithCardinality>()
+            tokens.forEach { abstractTokens.add(it.abstractTokenWithCardinality ?: return@forEach) }
+            if (abstractTokens.size == 0) return
+//        abstractTokens.forEach {if (it.abstractTerminal != null)writeAbstractTerminal(it.abstractTerminal!!, sb)
+//                                else if(it.assignment != null)writeAssignableTerminal(it.assignment!!.assignableTerminal, sb)
+//        }
+            abstractTokens.forEach {
+                it.assignment?.let {
+                    parserRule.attributes.put(it.validID.text, it.assignableTerminal)
+                }
+            }
+        }
+    }
 
     fun getRuleAlternativesAsString(rule: XtextParserRule?): String {
         val sb = StringBuilder()
         if (rule == null) return ""
-        val branches = rule.alternatives?.conditionalBranchList
-        if (branches == null) return ""
+        val branches = rule.alternatives.conditionalBranchList ?: return ""
         for (b in branches) {
             writebrunch(b, sb)
             sb.append("${if (b != branches.last()) {
@@ -402,10 +423,10 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
 
     fun createToken(keyword: String): String {
         val keywordWithoutCommas = keyword.substring(1, keyword.length - 1)
-        var postfix = ""
-        if (hasSameElementTypeNames(keywordWithoutCommas)) postfix = "_KEYWORD"
+        var postfix = "_KEYWORD"
+//        if (hasSameElementTypeNames(keywordWithoutCommas)) postfix = "_KEYWORD"
         KEYWORDS.get(keywordWithoutCommas)?.let { return it + postfix }
-        if (keywordWithoutCommas.matches(Regex("[a-zA-Z]+"))) return keywordWithoutCommas.toUpperCase() + postfix
+        if (keywordWithoutCommas.matches(Regex("[a-zA-Z0-9_]+"))) return keywordWithoutCommas.toUpperCase() + postfix
         else return ""
 
     }
@@ -434,4 +455,19 @@ class BnfGeneratorUtil(val fileModel: XtextFileModel) {
         }
         return sb.toString()
     }
+
+    companion object {
+        fun XtextConditionalBranch.getBranchTokens(): List<XtextAbstractTokenWithCardinality> {
+            return this.unorderedGroup?.groupList
+                    ?.flatMap { it.abstractTokenList }
+                    ?.mapNotNull { it.abstractTokenWithCardinality }
+                    ?: emptyList()
+        }
+
+    }
+
+
+
+
+
 }
