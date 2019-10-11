@@ -1,4 +1,4 @@
-package com.intellij.xtextLanguage.xtext.parserUtilBase;
+package com.intellij.languageUtil.parserUtilBase;
 
 import com.intellij.codeInsight.completion.impl.CamelHumpMatcher;
 import com.intellij.lang.*;

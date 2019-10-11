@@ -1,4 +1,4 @@
-package com.intellij.xtextLanguage.xtext.keywords;
+package com.intellij.languageUtil.completion;
 
 import com.intellij.codeInsight.TailType;
 import com.intellij.codeInsight.completion.CompletionInitializationContext;
@@ -12,6 +12,7 @@ import com.intellij.codeInsight.lookup.TailTypeDecorator;
 import com.intellij.lang.BracePair;
 import com.intellij.lang.Language;
 import com.intellij.lang.PsiBuilder;
+import com.intellij.languageUtil.parserUtilBase.GeneratedParserUtilBaseCopy;
 import com.intellij.openapi.editor.Document;
 import com.intellij.openapi.fileTypes.LanguageFileType;
 import com.intellij.openapi.util.text.StringUtil;
@@ -22,7 +23,6 @@ import com.intellij.psi.impl.source.tree.TreeUtil;
 import com.intellij.psi.impl.source.tree.injected.InjectedLanguageUtil;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.util.ProcessingContext;
-import com.intellij.xtextLanguage.xtext.parserUtilBase.GeneratedParserUtilBaseCopy;
 import com.intellij.xtextLanguage.xtext.psi.XtextTypes;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
@@ -31,7 +31,7 @@ import java.util.Arrays;
 import java.util.Collection;
 import java.util.List;
 
-class KeywordCompletionProvider<T extends PsiFile, F extends IElementType> extends CompletionProvider<CompletionParameters> {
+public class KeywordCompletionProvider<T extends PsiFile, F extends IElementType> extends CompletionProvider<CompletionParameters> {
     final Class<F> fClass;
     final List<String> leftBraces = Arrays.asList("(", "{", "<");
     final List<BracePair> myBraces = Arrays.asList(new BracePair(XtextTypes.L_BRACE, XtextTypes.R_BRACE, true), new BracePair(XtextTypes.L_BRACKET, XtextTypes.R_BRACKET, true), new BracePair(XtextTypes.L_ANGLE_BRACKET, XtextTypes.R_ANGLE_BRACKET, true));
