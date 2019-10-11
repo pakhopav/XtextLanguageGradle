@@ -32,6 +32,14 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
         generateSyntaxHighlighterFile()
         generateSyntaxHighlighterFactoryFile()
         generateCompletionContributorFile()
+//        generateNamedElementInterfaceFile()
+        genenerateNamedElementFile()
+        geneneratePsiImplUtilFile()
+        generateElementFactoryFile()
+        generateNameVisitorFile()
+        generateReferenceContributorFile()
+        generateReferenceFile()
+        generateUtilFile()
         generateXmlExtentions()
 
 
@@ -63,6 +71,7 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
           |    elementTypeClass="$packageDir.psi.${extention}ElementType"
           |    tokenTypeClass="$packageDir.psi.${extention}TokenType"
           |    parserUtilClass= "com.intellij.languageUtil.parserUtilBase.GeneratedParserUtilBaseCopy"
+          |    psiImplUtilClass="$packageDir.psi.impl.${extention}PsiImplUtil"
           |    generateTokenAccessors=true
           |    generateTokens=true
           |    extraRoot(".*")= true
@@ -84,7 +93,20 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
     }
 
     private fun generateRules(out: PrintWriter) {
-        fileModel.myParserRules.forEach { out.print("${generatorUtil.nameWithCaret(it.name)} ::= ${generatorUtil.getRuleAlternativesAsString(it.myRule)}\n") }
+        fileModel.myParserRules.forEach {
+            if (it == fileModel.myParserRules.first()) {
+                out.print("${extention}File ::= ${it.name}\n")
+            }
+            out.print("${generatorUtil.nameWithCaret(it.name)} ::= ${generatorUtil.getRuleAlternativesAsString(it.myRule)}\n")
+            if (it.isNamed) out.print("""
+                |{
+                |mixin="$packageDir.psi.impl.${extention}NamedElementImpl"
+                |implements="com.intellij.psi.PsiNameIdentifierOwner"
+                |methods=[ getName setName getNameIdentifier ]
+                |}
+
+            """.trimMargin("|"))
+        }
     }
 
     private fun createFile(fileName: String, filePath: String): File {
@@ -346,6 +368,8 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
             |    <lang.parserDefinition language="${extention}" implementationClass="${packageDir}.${extention}ParserDefinition"/>
             |    <lang.syntaxHighlighterFactory language="${extention}" implementationClass="${packageDir}.${extention}SyntaxHighlighterFactory"/>
             |    <completion.contributor language="${extention}" implementationClass="${packageDir}.${extention}CompletionContributor"/>
+            |    <psi.referenceContributor language="${extention}" implementation="${packageDir}.${extention}ReferenceContributor"/>
+            |  
             |</extensions>
         """.trimMargin("|"))
         out.close()
@@ -637,6 +661,297 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
             |}
             |}
 
+
+        """.trimMargin("|"))
+        out.close()
+
+    }
+
+    //    private fun generateNamedElementInterfaceFile() {
+//        val file = createFile(extention + "NamedElement.java", myGenDir+"/psi")
+//        val out = PrintWriter(FileOutputStream(file))
+//        out.print("""
+//            |package $packageDir.psi;
+//
+//            |import com.intellij.psi.PsiNameIdentifierOwner;
+//
+//            |public interface ${extention}NamedElement extends PsiNameIdentifierOwner {
+//            |}
+//        """.trimMargin("|"))
+//        out.close()
+//
+//    }
+    private fun genenerateNamedElementFile() {
+        val file = createFile(extention + "NamedElementImpl.java", myGenDir + "/psi/impl")
+        val out = PrintWriter(FileOutputStream(file))
+        out.print("""
+            |package $packageDir.psi.impl;
+            
+            |import com.intellij.lang.ASTNode;
+            |import org.jetbrains.annotations.NotNull;
+            |import com.intellij.psi.PsiNameIdentifierOwner;
+            
+            |public abstract class ${extention}NamedElementImpl extends ${extention}PsiCompositeElementImpl implements PsiNameIdentifierOwner {
+            |    public ${extention}NamedElementImpl(@NotNull ASTNode node) {
+            |        super(node);
+            |    }
+            |}
+        """.trimMargin("|"))
+        out.close()
+
+    }
+
+    private fun geneneratePsiImplUtilFile() {
+        val file = createFile(extention + "PsiImplUtil.java", myGenDir + "/psi/impl")
+        val out = PrintWriter(FileOutputStream(file))
+        out.print("""
+            |package $packageDir.psi.impl;
+                        
+            |import com.intellij.psi.*;
+            |import $packageDir.psi.${extention}ElementFactory;
+            |import $packageDir.psi.*;
+            |import com.intellij.psi.util.PsiTreeUtil;
+            
+            |import java.util.Optional;
+            
+            |public class ${extention}PsiImplUtil {
+            |    static ${extention}NameVisitor nameVisitor = new ${extention}NameVisitor();
+
+        """.trimMargin("|"))
+        fileModel.myParserRules.stream()
+                .filter { it.isNamed == true }
+                .forEach {
+                    out.print("""
+                       
+                        |public static PsiElement setName(${extention}${it.name} element, String newName) {
+                        |    //TODO
+                        |    return element;
+                        |}
+                        
+                        |public static String getName(${extention}${it.name} element) {
+                        |    return Optional.ofNullable(getNameIdentifier(element))
+                        |        .map(PsiElement::getText)
+                        |        .orElse(null);
+                        |}
+                        |    
+                        |public static PsiElement getNameIdentifier(${extention}${it.name} element) {
+                        |    return nameVisitor.visit${it.name}(element);
+                        |}
+                        
+                    """.trimMargin("|"))
+
+                }
+
+
+        out.print("}")
+        out.close()
+
+    }
+
+    private fun generateElementFactoryFile() {
+        val file = createFile(extention + "ElementFactory.java", myGenDir + "/psi")
+        val out = PrintWriter(FileOutputStream(file))
+        out.print("""
+            |package $packageDir.psi;
+          
+            |public abstract class ${extention}ElementFactory  {
+            |  
+            |}
+        """.trimMargin("|"))
+        out.close()
+
+    }
+
+    private fun generateNameVisitorFile() {
+        val visitorGenerator = VisitorGenerator(fileModel.myVisitorGeneratorModel, extention)
+        visitorGenerator.generateNameVisitor()
+
+    }
+
+    private fun generateReferenceContributorFile() {
+        val file = createFile(extention + "ReferenceContributor.java", myGenDir)
+        val out = PrintWriter(FileOutputStream(file))
+        out.print("""
+            |package $packageDir;
+            
+            |import com.intellij.openapi.util.TextRange;
+            |import com.intellij.patterns.PlatformPatterns;
+            |import com.intellij.psi.*;
+            |import com.intellij.util.ProcessingContext;
+            |import $packageDir.psi.*;
+            |import org.jetbrains.annotations.NotNull;
+            
+            |import java.util.ArrayList;
+            |import java.util.Arrays;
+            |import java.util.Collection;
+            
+            |public class ${extention}ReferenceContributor extends PsiReferenceContributor {
+            |@Override
+            |public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
+            
+        """.trimMargin("|"))
+        fileModel.myReferences.forEach {
+            val referenceName = it.name.replace("_", "")
+            out.print("""
+            |registrar.registerReferenceProvider(PlatformPatterns.psiElement(${extention}${referenceName}.class).withLanguage(${extention}Language.INSTANCE),
+            |    new PsiReferenceProvider() {
+            |        @NotNull
+            |        @Override
+            |        public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
+            |                                                     @NotNull ProcessingContext context){
+            |            ${extention}${referenceName} reference = (${extention}${referenceName}) element;
+            |            String value = reference.getText();
+            |            ArrayList<Class<? extends PsiNameIdentifierOwner>> list = new ArrayList<>((Collection<? extends Class<? extends PsiNameIdentifierOwner>>)Arrays.asList(
+            """.trimMargin("|"))
+            val targets = it.targets
+            targets.forEach {
+                out.print("${extention}${it.name}.class")
+                if (it !== targets.last()) out.print(", ")
+            }
+            out.print("));\n")
+            out.print("""
+            |            return new PsiReference[]{
+            |                new ${extention}Reference(element, new TextRange(0, value.length()), list)};
+            |            }
+            |        });
+            """.trimMargin("|"))
+        }
+        out.print("    }\n}")
+
+
+        out.close()
+
+    }
+
+    private fun generateReferenceFile() {
+        val file = createFile(extention + "Reference.java", myGenDir)
+        val out = PrintWriter(FileOutputStream(file))
+        out.print("""
+            |package $packageDir;
+            |import com.intellij.codeInsight.lookup.LookupElement;
+            |import com.intellij.codeInsight.lookup.LookupElementBuilder;
+            |import com.intellij.openapi.util.TextRange;
+            |import com.intellij.psi.*;
+            |import org.jetbrains.annotations.NotNull;
+            |import org.jetbrains.annotations.Nullable;
+            
+            |import java.util.ArrayList;
+            |import java.util.List;
+            
+            |public class ${extention}Reference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
+            |    private String key;
+            |    private List<Class<? extends PsiNameIdentifierOwner>> tClasses;
+            
+            |    public ${extention}Reference(@NotNull PsiElement element, TextRange textRange, List<Class<? extends PsiNameIdentifierOwner>> tclasses) {
+            |        super(element, textRange);
+            |        key = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
+            |        this.tClasses = tclasses;
+            |    }
+            
+            |    @NotNull
+            |    @Override
+            |    public ResolveResult[] multiResolve(boolean incompleteCode) {
+            |        return MultiResolve(incompleteCode, tClasses);
+            |    }
+            
+            |    @Nullable
+            |    @Override
+            |    public PsiElement resolve() {
+            |        ResolveResult[] resolveResults = multiResolve(false);
+            |        return resolveResults.length == 1 ? resolveResults[0].getElement() : null;
+            |    }
+            
+            |    @NotNull
+            |    @Override
+            |    public Object[] getVariants() {
+            |    return ${extention}GetVariants(tClasses);
+            |    }
+            
+            |    public  ResolveResult[] MultiResolve(boolean incompleteCode, final List<Class<? extends PsiNameIdentifierOwner>> classes) {
+            |        PsiFile file = myElement.getContainingFile();
+            |        List<? extends PsiNameIdentifierOwner> elements = new ArrayList<>();
+            |        classes.forEach(it -> {
+            |            elements.addAll((ArrayList)${extention}Util.findElementsInCurrentFile(file, it, key));
+            |        });
+            |        List<ResolveResult> results = new ArrayList<>();
+            |        elements.forEach(it ->{
+            |            results.add(new PsiElementResolveResult(it));
+            |        });
+            
+            |        return results.toArray(new ResolveResult[results.size()]);
+            |    }
+            
+            |    public Object[] ${extention}GetVariants( List<Class<? extends PsiNameIdentifierOwner>> classes) {
+            |    PsiFile file = myElement.getContainingFile();
+            |    List<? extends PsiNameIdentifierOwner> elements = new ArrayList<>();
+            |    classes.forEach(it ->{
+            |        elements.addAll((ArrayList)${extention}Util.findElementsInCurrentFile(file, it));
+            |    });
+            |    List<LookupElement> variants = new ArrayList<LookupElement>();
+            |    elements.forEach(it ->{
+            |        if (it.getName() != null && it.getName().length() > 0) {
+            |            variants.add(LookupElementBuilder.create(it).
+            |                 withIcon(${extention}Icons.FILE).
+            |                 withTypeText(it.getContainingFile().getName())
+            |                 );
+            |        }
+            |    });
+            
+            |    return variants.toArray();
+            |    }
+            |}
+        """.trimMargin("|"))
+        out.close()
+
+    }
+
+    private fun generateUtilFile() {
+        val file = createFile(extention + "Util.java", myGenDir)
+        val out = PrintWriter(FileOutputStream(file))
+        out.print("""
+            |package $packageDir;
+            
+|import com.intellij.psi.PsiFile;
+|import com.intellij.psi.PsiNameIdentifierOwner;
+|import com.intellij.psi.util.PsiTreeUtil;
+|import $packageDir.psi.${extention}File;
+
+|import java.util.ArrayList;
+|import java.util.Collections;
+|import java.util.List;
+
+|public class ${extention}Util {
+|
+|    public static <T extends PsiNameIdentifierOwner> ArrayList<T> findElementsInCurrentFile(PsiFile file, Class<T> tClass, String Id) {
+|        ArrayList<T> result = new ArrayList<>();
+|        ${extention}File ${extention.decapitalize()}File = (${extention}File) file;
+|        if (${extention.decapitalize()}File != null) {
+|
+|           List<T> elements = new ArrayList (PsiTreeUtil.findChildrenOfType(${extention.decapitalize()}File, tClass));
+|
+|            for (T property : elements) {
+|                if (Id.equals(property.getName())) {
+|                    result.add(property);
+|                }
+|            }
+|
+|        }
+|
+|        return result ;
+|    }
+|
+|    public static <T extends PsiNameIdentifierOwner> ArrayList<T> findElementsInCurrentFile(PsiFile file, Class<T> tClass) {
+|        ArrayList<T> result = new ArrayList<>();
+|        ${extention}File ${extention.decapitalize()}File = (${extention}File) file;
+|        if (${extention.decapitalize()}File != null) {
+|            List<T> elements = new ArrayList(PsiTreeUtil.findChildrenOfType(${extention.decapitalize()}File, tClass));
+|                result.addAll(elements);
+|            
+|       }
+|
+|        return result;
+|    }
+|}
 
         """.trimMargin("|"))
         out.close()
