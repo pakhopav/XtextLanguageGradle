@@ -60,10 +60,11 @@
     elementTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextElementType"
     tokenTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextTokenType"
     psiImplUtilClass="com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil"
-    parserUtilClass= "com.intellij.xtextLanguage.xtext.parserUtilBase.GeneratedParserUtilBaseCopy"
+    parserUtilClass= "com.intellij.languageUtil.parserUtilBase.GeneratedParserUtilBaseCopy"
     generateTokenAccessors=true
     generateTokens=true
     extraRoot(".*")= true
+
 }
 Grammar ::= 'grammar' GrammarID ('with' REFERENCE_Grammar_GrammarID (',' REFERENCE_Grammar_GrammarID  )*  )? ('hidden' '(' (REFERENCE_AbstractRule_RuleID (',' REFERENCE_AbstractRule_RuleID  )*  )? ')'  )? AbstractMetamodelDeclaration * (AbstractRule  )+  
 GrammarID ::= ValidID ('.' ValidID  )*  

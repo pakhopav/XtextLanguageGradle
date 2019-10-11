@@ -8,7 +8,7 @@ import com.intellij.lang.PsiBuilder.Marker;
 import com.intellij.lang.PsiParser;
 import com.intellij.psi.tree.IElementType;
 
-import static com.intellij.xtextLanguage.xtext.parserUtilBase.GeneratedParserUtilBaseCopy.*;
+import static com.intellij.languageUtil.parserUtilBase.GeneratedParserUtilBaseCopy.*;
 import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
 
 @SuppressWarnings({"SimplifiableIfStatement", "UnusedAssignment"})
