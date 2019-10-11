@@ -239,8 +239,7 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         BuildModelWithImports(model, model);
         for (ReferenceElement s : model.getMyReferences()) {
             if (s.getTargets() != null) {
-                System.out.println(s.getTargets().toString());
-
+                s.getTargets().stream().forEach(it -> System.out.println(it.getName()));
             }
         }
         BnfGenerator generator = new BnfGenerator("newXtext", model);
@@ -258,7 +257,25 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         XtextFile xtextFile = (XtextFile) file;
         XtextFileModel model = new XtextFileModel(xtextFile);
         BuildModelWithImports(model, model);
+        model.createVisitorGeneratorModel();
+
         BnfGenerator generator = new BnfGenerator("Entity", model);
+        try {
+            generator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+
+    }
+
+    public void testChoicesExample() {
+        PsiFile file = getXtextFile();
+        XtextFile xtextFile = (XtextFile) file;
+        XtextFileModel model = new XtextFileModel(xtextFile);
+        BuildModelWithImports(model, model);
+        model.createVisitorGeneratorModel();
+        BnfGenerator generator = new BnfGenerator("Choices", model);
         try {
             generator.generate();
         } catch (IOException e) {
