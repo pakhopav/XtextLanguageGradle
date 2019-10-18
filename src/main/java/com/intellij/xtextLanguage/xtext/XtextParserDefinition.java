@@ -1,15 +1,21 @@
 package com.intellij.xtextLanguage.xtext;
 
 
-import com.intellij.lang.*;
-        import com.intellij.lexer.Lexer;
-        import com.intellij.openapi.project.Project;
-        import com.intellij.psi.*;
-        import com.intellij.psi.tree.*;
-        import com.intellij.xtextLanguage.xtext.psi.XtextFile;
-        import com.intellij.xtextLanguage.xtext.parser.XtextParser;
-        import com.intellij.xtextLanguage.xtext.psi.*;
-        import org.jetbrains.annotations.NotNull;
+import com.intellij.lang.ASTNode;
+import com.intellij.lang.ParserDefinition;
+import com.intellij.lang.PsiParser;
+import com.intellij.lexer.Lexer;
+import com.intellij.openapi.project.Project;
+import com.intellij.psi.FileViewProvider;
+import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiFile;
+import com.intellij.psi.TokenType;
+import com.intellij.psi.tree.IFileElementType;
+import com.intellij.psi.tree.TokenSet;
+import com.intellij.xtextLanguage.xtext.parser.XtextParser;
+import com.intellij.xtextLanguage.xtext.psi.XtextTypes;
+import com.intellij.xtextLanguage.xtext.psi.impl.XtextFileImpl;
+import org.jetbrains.annotations.NotNull;
 
 public class XtextParserDefinition implements ParserDefinition {
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
@@ -49,7 +55,7 @@ public class XtextParserDefinition implements ParserDefinition {
     }
 
     public PsiFile createFile(FileViewProvider viewProvider) {
-        return new XtextFile(viewProvider);
+        return new XtextFileImpl(viewProvider);
     }
 
     public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {

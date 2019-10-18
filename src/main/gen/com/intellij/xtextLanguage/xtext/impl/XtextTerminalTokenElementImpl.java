@@ -1,16 +1,12 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
 import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class XtextTerminalTokenElementImpl extends XtextPsiCompositeElementImpl implements XtextTerminalTokenElement {
 
@@ -41,12 +37,6 @@ public class XtextTerminalTokenElementImpl extends XtextPsiCompositeElementImpl 
 
   @Override
   @Nullable
-  public XtextEof getEof() {
-    return findChildByClass(XtextEof.class);
-  }
-
-  @Override
-  @Nullable
   public XtextParenthesizedTerminalElement getParenthesizedTerminalElement() {
     return findChildByClass(XtextParenthesizedTerminalElement.class);
   }
@@ -62,5 +52,11 @@ public class XtextTerminalTokenElementImpl extends XtextPsiCompositeElementImpl 
   public XtextWildcard getWildcard() {
     return findChildByClass(XtextWildcard.class);
   }
+
+    @Override
+    @Nullable
+    public XtextCaretEOF getCaretEOF() {
+        return findChildByClass(XtextCaretEOF.class);
+    }
 
 }

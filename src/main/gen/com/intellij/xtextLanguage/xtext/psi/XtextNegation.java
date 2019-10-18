@@ -1,9 +1,8 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.Nullable;
 
 public interface XtextNegation extends PsiElement {
 
@@ -11,9 +10,6 @@ public interface XtextNegation extends PsiElement {
   XtextAtom getAtom();
 
   @Nullable
-  XtextNegation getNegation();
-
-  @Nullable
-  PsiElement getAcxMark();
+  XtextRuleFromNegationNegation getRuleFromNegationNegation();
 
 }

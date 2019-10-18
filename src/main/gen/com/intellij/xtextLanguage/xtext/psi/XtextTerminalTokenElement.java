@@ -1,9 +1,8 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.Nullable;
 
 public interface XtextTerminalTokenElement extends PsiElement {
 
@@ -14,9 +13,6 @@ public interface XtextTerminalTokenElement extends PsiElement {
   XtextCharacterRange getCharacterRange();
 
   @Nullable
-  XtextEof getEof();
-
-  @Nullable
   XtextParenthesizedTerminalElement getParenthesizedTerminalElement();
 
   @Nullable
@@ -24,5 +20,8 @@ public interface XtextTerminalTokenElement extends PsiElement {
 
   @Nullable
   XtextWildcard getWildcard();
+
+    @Nullable
+    XtextCaretEOF getCaretEOF();
 
 }

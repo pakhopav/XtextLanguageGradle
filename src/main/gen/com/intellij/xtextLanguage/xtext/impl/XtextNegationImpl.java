@@ -1,16 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextAtom;
+import com.intellij.xtextLanguage.xtext.psi.XtextNegation;
+import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromNegationNegation;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class XtextNegationImpl extends XtextPsiCompositeElementImpl implements XtextNegation {
 
@@ -35,14 +34,8 @@ public class XtextNegationImpl extends XtextPsiCompositeElementImpl implements X
 
   @Override
   @Nullable
-  public XtextNegation getNegation() {
-    return findChildByClass(XtextNegation.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getAcxMark() {
-    return findChildByType(ACX_MARK);
+  public XtextRuleFromNegationNegation getRuleFromNegationNegation() {
+      return findChildByClass(XtextRuleFromNegationNegation.class);
   }
 
 }

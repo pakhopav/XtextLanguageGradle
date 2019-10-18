@@ -1,16 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextConditionalBranch;
+import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromConditionalBranchGroup;
+import com.intellij.xtextLanguage.xtext.psi.XtextUnorderedGroup;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class XtextConditionalBranchImpl extends XtextPsiCompositeElementImpl implements XtextConditionalBranch {
 
@@ -28,33 +27,15 @@ public class XtextConditionalBranchImpl extends XtextPsiCompositeElementImpl imp
   }
 
   @Override
-  @NotNull
-  public List<XtextAbstractToken> getAbstractTokenList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, XtextAbstractToken.class);
-  }
-
-  @Override
   @Nullable
-  public XtextDisjunction getDisjunction() {
-    return findChildByClass(XtextDisjunction.class);
+  public XtextRuleFromConditionalBranchGroup getRuleFromConditionalBranchGroup() {
+      return findChildByClass(XtextRuleFromConditionalBranchGroup.class);
   }
 
   @Override
   @Nullable
   public XtextUnorderedGroup getUnorderedGroup() {
     return findChildByClass(XtextUnorderedGroup.class);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getLAngleBracket() {
-    return findChildByType(L_ANGLE_BRACKET);
-  }
-
-  @Override
-  @Nullable
-  public PsiElement getRAngleBracket() {
-    return findChildByType(R_ANGLE_BRACKET);
   }
 
 }

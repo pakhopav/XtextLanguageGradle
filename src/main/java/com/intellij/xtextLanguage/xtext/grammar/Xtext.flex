@@ -2,7 +2,6 @@ package com.intellij.xtextLanguage.xtext;
 
 import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.xtextLanguage.xtext.psi.XtextTypes;
 import static com.intellij.psi.TokenType.BAD_CHARACTER; // Pre-defined bad character token.
 import static com.intellij.psi.TokenType.WHITE_SPACE; // Pre-defined whitespace character token.
 import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*; // Note that is the class which is specified as `elementTypeHolderClass`
@@ -29,6 +28,7 @@ SL_COMMENT = \/\/.*
 
 COMMENT_TAIL=([^"*"]*("*"+[^"*""/"])?)*("*"+"/")?
 ML_COMMENT=("/*"{COMMENT_TAIL})|"/*"
+ANY_OTHER = .
 %%
 <YYINITIAL> {
 
@@ -56,7 +56,7 @@ ML_COMMENT=("/*"{COMMENT_TAIL})|"/*"
 ":" {return COLON;}
 "*" {return ASTERISK;}
 "true" {return TRUE;}
-"false" {return FALCE;}
+"false" {return FALSE;}
 "=" {return EQUALS;}
 "terminal" {return TERMINAL;}
 "enum" {return ENUM;}
@@ -73,14 +73,12 @@ ML_COMMENT=("/*"{COMMENT_TAIL})|"/*"
 "EOF" {return EOF_KEY;}
 "::" {return COLONS;}
 
-
 {ID} {return ID; }
 {STRING} {return STRING;}
 {INT} {return INT;}
 {WS} {return WHITE_SPACE;}
 {SL_COMMENT} {return SL_COMMENT;}
 {ML_COMMENT} {return ML_COMMENT;}
+{ANY_OTHER} {return ANY_OTHER;}
 }
-
-
 [^] { return BAD_CHARACTER; }

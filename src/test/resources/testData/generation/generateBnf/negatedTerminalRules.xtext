@@ -1,0 +1,36 @@
+grammar org.eclipse.xtext.xbase.Xtype hidden(WS, ML_COMMENT, SL_COMMENT)
+
+
+
+Domainmodel:
+    importSection=XImportSection?
+    elements+=AbstractElement*;
+
+terminal ID:
+	'^'? ('a'..'z'|'A'..'Z'|'$'|'_') ('a'..'z'|'A'..'Z'|'$'|'_'|'0'..'9')*;
+
+terminal ML_COMMENT: '/*' -> '*/';
+
+terminal NEG1 : !'l';
+terminal NEG2 : !'la';
+
+terminal NEG3 : !'l'..'d';
+
+terminal NEG4 : ! 'lasd'..'qwe';
+
+terminal NEG5 : !(ID | 'd');
+
+terminal NEG6 : !('a'|'\n'|'a'..'z');
+
+terminal NEG7 : !('a'|'\n'|'a'..'zd');
+
+terminal NEG8 : !'l''string';
+terminal NEG9 : !'l'(' '|'\t'|'\r'|'\n')+ !'l'..'d';
+terminal NEG10 : !'l'(' '|'\t'|'\r'|'\n')+ !'l'..'d' "traaaaaa" !a;
+
+terminal WS: (' '|'\t'|'\r'|'\n')+;
+
+terminal ANY_OTHER: .;
+
+
+terminal WITH_REF : (' '|'\t'|'\r'|'\n') STRING  . ;
