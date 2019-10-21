@@ -1,43 +1,34 @@
-package com.intellij.xtextLanguage.xtext.generator
+package com.intellij.xtextLanguage.xtext.generator.models
 
+import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitorAllRuleCalls
+import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitorRepeatingRuleCalls
+import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitorUniqueName
 import com.intellij.xtextLanguage.xtext.psi.XtextParserRule
 
-class VisitorGeneratorModelImpl(xtextRules: MutableList<XtextParserRule>, val terminalRules: List<String>) : VisitorGeneratorModel {
+class VisitorGeneratorModelImpl(xtextRules: List<XtextParserRule>, val terminalRulesNames: List<String>) : VisitorGeneratorModel {
     override var rules = culcRulesForNameVisitor(xtextRules)
 
 
-    fun culcRulesForNameVisitor(xtextRules: MutableList<XtextParserRule>): MutableList<VisitorGeneratorModel.ModelRule> {
+    fun culcRulesForNameVisitor(xtextRules: List<XtextParserRule>): MutableList<VisitorGeneratorModel.ModelRule> {
         val listOfModelRules = mutableListOf<VisitorGeneratorModel.ModelRule>()
         xtextRules.forEach {
             val rule = it
+            val allRuleCalls = XtextVisitorAllRuleCalls.getAllRuleCallsInParserRule(it)
+            val ruleCalls = computeRuleCallList(allRuleCalls).toMutableList()
 
-            val visitorUniqueName = XtextVisitorUniqueName()
-            visitorUniqueName.visitParserRule(it)
-
-            val visitorAllRuleCalls = XtextVisitorAllRuleCalls()
-            visitorAllRuleCalls.visitParserRule(it)
-
-
-            val ruleCalls = computeRuleCallList(visitorAllRuleCalls.RuleCalls).toMutableList()
             val listRepeating = mutableListOf<String>()
             ruleCalls.forEach {
-                val visitor3 = XtextVisitorRepeatingRuleCalls(it)
-                visitor3.visitParserRule(rule)
-                if (visitor3.isRepeating) listRepeating.add(it)
+                if (XtextVisitorRepeatingRuleCalls.isRuleCallRepeatsInBranchOfParserRule(rule, it)) listRepeating.add(it)
             }
-
-
-            val modelRule = VisitorGeneratorModel.ModelRule()
-            var ruleName = createGkitRuleName(it.ruleNameAndParams.validID.text)
-
             listRepeating.forEach {
                 ruleCalls.remove(it)
             }
 
-            modelRule.name = ruleName.capitalize()
+            val modelRule = VisitorGeneratorModel.ModelRule()
+            modelRule.name = it.ruleNameAndParams.validID.text.replace("^", "Caret").capitalize()
+            modelRule.uniqueName = XtextVisitorUniqueName.getUniqueNameOfParserRule(it)
             modelRule.ruleCalls = ruleCalls
             modelRule.ruleCallsList = listRepeating
-            modelRule.uniqueName = visitorUniqueName.uniqueName
             listOfModelRules.add(modelRule)
         }
         return listOfModelRules
@@ -47,25 +38,16 @@ class VisitorGeneratorModelImpl(xtextRules: MutableList<XtextParserRule>, val te
     fun computeRuleCallList(list: MutableList<String>): List<String> {
         val newList = list.distinct().toMutableList()
         return removeTerminalRuleCallsFromList(newList).map {
-            createGkitRuleName(it)
+            it.replace("^", "Caret").capitalize()
         }
     }
 
     fun removeTerminalRuleCallsFromList(list: MutableList<String>): List<String> {
 
-        return list.filter { !terminalRules.contains(it) || it == "ID" }
+        return list.filter { !terminalRulesNames.contains(it) || it == "ID" }
     }
 
 
-    fun createGkitRuleName(oldName: String): String {
-        var newName: String
-        if (oldName.startsWith("^")) {
-            newName = oldName.replace("^", "caret").capitalize()
-        } else {
-            newName = oldName.capitalize()
-        }
-        return newName
-    }
 
 
 //    fun culcRulesForNameVisitor(xtextRules: MutableList<XtextParserRule>): MutableList<VisitorGeneratorModel.ModelRule>{
