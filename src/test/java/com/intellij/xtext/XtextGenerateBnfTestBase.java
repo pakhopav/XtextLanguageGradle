@@ -4,11 +4,14 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementVisitor;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
-import com.intellij.xtextLanguage.xtext.generator.XtextFileModel;
 import com.intellij.xtextLanguage.xtext.psi.XtextFile;
 import com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEGrammarGrammarID;
 import org.jetbrains.annotations.NotNull;
+
+import java.util.ArrayList;
+import java.util.List;
 
 public class XtextGenerateBnfTestBase extends LightPlatformCodeInsightFixtureTestCase {
     private final String myDataFolder;
@@ -27,26 +30,24 @@ public class XtextGenerateBnfTestBase extends LightPlatformCodeInsightFixtureTes
         return AllTests.getTestDataRoot() + myDataFolder;
     }
 
-    protected String getCurrentInputFileName() {
+    private String getCurrentInputFileName() {
         return getTestName(true) + ".xtext";
     }
 
-    protected PsiFile getXtextFile() {
+    XtextFile getXtextFile() {
         String fileName = getCurrentInputFileName();
         PsiFile file = myFixture.configureByFile(fileName);
 
 
-        return file;
+        return (XtextFile) file;
     }
 
-    protected PsiFile getFile(String fileName) {
-        PsiFile file = myFixture.configureByFile(fileName + ".xtext");
-        return file;
+    private XtextFile getXtextFileByName(String fileName) {
+        return (XtextFile) myFixture.configureByFile(fileName + ".xtext");
     }
 
     protected PsiFile getBnfFile(String fileName) {
-        PsiFile file = myFixture.configureByFile(fileName + ".bnf");
-        return file;
+        return myFixture.configureByFile(fileName + ".bnf");
     }
 
     protected PsiFile getFileWithAbsolutePath(String path) {
@@ -54,26 +55,30 @@ public class XtextGenerateBnfTestBase extends LightPlatformCodeInsightFixtureTes
         return file;
     }
 
-    protected void BuildModelWithImports(XtextFileModel mainModel, XtextFileModel importedModel) {
-        XtextREFERENCEGrammarGrammarID[] grammars = importedModel.getMyImportedGrammars();
+    List<XtextFile> findAllFiles() {
+        ArrayList<XtextFile> listOfFiles = new ArrayList<>();
+        XtextFile mainFile = getXtextFile();
+        listOfFiles.add(mainFile);
+        List<XtextREFERENCEGrammarGrammarID> grammars = new ArrayList<>(PsiTreeUtil.findChildrenOfType(mainFile, XtextREFERENCEGrammarGrammarID.class));
+        listOfFiles.addAll(findAllFilesRecursively(grammars));
+        return listOfFiles;
+    }
+
+    List<XtextFile> findAllFilesRecursively(List<XtextREFERENCEGrammarGrammarID> grammars) {
+        ArrayList<XtextFile> listOfFiles = new ArrayList<>();
         if (grammars != null) {
+
             for (XtextREFERENCEGrammarGrammarID name : grammars) {
-                XtextFile file = (XtextFile) getFile(name.getText());
-                if (file != null) {
-                    XtextFileModel newModel = new XtextFileModel(file);
-                    BuildModelWithImports(mainModel, newModel);
-                }
+                XtextFile file = getXtextFileByName(name.getText());
+                listOfFiles.add(file);
+                List<XtextREFERENCEGrammarGrammarID> listOfGrammars = new ArrayList<>(PsiTreeUtil.findChildrenOfType(file, XtextREFERENCEGrammarGrammarID.class));
+                listOfFiles.addAll(findAllFilesRecursively(listOfGrammars));
             }
         }
-        if (mainModel != importedModel) {
-            mainModel.getMyEnumRules().addAll(importedModel.getMyEnumRules());
-            mainModel.getMyParserRules().addAll(importedModel.getMyParserRules());
-            mainModel.getMyTerminalRules().addAll(importedModel.getMyTerminalRules());
-            mainModel.getMyReferences().addAll(importedModel.getMyReferences());
-        }
-
-
+        return listOfFiles;
     }
+
+
     protected static class MyErrorFinder extends PsiRecursiveElementVisitor {
         private static final MyErrorFinder INSTANCE = new MyErrorFinder();
         public boolean wasError = false;

@@ -8,7 +8,9 @@ Domainmodel :
 
 Choice:
     AfterMany | ChoicesSimple | ChoicesSameName | LiteralAfterCall | ChoicesDeep | SequenceItem;
-
+UnorderedGroup returns AbstractElement:
+	Group ({UnorderedGroup.elements+=current} ('&' elements+=Group)+)?
+;
 AfterMany :
 	((items += SequenceItem)             )+
 	NamedElement
@@ -62,6 +64,7 @@ ChoicesDeep :
         NamedElement Choice
     )
 ;
+
 SequenceItem : 'item' name=ID;
 Whatever : 'Whatever' what=STRING 'bbb';
 NamedElement : 'name' name=ID;

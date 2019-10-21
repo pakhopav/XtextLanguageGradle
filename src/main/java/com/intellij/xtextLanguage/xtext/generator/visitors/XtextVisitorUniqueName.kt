@@ -1,4 +1,4 @@
-package com.intellij.xtextLanguage.xtext.generator
+package com.intellij.xtextLanguage.xtext.generator.visitors
 
 import com.intellij.xtextLanguage.xtext.psi.XtextAlternatives
 import com.intellij.xtextLanguage.xtext.psi.XtextAssignment
@@ -7,6 +7,14 @@ import com.intellij.xtextLanguage.xtext.psi.XtextParserRule
 class XtextVisitorUniqueName : XtextVisitorRuleCalls() {
     var uniqueName: String? = null
     var isNameAvailable = false
+
+    companion object {
+        fun getUniqueNameOfParserRule(rule: XtextParserRule): String? {
+            val visitor = XtextVisitorUniqueName()
+            visitor.visitParserRule(rule)
+            return visitor.uniqueName
+        }
+    }
 
 
     override fun visitAlternatives(o: XtextAlternatives) {

@@ -1,11 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextRuleModel
+import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import com.intellij.xtextLanguage.xtext.generator.models.elements.EnumRule
 import com.intellij.xtextLanguage.xtext.generator.models.elements.ParserRule
 import com.intellij.xtextLanguage.xtext.generator.models.elements.TerminalRule
 
-class RuleResolverImpl(val model: XtextRuleModel) : RuleResolver {
+class RuleResolverImpl(val model: XtextMainModel) : RuleResolver {
     override fun getParserRuleByName(name: String): ParserRule? {
         return model.parserRules.filter { it.name == name }.ifEmpty { null }?.first()
     }
