@@ -1,15 +1,15 @@
-package com.intellij.xtextLanguage.xtext.generator
+package com.intellij.xtextLanguage.xtext.generator.generators
 
+import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.IOException
 import java.io.PrintWriter
 
 
-class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
+class Generator(val extention: String, val fileModel: XtextMainModel) {
     internal val myGenDir = "src/main/java/com/intellij/${extention.toLowerCase()}Language/${extention.toLowerCase()}"
     internal val packageDir = "com.intellij.${extention.toLowerCase()}Language.${extention.toLowerCase()}"
-    val generatorUtil = BnfGeneratorUtil(fileModel)
 
 
 
@@ -32,10 +32,9 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
         generateSyntaxHighlighterFile()
         generateSyntaxHighlighterFactoryFile()
         generateCompletionContributorFile()
-//        generateNamedElementInterfaceFile()
         genenerateNamedElementFile()
         geneneratePsiImplUtilFile()
-        generateElementFactoryFile()
+//        generateElementFactoryFile()
         generateNameVisitorFile()
         generateReferenceContributorFile()
         generateReferenceFile()
@@ -45,93 +44,25 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
 
     }
 
-    private fun generateTerminalRules(out: PrintWriter) {
-        out.print("    tokens = [\n")
-        fileModel.myTerminalRules.forEach {
-            if (generatorUtil.getRegexpAsString(it.myRule) != "") {
-                out.print("      ${it.name} =\"regexp:${generatorUtil.getRegexpAsString(it.myRule)}\"\n")
+
+    companion object {
+        fun createFile(fileName: String, filePath: String): File {
+            val path = File(filePath)
+            val file = File(filePath + "/" + fileName)
+            try {
+                path.mkdirs()
+                file.createNewFile()
+            } catch (e: IOException) {
+                e.printStackTrace()
             }
-
-        }
-        generateKeywordTokens(out)
-        out.print("    ]\n")
-    }
-
-    private fun generateAttributes(out: PrintWriter) {
-        out.print("""
-          |    parserClass="$packageDir.parser.${extention}Parser"
-        
-          |    extends="$packageDir.psi.impl.${extention}PsiCompositeElementImpl"
-          |    psiClassPrefix="${extention}"
-          |    psiImplClassSuffix="Impl"
-          |    psiPackage="$packageDir.psi"
-          |    psiImplPackage="$packageDir.impl"
-
-          |    elementTypeHolderClass="$packageDir.psi.${extention}Types"
-          |    elementTypeClass="$packageDir.psi.${extention}ElementType"
-          |    tokenTypeClass="$packageDir.psi.${extention}TokenType"
-          |    parserUtilClass= "com.intellij.languageUtil.parserUtilBase.GeneratedParserUtilBaseCopy"
-          |    psiImplUtilClass="$packageDir.psi.impl.${extention}PsiImplUtil"
-          |    generateTokenAccessors=true
-          |    generateTokens=true
-          |    extraRoot(".*")= true
-                """.trimMargin("|"))
-        out.print("\n")
-    }
-
-    private fun generateKeywordTokens(out: PrintWriter) {
-        fileModel.myKeywordsWithNames.keys.forEach { out.print("      ${fileModel.myKeywordsWithNames.get(it)} = ${it}\n") }
-    }
-
-    private fun generateReferences(out: PrintWriter) {
-        fileModel.myReferences.forEach { out.print("${it.name} ::= ${it.referenceType}\n") }
-    }
-
-    private fun generateEnumRules(out: PrintWriter) {
-        fileModel.myEnumRules.forEach { out.print("${it.name} ::= ${generatorUtil.getEnumRuleDeclarationsAsString(it.myRule)}\n") }
-
-    }
-
-    private fun generateRules(out: PrintWriter) {
-        fileModel.myParserRules.forEach {
-            if (it == fileModel.myParserRules.first()) {
-                out.print("${extention}File ::= ${it.name}\n")
-            }
-            out.print("${generatorUtil.nameWithCaret(it.name)} ::= ${generatorUtil.getRuleAlternativesAsString(it.myRule)}\n")
-            if (it.isNamed) out.print("""
-                |{
-                |mixin="$packageDir.psi.impl.${extention}NamedElementImpl"
-                |implements="com.intellij.psi.PsiNameIdentifierOwner"
-                |methods=[ getName setName getNameIdentifier ]
-                |}
-
-            """.trimMargin("|"))
+            return file
         }
     }
 
-    private fun createFile(fileName: String, filePath: String): File {
-        val path = File(filePath)
-        val file = File(filePath + "/" + fileName)
-        try {
-            path.mkdirs()
-            file.createNewFile()
-        } catch (e: IOException) {
-            e.printStackTrace()
-        }
-        return file
-    }
 
     private fun generateBnfFile() {
-        val file = createFile(extention + ".bnf", myGenDir + "/grammar")
-        val out = PrintWriter(FileOutputStream(file))
-        out.print("{\n")
-        generateTerminalRules(out)
-        generateAttributes(out)
-        out.print("}\n")
-        generateRules(out)
-        generateEnumRules(out)
-        generateReferences(out)
-        out.close()
+        val bnfGenerator = BnfGenerator(fileModel, extention)
+        bnfGenerator.generateBnf()
     }
 
 
@@ -337,21 +268,27 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
             |%}
 
         """.trimMargin("|"))
-        fileModel.myTerminalRules.forEach {
-            if (generatorUtil.getRegexpAsString(it.myRule) != "") {
-                if (it.name.equals("WS")) out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
-                else out.print("${it.name} =${generatorUtil.getFlexRegexp(generatorUtil.getRegexpAsString(it.myRule))}\n")
+        fileModel.terminalRules.forEach {
+            if (it.name.equals("WS")) {
+                out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
+            } else {
+                out.print("${it.name} =")
+                it.alterntiveElements.forEach {
+                    out.print(it.getFlexName())
+                }
+                out.print("\n")
             }
-            if (fileModel.getTerminalRuleByName("WS") == null) out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
+            if (fileModel.ruleResolver.getTerminalRuleByName("WS") == null) out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
         }
         out.print("%%\n<YYINITIAL> {\n")
-        fileModel.myKeywordsWithNames.keys.forEach { out.print("\"${it.substring(1, it.length - 1)}\" {return ${fileModel.myKeywordsWithNames.get(it)};}\n") }
-        fileModel.myTerminalRules.forEach {
-            if (generatorUtil.getRegexpAsString(it.myRule) != "") {
-                if (it.name.equals("WS")) out.print("{WS} {return WHITE_SPACE;}\n")
-                else out.print("{${it.name}} {return ${it.name};}\n")
+        fileModel.keywordModel.keywords.forEach { out.print("\"${it.keyword.substring(1, it.keyword.length - 1)}\" {return ${it.name};}\n") }
+        fileModel.terminalRules.forEach {
+            if (it.name.equals("WS")) {
+                out.print("{WS} {return WHITE_SPACE;}\n")
+            } else {
+                out.print("{${it.name}} {return ${it.name};}\n")
             }
-            if (fileModel.getTerminalRuleByName("WS") == null) out.print("{WS} {return WHITE_SPACE;}\n")
+            if (fileModel.ruleResolver.getTerminalRuleByName("WS") == null) out.print("{WS} {return WHITE_SPACE;}\n")
 
         }
         out.print("}\n[^] { return BAD_CHARACTER; }")
@@ -460,13 +397,13 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
             |    public static final TokenSet KEYWORDS = TokenSet.create(
             """.trimMargin("|"))
 
-        fileModel.myKeywordsForParserDefinition.forEach {
+        fileModel.keywordModel.keywordsForParserDefinitionFile.forEach {
             out.print("    ${extention}Types.${it}")
-            if (it != fileModel.myKeywordsForParserDefinition.last()) out.print(",\n")
+            if (it != fileModel.keywordModel.keywordsForParserDefinitionFile.last()) out.print(",\n")
 
         }
         out.print(");\n")
-        if (fileModel.getTerminalRuleByName("ML_COMMENT") != null && fileModel.getTerminalRuleByName("SL_COMMENT") != null) {
+        if (fileModel.ruleResolver.getTerminalRuleByName("ML_COMMENT") != null && fileModel.ruleResolver.getTerminalRuleByName("SL_COMMENT") != null) {
             out.print("    public static final TokenSet COMMENTS = TokenSet.create(${extention}Types.SL_COMMENT, ${extention}Types.ML_COMMENT);")
         } else out.print("    public static final TokenSet COMMENTS = null;")
         out.print("""
@@ -594,7 +531,7 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
             |    public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
             |        if (${extention}ParserDefinition.KEYWORDS.contains(tokenType)) {
             |            return KEY_KEYS;""".trimMargin("|"))
-        if (fileModel.getTerminalRuleByName("STRING") != null) {
+        if (fileModel.ruleResolver.getTerminalRuleByName("STRING") != null) {
             out.print("""
             |        } else if (tokenType.equals(${extention}Types.STRING)) {
             |            return VALUE_KEYS;
@@ -667,20 +604,6 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
 
     }
 
-    //    private fun generateNamedElementInterfaceFile() {
-//        val file = createFile(extention + "NamedElement.java", myGenDir+"/psi")
-//        val out = PrintWriter(FileOutputStream(file))
-//        out.print("""
-//            |package $packageDir.psi;
-//
-//            |import com.intellij.psi.PsiNameIdentifierOwner;
-//
-//            |public interface ${extention}NamedElement extends PsiNameIdentifierOwner {
-//            |}
-//        """.trimMargin("|"))
-//        out.close()
-//
-//    }
     private fun genenerateNamedElementFile() {
         val file = createFile(extention + "NamedElementImpl.java", myGenDir + "/psi/impl")
         val out = PrintWriter(FileOutputStream(file))
@@ -708,7 +631,6 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
             |package $packageDir.psi.impl;
                         
             |import com.intellij.psi.*;
-            |import $packageDir.psi.${extention}ElementFactory;
             |import $packageDir.psi.*;
             |import com.intellij.psi.util.PsiTreeUtil;
             
@@ -718,8 +640,8 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
             |    static ${extention}NameVisitor nameVisitor = new ${extention}NameVisitor();
 
         """.trimMargin("|"))
-        fileModel.myParserRules.stream()
-                .filter { it.isNamed == true }
+        fileModel.parserRules.stream()
+                .filter { it.isReferenced == true }
                 .forEach {
                     out.print("""
                        
@@ -763,7 +685,7 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
     }
 
     private fun generateNameVisitorFile() {
-        val visitorGenerator = VisitorGenerator(fileModel.myVisitorGeneratorModel, extention)
+        val visitorGenerator = VisitorGenerator(fileModel.visitorGeneratorModel, extention)
         visitorGenerator.generateNameVisitor()
 
     }
@@ -790,7 +712,8 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
             |public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
             
         """.trimMargin("|"))
-        fileModel.myReferences.forEach {
+        fileModel.referencesModel.references.forEach {
+            if (it.targets.size == 0) return@forEach
             val referenceName = it.name.replace("_", "")
             out.print("""
             |registrar.registerReferenceProvider(PlatformPatterns.psiElement(${extention}${referenceName}.class).withLanguage(${extention}Language.INSTANCE),
@@ -911,47 +834,47 @@ class BnfGenerator(val extention: String, val fileModel: XtextFileModel) {
         out.print("""
             |package $packageDir;
             
-|import com.intellij.psi.PsiFile;
-|import com.intellij.psi.PsiNameIdentifierOwner;
-|import com.intellij.psi.util.PsiTreeUtil;
-|import $packageDir.psi.${extention}File;
-
-|import java.util.ArrayList;
-|import java.util.Collections;
-|import java.util.List;
-
-|public class ${extention}Util {
-|
-|    public static <T extends PsiNameIdentifierOwner> ArrayList<T> findElementsInCurrentFile(PsiFile file, Class<T> tClass, String Id) {
-|        ArrayList<T> result = new ArrayList<>();
-|        ${extention}File ${extention.decapitalize()}File = (${extention}File) file;
-|        if (${extention.decapitalize()}File != null) {
-|
-|           List<T> elements = new ArrayList (PsiTreeUtil.findChildrenOfType(${extention.decapitalize()}File, tClass));
-|
-|            for (T property : elements) {
-|                if (Id.equals(property.getName())) {
-|                    result.add(property);
-|                }
-|            }
-|
-|        }
-|
-|        return result ;
-|    }
-|
-|    public static <T extends PsiNameIdentifierOwner> ArrayList<T> findElementsInCurrentFile(PsiFile file, Class<T> tClass) {
-|        ArrayList<T> result = new ArrayList<>();
-|        ${extention}File ${extention.decapitalize()}File = (${extention}File) file;
-|        if (${extention.decapitalize()}File != null) {
-|            List<T> elements = new ArrayList(PsiTreeUtil.findChildrenOfType(${extention.decapitalize()}File, tClass));
-|                result.addAll(elements);
-|            
-|       }
-|
-|        return result;
-|    }
-|}
+            |import com.intellij.psi.PsiFile;
+            |import com.intellij.psi.PsiNameIdentifierOwner;
+            |import com.intellij.psi.util.PsiTreeUtil;
+            |import $packageDir.psi.${extention}File;
+            
+            |import java.util.ArrayList;
+            |import java.util.Collections;
+            |import java.util.List;
+            
+            |public class ${extention}Util {
+            |
+            |    public static <T extends PsiNameIdentifierOwner> ArrayList<T> findElementsInCurrentFile(PsiFile file, Class<T> tClass, String Id) {
+            |        ArrayList<T> result = new ArrayList<>();
+            |        ${extention}File ${extention.decapitalize()}File = (${extention}File) file;
+            |        if (${extention.decapitalize()}File != null) {
+            |
+            |           List<T> elements = new ArrayList (PsiTreeUtil.findChildrenOfType(${extention.decapitalize()}File, tClass));
+            |
+            |            for (T property : elements) {
+            |                if (Id.equals(property.getName())) {
+            |                    result.add(property);
+            |                }
+            |            }
+            |
+            |        }
+            |
+            |        return result ;
+            |    }
+            |
+            |    public static <T extends PsiNameIdentifierOwner> ArrayList<T> findElementsInCurrentFile(PsiFile file, Class<T> tClass) {
+            |        ArrayList<T> result = new ArrayList<>();
+            |        ${extention}File ${extention.decapitalize()}File = (${extention}File) file;
+            |        if (${extention.decapitalize()}File != null) {
+            |            List<T> elements = new ArrayList(PsiTreeUtil.findChildrenOfType(${extention.decapitalize()}File, tClass));
+            |                result.addAll(elements);
+            |            
+            |       }
+            |
+            |        return result;
+            |    }
+            |}
 
         """.trimMargin("|"))
         out.close()
