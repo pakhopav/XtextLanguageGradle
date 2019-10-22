@@ -1,14 +1,12 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.VisitorGeneratorModel
+import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import java.io.File
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class VisitorGenerator(val model: VisitorGeneratorModel, val extention: String) {
-    val myGenDir = "src/main/java/com/intellij/${extention.toLowerCase()}Language/${extention.toLowerCase()}"
-    val packageDir = "com.intellij.${extention.toLowerCase()}Language.${extention.toLowerCase()}"
-
+class VisitorGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
+    val model = fileModel.visitorGeneratorModel
     fun generateVisitor() {
 
     }

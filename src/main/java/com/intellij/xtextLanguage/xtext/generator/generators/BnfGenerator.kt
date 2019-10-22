@@ -4,9 +4,8 @@ import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class BnfGenerator(val fileModel: XtextMainModel, val extention: String) {
-    val myGenDir = "src/main/java/com/intellij/${extention.toLowerCase()}Language/${extention.toLowerCase()}"
-    val packageDir = "com.intellij.${extention.toLowerCase()}Language.${extention.toLowerCase()}"
+class BnfGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
+
 
     fun generateBnf() {
         val file = Generator.createFile(extention + ".bnf", myGenDir + "/grammar")
