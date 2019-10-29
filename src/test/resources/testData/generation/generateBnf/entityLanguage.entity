@@ -1,0 +1,11 @@
+entity  AAA extends CCC {}
+
+datatype type1
+datatype type2
+
+entity CCC extends DDD {
+    many f1 : AAA
+    f4 : type2
+}
+
+entity DDD extends AAA { f6 : typ1}

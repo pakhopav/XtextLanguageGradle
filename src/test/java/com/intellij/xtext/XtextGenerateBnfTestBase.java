@@ -1,5 +1,6 @@
 package com.intellij.xtext;
 
+import com.intellij.entityLanguage.entity.psi.EntityFile;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiErrorElement;
 import com.intellij.psi.PsiFile;
@@ -50,6 +51,10 @@ public class XtextGenerateBnfTestBase extends LightPlatformCodeInsightFixtureTes
         return myFixture.configureByFile(fileName + ".bnf");
     }
 
+    protected EntityFile getEntityFile(String fileName) {
+        return (EntityFile) myFixture.configureByFile(fileName + ".entity");
+    }
+
     protected PsiFile getFileWithAbsolutePath(String path) {
         PsiFile file = myFixture.configureByFile(path);
         return file;
@@ -64,7 +69,7 @@ public class XtextGenerateBnfTestBase extends LightPlatformCodeInsightFixtureTes
         return listOfFiles;
     }
 
-    List<XtextFile> findAllFilesRecursively(List<XtextREFERENCEGrammarGrammarID> grammars) {
+    private List<XtextFile> findAllFilesRecursively(List<XtextREFERENCEGrammarGrammarID> grammars) {
         ArrayList<XtextFile> listOfFiles = new ArrayList<>();
         if (grammars != null) {
 

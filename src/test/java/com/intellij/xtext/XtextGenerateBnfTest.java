@@ -1,13 +1,26 @@
 package com.intellij.xtext;
 
+import com.intellij.entityLanguage.entity.emf.EmfObjectFactory;
+import com.intellij.entityLanguage.entity.psi.EntityDomainmodel;
+import com.intellij.entityLanguage.entity.psi.EntityFile;
 import com.intellij.psi.PsiFile;
+import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.testFramework.TestDataPath;
 import com.intellij.xtextLanguage.xtext.generator.generators.Generator;
 import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel;
 import com.intellij.xtextLanguage.xtext.psi.XtextFile;
+import org.eclipse.emf.common.util.URI;
+import org.eclipse.emf.ecore.resource.Resource;
+import org.eclipse.emf.ecore.resource.ResourceSet;
+import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl;
+import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl;
+import org.example.domainmodel.domainmodel.Domainmodel;
 
 import java.io.IOException;
+import java.util.Collections;
 import java.util.List;
+import java.util.Map;
+import java.util.Objects;
 
 @TestDataPath("$CONTENT_ROOT/testData/generation/generateBnf")
 public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
@@ -258,31 +271,56 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
     }
 
     public void testEntityExampleReferencesImplementation() {
-        List<XtextFile> allXtextFiles = findAllFiles();
-        XtextMainModel model = new XtextMainModel(allXtextFiles);
-        Generator generator = new Generator("Entity", model);
+        EntityFile entityFile = getEntityFile("entityLanguage");
+        EmfObjectFactory factory = new EmfObjectFactory();
+        Domainmodel domainmodel = factory.createEmfModel(Objects.requireNonNull(PsiTreeUtil.findChildOfType(entityFile, EntityDomainmodel.class)));
+        Resource.Factory.Registry reg = Resource.Factory.Registry.INSTANCE;
+        Map<String, Object> m = reg.getExtensionToFactoryMap();
+        m.put("dmodel", new XMIResourceFactoryImpl());
+
+        // Obtain a new resource set
+        ResourceSet resSet = new ResourceSetImpl();
+
+        Resource resource = resSet.createResource(URI
+                .createURI("My2.dmodel"));
+        // Get the first model element and cast it to the right type, in my
+        // example everything is hierarchical included in this first node
+        resource.getContents().add(domainmodel);
+        // now save the content.
         try {
-            generator.generate();
+            resource.save(Collections.EMPTY_MAP);
         } catch (IOException e) {
+            // TODO Auto-generated catch block
             e.printStackTrace();
         }
-
-
-    }
-
-//    public void testChoicesExample() {
-//        PsiFile file = getXtextFile();
-//        XtextFile xtextFile = (XtextFile) file;
-//        XtextMainModel model = new XtextMainModel(xtextFile);
-//        BuildModelWithImports(model, model);
-//        model.createVisitorGeneratorModel();
-//        Generator generator = new Generator("Choices", model);
+//        List<XtextFile> allXtextFiles = findAllFiles();
+//        XtextMainModel model = new XtextMainModel(allXtextFiles);
+//
+//        Generator generator = new Generator("Entity", model);
 //        try {
 //            generator.generate();
 //        } catch (IOException e) {
 //            e.printStackTrace();
 //        }
 //
-//
-//    }
+
+    }
+
+    public void testInvalidRules() {
+        List<XtextFile> allXtextFiles = findAllFiles();
+        XtextMainModel model = new XtextMainModel(allXtextFiles);
+        Generator generator = new Generator("ErrRules", model);
+        try {
+            generator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void testEntityBasedGrammar() {
+        List<XtextFile> allXtextFiles = findAllFiles();
+        XtextMainModel model = new XtextMainModel(allXtextFiles);
+
+    }
+
 }
