@@ -9,6 +9,9 @@ public interface XtextTerminalTokenElement extends PsiElement {
   @Nullable
   XtextAbstractNegatedToken getAbstractNegatedToken();
 
+    @Nullable
+    XtextCaretEOF getCaretEOF();
+
   @Nullable
   XtextCharacterRange getCharacterRange();
 
@@ -20,8 +23,5 @@ public interface XtextTerminalTokenElement extends PsiElement {
 
   @Nullable
   XtextWildcard getWildcard();
-
-    @Nullable
-    XtextCaretEOF getCaretEOF();
 
 }

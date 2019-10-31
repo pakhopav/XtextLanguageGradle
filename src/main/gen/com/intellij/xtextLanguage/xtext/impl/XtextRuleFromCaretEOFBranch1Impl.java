@@ -2,21 +2,23 @@
 package com.intellij.xtextLanguage.xtext.impl;
 
 import com.intellij.lang.ASTNode;
+import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.xtextLanguage.xtext.psi.XtextCaretEOF;
 import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromCaretEOFBranch1;
 import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
 import org.jetbrains.annotations.NotNull;
 
-public class XtextCaretEOFImpl extends XtextPsiCompositeElementImpl implements XtextCaretEOF {
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.EOF_KEY_KEYWORD;
 
-    public XtextCaretEOFImpl(@NotNull ASTNode node) {
+public class XtextRuleFromCaretEOFBranch1Impl extends XtextPsiCompositeElementImpl implements XtextRuleFromCaretEOFBranch1 {
+
+    public XtextRuleFromCaretEOFBranch1Impl(@NotNull ASTNode node) {
         super(node);
     }
 
     public void accept(@NotNull XtextVisitor visitor) {
-        visitor.visitCaretEOF(this);
+        visitor.visitRuleFromCaretEOFBranch1(this);
     }
 
     public void accept(@NotNull PsiElementVisitor visitor) {
@@ -26,8 +28,8 @@ public class XtextCaretEOFImpl extends XtextPsiCompositeElementImpl implements X
 
     @Override
     @NotNull
-    public XtextRuleFromCaretEOFBranch1 getRuleFromCaretEOFBranch1() {
-        return findNotNullChildByClass(XtextRuleFromCaretEOFBranch1.class);
+    public PsiElement getEofKeyKeyword() {
+        return findNotNullChildByType(EOF_KEY_KEYWORD);
     }
 
 }

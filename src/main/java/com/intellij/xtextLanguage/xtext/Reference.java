@@ -1,5 +1,6 @@
 package com.intellij.xtextLanguage.xtext;
 
+
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
@@ -10,11 +11,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class XtextReference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
+public class Reference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
     private String key;
     private List<Class<? extends PsiNameIdentifierOwner>> tClasses;
 
-    public XtextReference(@NotNull PsiElement element, TextRange textRange, List<Class<? extends PsiNameIdentifierOwner>> tclasses) {
+    public Reference(@NotNull PsiElement element, TextRange textRange, List<Class<? extends PsiNameIdentifierOwner>> tclasses) {
         super(element, textRange);
         key = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
         this.tClasses = tclasses;
@@ -71,4 +72,5 @@ public class XtextReference extends PsiReferenceBase<PsiElement> implements PsiP
 
         return variants.toArray();
     }
+
 }

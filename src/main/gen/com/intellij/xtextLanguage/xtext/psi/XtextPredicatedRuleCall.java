@@ -1,9 +1,11 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public interface XtextPredicatedRuleCall extends PsiElement {
 
@@ -14,15 +16,15 @@ public interface XtextPredicatedRuleCall extends PsiElement {
   XtextREFERENCEAbstractRuleRuleID getREFERENCEAbstractRuleRuleID();
 
   @Nullable
-  PsiElement getLAngleBracket();
+  PsiElement getLAngleBracketKeyword();
 
   @Nullable
-  PsiElement getPred();
+  PsiElement getPredKeyword();
 
   @Nullable
-  PsiElement getRAngleBracket();
+  PsiElement getRAngleBracketKeyword();
 
   @Nullable
-  PsiElement getWeakPred();
+  PsiElement getWeakPredKeyword();
 
 }

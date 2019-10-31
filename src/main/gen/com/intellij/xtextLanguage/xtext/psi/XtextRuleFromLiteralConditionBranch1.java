@@ -4,12 +4,12 @@ package com.intellij.xtextLanguage.xtext.psi;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.Nullable;
 
-public interface XtextRuleFromLiteralConditionLiteralCondition extends PsiElement {
+public interface XtextRuleFromLiteralConditionBranch1 extends PsiElement {
 
     @Nullable
-    PsiElement getFalse();
+    PsiElement getFalseKeyword();
 
     @Nullable
-    PsiElement getTrue();
+    PsiElement getTrueKeyword();
 
 }

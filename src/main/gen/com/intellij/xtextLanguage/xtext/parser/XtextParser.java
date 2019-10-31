@@ -59,6 +59,8 @@ public class XtextParser implements PsiParser, LightPsiParser {
             r = Assignment(b, l + 1);
         } else if (t == ATOM) {
             r = Atom(b, l + 1);
+        } else if (t == CARET_EOF) {
+            r = CaretEOF(b, l + 1);
         } else if (t == CHARACTER_RANGE) {
             r = CharacterRange(b, l + 1);
         } else if (t == CONDITIONAL_BRANCH) {
@@ -79,6 +81,8 @@ public class XtextParser implements PsiParser, LightPsiParser {
             r = EnumRule(b, l + 1);
         } else if (t == GENERATED_METAMODEL) {
             r = GeneratedMetamodel(b, l + 1);
+        } else if (t == GRAMMAR) {
+            r = Grammar(b, l + 1);
         } else if (t == GRAMMAR_ID) {
             r = GrammarID(b, l + 1);
         } else if (t == GROUP) {
@@ -131,16 +135,16 @@ public class XtextParser implements PsiParser, LightPsiParser {
             r = ReferencedMetamodel(b, l + 1);
         } else if (t == RULE_CALL) {
             r = RuleCall(b, l + 1);
-        } else if (t == RULE_FROM_CONDITIONAL_BRANCH_GROUP) {
-            r = RuleFromConditionalBranch_Group(b, l + 1);
-        } else if (t == RULE_FROM_LITERAL_CONDITION_LITERAL_CONDITION) {
-            r = RuleFromLiteralCondition_LiteralCondition(b, l + 1);
-        } else if (t == RULE_FROM_NEGATION_NEGATION) {
-            r = RuleFromNegation_Negation(b, l + 1);
-        } else if (t == RULE_FROM_WILDCARD_WILDCARD) {
-            r = RuleFromWildcard_Wildcard(b, l + 1);
-        } else if (t == RULE_FROMCARET_EOF_CARET_EOF) {
-            r = RuleFromcaretEOF_caretEOF(b, l + 1);
+        } else if (t == RULE_FROM_CARET_EOF_BRANCH_1) {
+            r = RuleFromCaretEOFBranch1(b, l + 1);
+        } else if (t == RULE_FROM_CONDITIONAL_BRANCH_BRANCH_2) {
+            r = RuleFromConditionalBranchBranch2(b, l + 1);
+        } else if (t == RULE_FROM_LITERAL_CONDITION_BRANCH_1) {
+            r = RuleFromLiteralConditionBranch1(b, l + 1);
+        } else if (t == RULE_FROM_NEGATION_BRANCH_2) {
+            r = RuleFromNegationBranch2(b, l + 1);
+        } else if (t == RULE_FROM_WILDCARD_BRANCH_1) {
+            r = RuleFromWildcardBranch1(b, l + 1);
         } else if (t == RULE_ID) {
             r = RuleID(b, l + 1);
         } else if (t == RULE_NAME_AND_PARAMS) {
@@ -167,10 +171,8 @@ public class XtextParser implements PsiParser, LightPsiParser {
             r = ValidID(b, l + 1);
         } else if (t == WILDCARD) {
             r = Wildcard(b, l + 1);
-        } else if (t == CARET_EOF) {
-            r = caretEOF(b, l + 1);
         } else {
-            r = Grammar(b, l + 1);
+            r = XtextFile(b, l + 1);
         }
         return r;
     }
@@ -179,7 +181,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // GeneratedMetamodel |  ReferencedMetamodel
   public static boolean AbstractMetamodelDeclaration(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "AbstractMetamodelDeclaration")) return false;
-    if (!nextTokenIs(b, "<abstract metamodel declaration>", GENERATE, IMPORT)) return false;
+      if (!nextTokenIs(b, "<abstract metamodel declaration>", GENERATE_KEYWORD, IMPORT_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, ABSTRACT_METAMODEL_DECLARATION, "<abstract metamodel declaration>");
     r = GeneratedMetamodel(b, l + 1);
@@ -192,7 +194,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // NegatedToken |  UntilToken
   public static boolean AbstractNegatedToken(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "AbstractNegatedToken")) return false;
-    if (!nextTokenIs(b, "<abstract negated token>", ACX_MARK, WEAK_PRED)) return false;
+      if (!nextTokenIs(b, "<abstract negated token>", ACX_MARK_KEYWORD, WEAK_PRED_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, ABSTRACT_NEGATED_TOKEN, "<abstract negated token>");
     r = NegatedToken(b, l + 1);
@@ -275,9 +277,9 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "AbstractTokenWithCardinality_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, QUES_MARK);
-    if (!r) r = consumeToken(b, ASTERISK);
-    if (!r) r = consumeToken(b, PLUS);
+      r = consumeToken(b, QUES_MARK_KEYWORD);
+      if (!r) r = consumeToken(b, ASTERISK_KEYWORD);
+      if (!r) r = consumeToken(b, PLUS_KEYWORD);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -286,13 +288,13 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // '{' TypeRef ('.' ValidID ('=' |  '+='  ) 'current'  )? '}'
   public static boolean Action(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Action")) return false;
-    if (!nextTokenIs(b, L_BRACE)) return false;
+      if (!nextTokenIs(b, L_BRACE_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, L_BRACE);
+      r = consumeToken(b, L_BRACE_KEYWORD);
     r = r && TypeRef(b, l + 1);
     r = r && Action_2(b, l + 1);
-    r = r && consumeToken(b, R_BRACE);
+      r = r && consumeToken(b, R_BRACE_KEYWORD);
       //last
     exit_section_(b, m, ACTION, r);
     return r;
@@ -310,10 +312,10 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "Action_2_0")) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, DOT);
+        r = consumeToken(b, DOT_KEYWORD);
         r = r && ValidID(b, l + 1);
         r = r && Action_2_0_2(b, l + 1);
-        r = r && consumeToken(b, CURRENT);
+        r = r && consumeToken(b, CURRENT_KEYWORD);
         //last
         exit_section_(b, m, null, r);
         return r;
@@ -324,8 +326,8 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "Action_2_0_2")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, EQUALS);
-    if (!r) r = consumeToken(b, PLUS_EQUALS);
+      r = consumeToken(b, EQUALS_KEYWORD);
+      if (!r) r = consumeToken(b, PLUS_EQUALS_KEYWORD);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -369,7 +371,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "Alternatives_1_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, PIPE);
+      r = consumeToken(b, PIPE_KEYWORD);
     r = r && ConditionalBranch(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -379,10 +381,10 @@ public class XtextParser implements PsiParser, LightPsiParser {
     // '@' ID
     public static boolean Annotation(PsiBuilder b, int l) {
         if (!recursion_guard_(b, l, "Annotation")) return false;
-        if (!nextTokenIs(b, AT_SIGN)) return false;
+        if (!nextTokenIs(b, AT_SIGN_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-        r = consumeTokens(b, 0, AT_SIGN, ID);
+        r = consumeTokens(b, 0, AT_SIGN_KEYWORD, ID);
         //last
         exit_section_(b, m, ANNOTATION, r);
     return r;
@@ -427,7 +429,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "AssignableAlternatives_1_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, PIPE);
+      r = consumeToken(b, PIPE_KEYWORD);
     r = r && AssignableTerminal(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -473,8 +475,8 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "Assignment_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, PRED);
-    if (!r) r = consumeToken(b, WEAK_PRED);
+      r = consumeToken(b, PRED_KEYWORD);
+      if (!r) r = consumeToken(b, WEAK_PRED_KEYWORD);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -484,9 +486,9 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "Assignment_2")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, PLUS_EQUALS);
-    if (!r) r = consumeToken(b, EQUALS);
-    if (!r) r = consumeToken(b, QUES_EQUALS);
+      r = consumeToken(b, PLUS_EQUALS_KEYWORD);
+      if (!r) r = consumeToken(b, EQUALS_KEYWORD);
+      if (!r) r = consumeToken(b, QUES_EQUALS_KEYWORD);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -503,6 +505,18 @@ public class XtextParser implements PsiParser, LightPsiParser {
     exit_section_(b, l, m, r, false, null);
     return r;
   }
+
+    /* ********************************************************** */
+    // RuleFromCaretEOFBranch1
+    public static boolean CaretEOF(PsiBuilder b, int l) {
+        if (!recursion_guard_(b, l, "CaretEOF")) return false;
+        if (!nextTokenIs(b, EOF_KEY_KEYWORD)) return false;
+        boolean r;
+        Marker m = enter_section_(b);
+        r = RuleFromCaretEOFBranch1(b, l + 1);
+        exit_section_(b, m, CARET_EOF, r);
+        return r;
+    }
 
   /* ********************************************************** */
   // Keyword ('..' Keyword  )?
@@ -529,20 +543,20 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "CharacterRange_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, RANGE);
+      r = consumeToken(b, RANGE_KEYWORD);
     r = r && Keyword(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
   /* ********************************************************** */
-  // UnorderedGroup |  RuleFromConditionalBranch_Group
+  // UnorderedGroup |  RuleFromConditionalBranchBranch2
   public static boolean ConditionalBranch(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ConditionalBranch")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, CONDITIONAL_BRANCH, "<conditional branch>");
     r = UnorderedGroup(b, l + 1);
-      if (!r) r = RuleFromConditionalBranch_Group(b, l + 1);
+      if (!r) r = RuleFromConditionalBranchBranch2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -575,7 +589,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "Conjunction_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, AMPERSAND);
+      r = consumeToken(b, AMPERSAND_KEYWORD);
     r = r && Negation(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -585,13 +599,13 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // '[' TypeRef ('|' CrossReferenceableTerminal  )? ']'
   public static boolean CrossReference(PsiBuilder b, int l) {
       if (!recursion_guard_(b, l, "CrossReference")) return false;
-      if (!nextTokenIs(b, L_SQUARE_BRACKET)) return false;
+      if (!nextTokenIs(b, L_SQUARE_BRACKET_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-      r = consumeToken(b, L_SQUARE_BRACKET);
+      r = consumeToken(b, L_SQUARE_BRACKET_KEYWORD);
       r = r && TypeRef(b, l + 1);
       r = r && CrossReference_2(b, l + 1);
-      r = r && consumeToken(b, R_SQUARE_BRACKET);
+      r = r && consumeToken(b, R_SQUARE_BRACKET_KEYWORD);
       //last
       exit_section_(b, m, CROSS_REFERENCE, r);
     return r;
@@ -609,7 +623,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "CrossReference_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, PIPE);
+      r = consumeToken(b, PIPE_KEYWORD);
     r = r && CrossReferenceableTerminal(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -655,7 +669,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "Disjunction_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, PIPE);
+      r = consumeToken(b, PIPE_KEYWORD);
     r = r && Conjunction(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -686,7 +700,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "EnumLiteralDeclaration_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, EQUALS);
+      r = consumeToken(b, EQUALS_KEYWORD);
     r = r && Keyword(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -732,7 +746,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "EnumLiterals_1_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, PIPE);
+      r = consumeToken(b, PIPE_KEYWORD);
     r = r && EnumLiteralDeclaration(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -742,16 +756,16 @@ public class XtextParser implements PsiParser, LightPsiParser {
     // (Annotation  )* 'enum' ValidID ('returns' TypeRef  )? ':' EnumLiterals ';'
     public static boolean EnumRule(PsiBuilder b, int l) {
         if (!recursion_guard_(b, l, "EnumRule")) return false;
-        if (!nextTokenIs(b, "<enum rule>", AT_SIGN, ENUM)) return false;
+        if (!nextTokenIs(b, "<enum rule>", AT_SIGN_KEYWORD, ENUM_KEYWORD)) return false;
     boolean r;
         Marker m = enter_section_(b, l, _NONE_, ENUM_RULE, "<enum rule>");
         r = EnumRule_0(b, l + 1);
-        r = r && consumeToken(b, ENUM);
+        r = r && consumeToken(b, ENUM_KEYWORD);
         r = r && ValidID(b, l + 1);
         r = r && EnumRule_3(b, l + 1);
-        r = r && consumeToken(b, COLON);
+        r = r && consumeToken(b, COLON_KEYWORD);
         r = r && EnumLiterals(b, l + 1);
-        r = r && consumeToken(b, SEMICOLON);
+        r = r && consumeToken(b, SEMICOLON_KEYWORD);
         //last
         exit_section_(b, l, m, r, false, null);
         return r;
@@ -790,7 +804,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "EnumRule_3_0")) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, RETURNS);
+        r = consumeToken(b, RETURNS_KEYWORD);
         r = r && TypeRef(b, l + 1);
         exit_section_(b, m, null, r);
     return r;
@@ -800,10 +814,10 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // 'generate' ValidID REFERENCE_ecore-EPackage_STRING ('as' ValidID  )?
   public static boolean GeneratedMetamodel(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "GeneratedMetamodel")) return false;
-    if (!nextTokenIs(b, GENERATE)) return false;
+      if (!nextTokenIs(b, GENERATE_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, GENERATE);
+      r = consumeToken(b, GENERATE_KEYWORD);
     r = r && ValidID(b, l + 1);
       r = r && REFERENCE_ecore_EPackage_STRING(b, l + 1);
     r = r && GeneratedMetamodel_3(b, l + 1);
@@ -823,7 +837,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "GeneratedMetamodel_3_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, AS);
+      r = consumeToken(b, AS_KEYWORD);
     r = r && ValidID(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -831,18 +845,18 @@ public class XtextParser implements PsiParser, LightPsiParser {
 
   /* ********************************************************** */
   // 'grammar' GrammarID ('with' REFERENCE_Grammar_GrammarID (',' REFERENCE_Grammar_GrammarID  )*  )? ('hidden' '(' (REFERENCE_AbstractRule_RuleID (',' REFERENCE_AbstractRule_RuleID  )*  )? ')'  )? AbstractMetamodelDeclaration * (AbstractRule  )+
-  static boolean Grammar(PsiBuilder b, int l) {
+  public static boolean Grammar(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Grammar")) return false;
-    if (!nextTokenIs(b, GRAMMAR)) return false;
+      if (!nextTokenIs(b, GRAMMAR_KEYWORD)) return false;
       boolean r;
       Marker m = enter_section_(b);
-    r = consumeToken(b, GRAMMAR);
+      r = consumeToken(b, GRAMMAR_KEYWORD);
       r = r && GrammarID(b, l + 1);
       r = r && Grammar_2(b, l + 1);
       r = r && Grammar_3(b, l + 1);
       r = r && Grammar_4(b, l + 1);
       r = r && Grammar_5(b, l + 1);
-      exit_section_(b, m, null, r);
+      exit_section_(b, m, GRAMMAR, r);
       return r;
   }
 
@@ -858,7 +872,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "Grammar_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, WITH);
+      r = consumeToken(b, WITH_KEYWORD);
     r = r && REFERENCE_Grammar_GrammarID(b, l + 1);
     r = r && Grammar_2_0_2(b, l + 1);
     exit_section_(b, m, null, r);
@@ -881,7 +895,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "Grammar_2_0_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, COMMA);
+      r = consumeToken(b, COMMA_KEYWORD);
     r = r && REFERENCE_Grammar_GrammarID(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -899,9 +913,9 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "Grammar_3_0")) return false;
     boolean r;
         Marker m = enter_section_(b);
-        r = consumeTokens(b, 0, HIDDEN, L_BRACKET);
+        r = consumeTokens(b, 0, HIDDEN_KEYWORD, L_BRACKET_KEYWORD);
         r = r && Grammar_3_0_2(b, l + 1);
-        r = r && consumeToken(b, R_BRACKET);
+        r = r && consumeToken(b, R_BRACKET_KEYWORD);
         //last
         exit_section_(b, m, null, r);
     return r;
@@ -941,7 +955,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "Grammar_3_0_2_0_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, COMMA);
+      r = consumeToken(b, COMMA_KEYWORD);
     r = r && REFERENCE_AbstractRule_RuleID(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -1011,7 +1025,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "GrammarID_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, DOT);
+      r = consumeToken(b, DOT_KEYWORD);
     r = r && ValidID(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -1075,13 +1089,13 @@ public class XtextParser implements PsiParser, LightPsiParser {
   }
 
   /* ********************************************************** */
-  // RuleFromLiteralCondition_LiteralCondition
+  // RuleFromLiteralConditionBranch1
   public static boolean LiteralCondition(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "LiteralCondition")) return false;
-      if (!nextTokenIs(b, "<literal condition>", FALSE, TRUE)) return false;
+      if (!nextTokenIs(b, "<literal condition>", FALSE_KEYWORD, TRUE_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, LITERAL_CONDITION, "<literal condition>");
-      r = RuleFromLiteralCondition_LiteralCondition(b, l + 1);
+      r = RuleFromLiteralConditionBranch1(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -1111,7 +1125,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b);
         r = REFERENCE_Parameter_ID(b, l + 1);
-        r = r && consumeToken(b, EQUALS);
+        r = r && consumeToken(b, EQUALS_KEYWORD);
         //last
         exit_section_(b, m, null, r);
     return r;
@@ -1131,23 +1145,23 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // '!' TerminalTokenElement
   public static boolean NegatedToken(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "NegatedToken")) return false;
-    if (!nextTokenIs(b, ACX_MARK)) return false;
+      if (!nextTokenIs(b, ACX_MARK_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, ACX_MARK);
+      r = consumeToken(b, ACX_MARK_KEYWORD);
     r = r && TerminalTokenElement(b, l + 1);
     exit_section_(b, m, NEGATED_TOKEN, r);
     return r;
   }
 
   /* ********************************************************** */
-  // Atom |  RuleFromNegation_Negation
+  // Atom |  RuleFromNegationBranch2
   public static boolean Negation(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "Negation")) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, NEGATION, "<negation>");
     r = Atom(b, l + 1);
-      if (!r) r = RuleFromNegation_Negation(b, l + 1);
+      if (!r) r = RuleFromNegationBranch2(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -1181,12 +1195,12 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // '(' AssignableAlternatives ')'
   public static boolean ParenthesizedAssignableElement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ParenthesizedAssignableElement")) return false;
-    if (!nextTokenIs(b, L_BRACKET)) return false;
+      if (!nextTokenIs(b, L_BRACKET_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, L_BRACKET);
+      r = consumeToken(b, L_BRACKET_KEYWORD);
     r = r && AssignableAlternatives(b, l + 1);
-    r = r && consumeToken(b, R_BRACKET);
+      r = r && consumeToken(b, R_BRACKET_KEYWORD);
       //last
     exit_section_(b, m, PARENTHESIZED_ASSIGNABLE_ELEMENT, r);
     return r;
@@ -1196,12 +1210,12 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // '(' Disjunction ')'
   public static boolean ParenthesizedCondition(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ParenthesizedCondition")) return false;
-    if (!nextTokenIs(b, L_BRACKET)) return false;
+      if (!nextTokenIs(b, L_BRACKET_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, L_BRACKET);
+      r = consumeToken(b, L_BRACKET_KEYWORD);
     r = r && Disjunction(b, l + 1);
-    r = r && consumeToken(b, R_BRACKET);
+      r = r && consumeToken(b, R_BRACKET_KEYWORD);
       //last
     exit_section_(b, m, PARENTHESIZED_CONDITION, r);
     return r;
@@ -1211,12 +1225,12 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // '(' Alternatives ')'
   public static boolean ParenthesizedElement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ParenthesizedElement")) return false;
-    if (!nextTokenIs(b, L_BRACKET)) return false;
+      if (!nextTokenIs(b, L_BRACKET_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, L_BRACKET);
+      r = consumeToken(b, L_BRACKET_KEYWORD);
     r = r && Alternatives(b, l + 1);
-    r = r && consumeToken(b, R_BRACKET);
+      r = r && consumeToken(b, R_BRACKET_KEYWORD);
       //last
     exit_section_(b, m, PARENTHESIZED_ELEMENT, r);
     return r;
@@ -1226,12 +1240,12 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // '(' TerminalAlternatives ')'
   public static boolean ParenthesizedTerminalElement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ParenthesizedTerminalElement")) return false;
-    if (!nextTokenIs(b, L_BRACKET)) return false;
+      if (!nextTokenIs(b, L_BRACKET_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, L_BRACKET);
+      r = consumeToken(b, L_BRACKET_KEYWORD);
     r = r && TerminalAlternatives(b, l + 1);
-    r = r && consumeToken(b, R_BRACKET);
+      r = r && consumeToken(b, R_BRACKET_KEYWORD);
       //last
     exit_section_(b, m, PARENTHESIZED_TERMINAL_ELEMENT, r);
     return r;
@@ -1246,9 +1260,9 @@ public class XtextParser implements PsiParser, LightPsiParser {
       r = ParserRule_0(b, l + 1);
       r = r && ParserRule_1(b, l + 1);
       r = r && ParserRule_2(b, l + 1);
-      r = r && consumeToken(b, COLON);
+      r = r && consumeToken(b, COLON_KEYWORD);
       r = r && Alternatives(b, l + 1);
-    r = r && consumeToken(b, SEMICOLON);
+      r = r && consumeToken(b, SEMICOLON_KEYWORD);
       //last
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -1291,7 +1305,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "ParserRule_1_0")) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, FRAGMENT);
+        r = consumeToken(b, FRAGMENT_KEYWORD);
         r = r && RuleNameAndParams(b, l + 1);
         r = r && ParserRule_1_0_2(b, l + 1);
         exit_section_(b, m, null, r);
@@ -1303,7 +1317,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "ParserRule_1_0_2")) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, ASTERISK);
+        r = consumeToken(b, ASTERISK_KEYWORD);
         if (!r) r = ParserRule_1_0_2_1(b, l + 1);
         exit_section_(b, m, null, r);
         return r;
@@ -1321,7 +1335,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "ParserRule_1_0_2_1_0")) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, RETURNS);
+        r = consumeToken(b, RETURNS_KEYWORD);
         r = r && TypeRef(b, l + 1);
         exit_section_(b, m, null, r);
         return r;
@@ -1350,7 +1364,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "ParserRule_1_1_1_0")) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, RETURNS);
+        r = consumeToken(b, RETURNS_KEYWORD);
         r = r && TypeRef(b, l + 1);
         exit_section_(b, m, null, r);
         return r;
@@ -1368,9 +1382,9 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "ParserRule_2_0")) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeTokens(b, 0, HIDDEN, L_BRACKET);
+        r = consumeTokens(b, 0, HIDDEN_KEYWORD, L_BRACKET_KEYWORD);
         r = r && ParserRule_2_0_2(b, l + 1);
-        r = r && consumeToken(b, R_BRACKET);
+        r = r && consumeToken(b, R_BRACKET_KEYWORD);
         //last
         exit_section_(b, m, null, r);
         return r;
@@ -1410,7 +1424,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "ParserRule_2_0_2_0_1_0")) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, COMMA);
+        r = consumeToken(b, COMMA_KEYWORD);
         r = r && REFERENCE_AbstractRule_RuleID(b, l + 1);
         exit_section_(b, m, null, r);
         return r;
@@ -1420,13 +1434,13 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // ('=>' |  '->'  )'(' Alternatives ')'
   public static boolean PredicatedGroup(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PredicatedGroup")) return false;
-    if (!nextTokenIs(b, "<predicated group>", PRED, WEAK_PRED)) return false;
+      if (!nextTokenIs(b, "<predicated group>", PRED_KEYWORD, WEAK_PRED_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, PREDICATED_GROUP, "<predicated group>");
     r = PredicatedGroup_0(b, l + 1);
-    r = r && consumeToken(b, L_BRACKET);
+      r = r && consumeToken(b, L_BRACKET_KEYWORD);
     r = r && Alternatives(b, l + 1);
-    r = r && consumeToken(b, R_BRACKET);
+      r = r && consumeToken(b, R_BRACKET_KEYWORD);
       //last
     exit_section_(b, l, m, r, false, null);
     return r;
@@ -1437,8 +1451,8 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "PredicatedGroup_0")) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, PRED);
-        if (!r) r = consumeToken(b, WEAK_PRED);
+        r = consumeToken(b, PRED_KEYWORD);
+        if (!r) r = consumeToken(b, WEAK_PRED_KEYWORD);
         exit_section_(b, m, null, r);
         return r;
     }
@@ -1447,7 +1461,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     // ('=>' |  '->'  )STRING
     public static boolean PredicatedKeyword(PsiBuilder b, int l) {
         if (!recursion_guard_(b, l, "PredicatedKeyword")) return false;
-        if (!nextTokenIs(b, "<predicated keyword>", PRED, WEAK_PRED)) return false;
+        if (!nextTokenIs(b, "<predicated keyword>", PRED_KEYWORD, WEAK_PRED_KEYWORD)) return false;
         boolean r;
         Marker m = enter_section_(b, l, _NONE_, PREDICATED_KEYWORD, "<predicated keyword>");
         r = PredicatedKeyword_0(b, l + 1);
@@ -1462,8 +1476,8 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "PredicatedKeyword_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, PRED);
-    if (!r) r = consumeToken(b, WEAK_PRED);
+      r = consumeToken(b, PRED_KEYWORD);
+      if (!r) r = consumeToken(b, WEAK_PRED_KEYWORD);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -1472,7 +1486,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // ('=>' |  '->'  )REFERENCE_AbstractRule_RuleID ('<' NamedArgument (',' NamedArgument  )* '>'  )?
   public static boolean PredicatedRuleCall(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "PredicatedRuleCall")) return false;
-    if (!nextTokenIs(b, "<predicated rule call>", PRED, WEAK_PRED)) return false;
+      if (!nextTokenIs(b, "<predicated rule call>", PRED_KEYWORD, WEAK_PRED_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, PREDICATED_RULE_CALL, "<predicated rule call>");
     r = PredicatedRuleCall_0(b, l + 1);
@@ -1487,8 +1501,8 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "PredicatedRuleCall_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, PRED);
-    if (!r) r = consumeToken(b, WEAK_PRED);
+      r = consumeToken(b, PRED_KEYWORD);
+      if (!r) r = consumeToken(b, WEAK_PRED_KEYWORD);
     exit_section_(b, m, null, r);
     return r;
   }
@@ -1505,10 +1519,10 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "PredicatedRuleCall_2_0")) return false;
     boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, L_ANGLE_BRACKET);
+        r = consumeToken(b, L_ANGLE_BRACKET_KEYWORD);
         r = r && NamedArgument(b, l + 1);
         r = r && PredicatedRuleCall_2_0_2(b, l + 1);
-        r = r && consumeToken(b, R_ANGLE_BRACKET);
+        r = r && consumeToken(b, R_ANGLE_BRACKET_KEYWORD);
         //last
         exit_section_(b, m, null, r);
     return r;
@@ -1530,7 +1544,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "PredicatedRuleCall_2_0_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, COMMA);
+      r = consumeToken(b, COMMA_KEYWORD);
     r = r && NamedArgument(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -1627,10 +1641,10 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // 'import' REFERENCE_ecore-EPackage_STRING ('as' ValidID  )?
   public static boolean ReferencedMetamodel(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "ReferencedMetamodel")) return false;
-    if (!nextTokenIs(b, IMPORT)) return false;
+      if (!nextTokenIs(b, IMPORT_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, IMPORT);
+      r = consumeToken(b, IMPORT_KEYWORD);
       r = r && REFERENCE_ecore_EPackage_STRING(b, l + 1);
     r = r && ReferencedMetamodel_2(b, l + 1);
     exit_section_(b, m, REFERENCED_METAMODEL, r);
@@ -1649,7 +1663,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "ReferencedMetamodel_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, AS);
+      r = consumeToken(b, AS_KEYWORD);
     r = r && ValidID(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -1679,10 +1693,10 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "RuleCall_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-        r = consumeToken(b, L_ANGLE_BRACKET);
+        r = consumeToken(b, L_ANGLE_BRACKET_KEYWORD);
         r = r && NamedArgument(b, l + 1);
         r = r && RuleCall_1_0_2(b, l + 1);
-        r = r && consumeToken(b, R_ANGLE_BRACKET);
+        r = r && consumeToken(b, R_ANGLE_BRACKET_KEYWORD);
         //last
         exit_section_(b, m, null, r);
     return r;
@@ -1704,45 +1718,58 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "RuleCall_1_0_2_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, COMMA);
+      r = consumeToken(b, COMMA_KEYWORD);
     r = r && NamedArgument(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
   }
 
     /* ********************************************************** */
-    // '<' Disjunction '>' (AbstractToken  )+
-    public static boolean RuleFromConditionalBranch_Group(PsiBuilder b, int l) {
-        if (!recursion_guard_(b, l, "RuleFromConditionalBranch_Group")) return false;
-        if (!nextTokenIs(b, L_ANGLE_BRACKET)) return false;
+    // 'EOF'
+    public static boolean RuleFromCaretEOFBranch1(PsiBuilder b, int l) {
+        if (!recursion_guard_(b, l, "RuleFromCaretEOFBranch1")) return false;
+        if (!nextTokenIs(b, EOF_KEY_KEYWORD)) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, L_ANGLE_BRACKET);
+        r = consumeToken(b, EOF_KEY_KEYWORD);
+        //last
+        exit_section_(b, m, RULE_FROM_CARET_EOF_BRANCH_1, r);
+        return r;
+    }
+
+    /* ********************************************************** */
+    // '<' Disjunction '>' (AbstractToken  )+
+    public static boolean RuleFromConditionalBranchBranch2(PsiBuilder b, int l) {
+        if (!recursion_guard_(b, l, "RuleFromConditionalBranchBranch2")) return false;
+        if (!nextTokenIs(b, L_ANGLE_BRACKET_KEYWORD)) return false;
+        boolean r;
+        Marker m = enter_section_(b);
+        r = consumeToken(b, L_ANGLE_BRACKET_KEYWORD);
         r = r && Disjunction(b, l + 1);
-        r = r && consumeToken(b, R_ANGLE_BRACKET);
-        r = r && RuleFromConditionalBranch_Group_3(b, l + 1);
-        exit_section_(b, m, RULE_FROM_CONDITIONAL_BRANCH_GROUP, r);
+        r = r && consumeToken(b, R_ANGLE_BRACKET_KEYWORD);
+        r = r && RuleFromConditionalBranchBranch2_3(b, l + 1);
+        exit_section_(b, m, RULE_FROM_CONDITIONAL_BRANCH_BRANCH_2, r);
         return r;
     }
 
     // (AbstractToken  )+
-    private static boolean RuleFromConditionalBranch_Group_3(PsiBuilder b, int l) {
-        if (!recursion_guard_(b, l, "RuleFromConditionalBranch_Group_3")) return false;
+    private static boolean RuleFromConditionalBranchBranch2_3(PsiBuilder b, int l) {
+        if (!recursion_guard_(b, l, "RuleFromConditionalBranchBranch2_3")) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = RuleFromConditionalBranch_Group_3_0(b, l + 1);
+        r = RuleFromConditionalBranchBranch2_3_0(b, l + 1);
         while (r) {
             int c = current_position_(b);
-            if (!RuleFromConditionalBranch_Group_3_0(b, l + 1)) break;
-            if (!empty_element_parsed_guard_(b, "RuleFromConditionalBranch_Group_3", c)) break;
+            if (!RuleFromConditionalBranchBranch2_3_0(b, l + 1)) break;
+            if (!empty_element_parsed_guard_(b, "RuleFromConditionalBranchBranch2_3", c)) break;
         }
         exit_section_(b, m, null, r);
         return r;
     }
 
     // (AbstractToken  )
-    private static boolean RuleFromConditionalBranch_Group_3_0(PsiBuilder b, int l) {
-        if (!recursion_guard_(b, l, "RuleFromConditionalBranch_Group_3_0")) return false;
+    private static boolean RuleFromConditionalBranchBranch2_3_0(PsiBuilder b, int l) {
+        if (!recursion_guard_(b, l, "RuleFromConditionalBranchBranch2_3_0")) return false;
         boolean r;
         Marker m = enter_section_(b);
         r = AbstractToken(b, l + 1);
@@ -1752,53 +1779,40 @@ public class XtextParser implements PsiParser, LightPsiParser {
 
     /* ********************************************************** */
     // 'true' |  'false'
-    public static boolean RuleFromLiteralCondition_LiteralCondition(PsiBuilder b, int l) {
-        if (!recursion_guard_(b, l, "RuleFromLiteralCondition_LiteralCondition")) return false;
-        if (!nextTokenIs(b, "<rule from literal condition literal condition>", FALSE, TRUE)) return false;
+    public static boolean RuleFromLiteralConditionBranch1(PsiBuilder b, int l) {
+        if (!recursion_guard_(b, l, "RuleFromLiteralConditionBranch1")) return false;
+        if (!nextTokenIs(b, "<rule from literal condition branch 1>", FALSE_KEYWORD, TRUE_KEYWORD)) return false;
         boolean r;
-        Marker m = enter_section_(b, l, _NONE_, RULE_FROM_LITERAL_CONDITION_LITERAL_CONDITION, "<rule from literal condition literal condition>");
-        r = consumeToken(b, TRUE);
-        if (!r) r = consumeToken(b, FALSE);
+        Marker m = enter_section_(b, l, _NONE_, RULE_FROM_LITERAL_CONDITION_BRANCH_1, "<rule from literal condition branch 1>");
+        r = consumeToken(b, TRUE_KEYWORD);
+        if (!r) r = consumeToken(b, FALSE_KEYWORD);
         exit_section_(b, l, m, r, false, null);
         return r;
     }
 
     /* ********************************************************** */
     // '!' Negation
-    public static boolean RuleFromNegation_Negation(PsiBuilder b, int l) {
-        if (!recursion_guard_(b, l, "RuleFromNegation_Negation")) return false;
-        if (!nextTokenIs(b, ACX_MARK)) return false;
+    public static boolean RuleFromNegationBranch2(PsiBuilder b, int l) {
+        if (!recursion_guard_(b, l, "RuleFromNegationBranch2")) return false;
+        if (!nextTokenIs(b, ACX_MARK_KEYWORD)) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, ACX_MARK);
+        r = consumeToken(b, ACX_MARK_KEYWORD);
         r = r && Negation(b, l + 1);
-        exit_section_(b, m, RULE_FROM_NEGATION_NEGATION, r);
+        exit_section_(b, m, RULE_FROM_NEGATION_BRANCH_2, r);
         return r;
     }
 
     /* ********************************************************** */
     // '.'
-    public static boolean RuleFromWildcard_Wildcard(PsiBuilder b, int l) {
-        if (!recursion_guard_(b, l, "RuleFromWildcard_Wildcard")) return false;
-        if (!nextTokenIs(b, DOT)) return false;
+    public static boolean RuleFromWildcardBranch1(PsiBuilder b, int l) {
+        if (!recursion_guard_(b, l, "RuleFromWildcardBranch1")) return false;
+        if (!nextTokenIs(b, DOT_KEYWORD)) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, DOT);
+        r = consumeToken(b, DOT_KEYWORD);
         //last
-        exit_section_(b, m, RULE_FROM_WILDCARD_WILDCARD, r);
-        return r;
-    }
-
-    /* ********************************************************** */
-    // 'EOF'
-    public static boolean RuleFromcaretEOF_caretEOF(PsiBuilder b, int l) {
-        if (!recursion_guard_(b, l, "RuleFromcaretEOF_caretEOF")) return false;
-        if (!nextTokenIs(b, EOF_KEY)) return false;
-        boolean r;
-        Marker m = enter_section_(b);
-        r = consumeToken(b, EOF_KEY);
-        //last
-        exit_section_(b, m, RULE_FROMCARET_EOF_CARET_EOF, r);
+        exit_section_(b, m, RULE_FROM_WILDCARD_BRANCH_1, r);
         return r;
     }
 
@@ -1830,7 +1844,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "RuleID_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, COLONS);
+      r = consumeToken(b, COLONS_KEYWORD);
     r = r && ValidID(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -1860,9 +1874,9 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "RuleNameAndParams_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, L_ANGLE_BRACKET);
+        r = consumeToken(b, L_ANGLE_BRACKET_KEYWORD);
         r = r && RuleNameAndParams_1_0_1(b, l + 1);
-    r = r && consumeToken(b, R_ANGLE_BRACKET);
+        r = r && consumeToken(b, R_ANGLE_BRACKET_KEYWORD);
         //last
     exit_section_(b, m, null, r);
     return r;
@@ -1902,7 +1916,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "RuleNameAndParams_1_0_1_0_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, COMMA);
+      r = consumeToken(b, COMMA_KEYWORD);
     r = r && Parameter(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -1947,7 +1961,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "TerminalAlternatives_1_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, PIPE);
+      r = consumeToken(b, PIPE_KEYWORD);
     r = r && TerminalGroup(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -2001,15 +2015,15 @@ public class XtextParser implements PsiParser, LightPsiParser {
     // (Annotation  )* 'terminal' ('fragment' ValidID |  ValidID ('returns' TypeRef  )?  )':' TerminalAlternatives ';'
     public static boolean TerminalRule(PsiBuilder b, int l) {
         if (!recursion_guard_(b, l, "TerminalRule")) return false;
-        if (!nextTokenIs(b, "<terminal rule>", AT_SIGN, TERMINAL)) return false;
+        if (!nextTokenIs(b, "<terminal rule>", AT_SIGN_KEYWORD, TERMINAL_KEYWORD)) return false;
         boolean r;
         Marker m = enter_section_(b, l, _NONE_, TERMINAL_RULE, "<terminal rule>");
         r = TerminalRule_0(b, l + 1);
-        r = r && consumeToken(b, TERMINAL);
+        r = r && consumeToken(b, TERMINAL_KEYWORD);
         r = r && TerminalRule_2(b, l + 1);
-        r = r && consumeToken(b, COLON);
+        r = r && consumeToken(b, COLON_KEYWORD);
         r = r && TerminalAlternatives(b, l + 1);
-        r = r && consumeToken(b, SEMICOLON);
+        r = r && consumeToken(b, SEMICOLON_KEYWORD);
         //last
         exit_section_(b, l, m, r, false, null);
         return r;
@@ -2052,7 +2066,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "TerminalRule_2_0")) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, FRAGMENT);
+        r = consumeToken(b, FRAGMENT_KEYWORD);
         r = r && ValidID(b, l + 1);
         exit_section_(b, m, null, r);
         return r;
@@ -2081,7 +2095,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
         if (!recursion_guard_(b, l, "TerminalRule_2_1_1_0")) return false;
         boolean r;
         Marker m = enter_section_(b);
-        r = consumeToken(b, RETURNS);
+        r = consumeToken(b, RETURNS_KEYWORD);
         r = r && TypeRef(b, l + 1);
         exit_section_(b, m, null, r);
         return r;
@@ -2122,15 +2136,15 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "TerminalToken_1_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, QUES_MARK);
-    if (!r) r = consumeToken(b, ASTERISK);
-    if (!r) r = consumeToken(b, PLUS);
+      r = consumeToken(b, QUES_MARK_KEYWORD);
+      if (!r) r = consumeToken(b, ASTERISK_KEYWORD);
+      if (!r) r = consumeToken(b, PLUS_KEYWORD);
     exit_section_(b, m, null, r);
     return r;
   }
 
   /* ********************************************************** */
-  // CharacterRange |  TerminalRuleCall |  ParenthesizedTerminalElement |  AbstractNegatedToken |  Wildcard |  caretEOF
+  // CharacterRange |  TerminalRuleCall |  ParenthesizedTerminalElement |  AbstractNegatedToken |  Wildcard |  CaretEOF
   public static boolean TerminalTokenElement(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "TerminalTokenElement")) return false;
     boolean r;
@@ -2140,7 +2154,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!r) r = ParenthesizedTerminalElement(b, l + 1);
     if (!r) r = AbstractNegatedToken(b, l + 1);
     if (!r) r = Wildcard(b, l + 1);
-      if (!r) r = caretEOF(b, l + 1);
+      if (!r) r = CaretEOF(b, l + 1);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
@@ -2171,7 +2185,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     boolean r;
         Marker m = enter_section_(b);
         r = REFERENCE_AbstractMetamodelDeclaration(b, l + 1);
-        r = r && consumeToken(b, COLONS);
+        r = r && consumeToken(b, COLONS_KEYWORD);
         //last
         exit_section_(b, m, null, r);
     return r;
@@ -2216,7 +2230,7 @@ public class XtextParser implements PsiParser, LightPsiParser {
     if (!recursion_guard_(b, l, "UnorderedGroup_1_0_0")) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, AMPERSAND);
+      r = consumeToken(b, AMPERSAND_KEYWORD);
     r = r && Group(b, l + 1);
     exit_section_(b, m, null, r);
     return r;
@@ -2226,10 +2240,10 @@ public class XtextParser implements PsiParser, LightPsiParser {
   // '->' TerminalTokenElement
   public static boolean UntilToken(PsiBuilder b, int l) {
     if (!recursion_guard_(b, l, "UntilToken")) return false;
-    if (!nextTokenIs(b, WEAK_PRED)) return false;
+      if (!nextTokenIs(b, WEAK_PRED_KEYWORD)) return false;
     boolean r;
     Marker m = enter_section_(b);
-    r = consumeToken(b, WEAK_PRED);
+      r = consumeToken(b, WEAK_PRED_KEYWORD);
     r = r && TerminalTokenElement(b, l + 1);
     exit_section_(b, m, UNTIL_TOKEN, r);
     return r;
@@ -2242,34 +2256,28 @@ public class XtextParser implements PsiParser, LightPsiParser {
     boolean r;
     Marker m = enter_section_(b, l, _NONE_, VALID_ID, "<valid id>");
     r = consumeToken(b, ID);
-    if (!r) r = consumeToken(b, TRUE);
-      if (!r) r = consumeToken(b, FALSE);
+      if (!r) r = consumeToken(b, TRUE_KEYWORD);
+      if (!r) r = consumeToken(b, FALSE_KEYWORD);
     exit_section_(b, l, m, r, false, null);
     return r;
   }
 
   /* ********************************************************** */
-  // RuleFromWildcard_Wildcard
+  // RuleFromWildcardBranch1
   public static boolean Wildcard(PsiBuilder b, int l) {
       if (!recursion_guard_(b, l, "Wildcard")) return false;
-      if (!nextTokenIs(b, DOT)) return false;
+      if (!nextTokenIs(b, DOT_KEYWORD)) return false;
       boolean r;
       Marker m = enter_section_(b);
-      r = RuleFromWildcard_Wildcard(b, l + 1);
+      r = RuleFromWildcardBranch1(b, l + 1);
       exit_section_(b, m, WILDCARD, r);
       return r;
   }
 
     /* ********************************************************** */
-    // RuleFromcaretEOF_caretEOF
-    public static boolean caretEOF(PsiBuilder b, int l) {
-        if (!recursion_guard_(b, l, "caretEOF")) return false;
-        if (!nextTokenIs(b, EOF_KEY)) return false;
-        boolean r;
-        Marker m = enter_section_(b);
-        r = RuleFromcaretEOF_caretEOF(b, l + 1);
-        exit_section_(b, m, CARET_EOF, r);
-        return r;
+    // Grammar
+    static boolean XtextFile(PsiBuilder b, int l) {
+        return Grammar(b, l + 1);
     }
 
 }

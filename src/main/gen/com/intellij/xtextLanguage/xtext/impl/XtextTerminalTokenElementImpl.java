@@ -29,6 +29,12 @@ public class XtextTerminalTokenElementImpl extends XtextPsiCompositeElementImpl 
     return findChildByClass(XtextAbstractNegatedToken.class);
   }
 
+    @Override
+    @Nullable
+    public XtextCaretEOF getCaretEOF() {
+        return findChildByClass(XtextCaretEOF.class);
+    }
+
   @Override
   @Nullable
   public XtextCharacterRange getCharacterRange() {
@@ -52,11 +58,5 @@ public class XtextTerminalTokenElementImpl extends XtextPsiCompositeElementImpl 
   public XtextWildcard getWildcard() {
     return findChildByClass(XtextWildcard.class);
   }
-
-    @Override
-    @Nullable
-    public XtextCaretEOF getCaretEOF() {
-        return findChildByClass(XtextCaretEOF.class);
-    }
 
 }

@@ -5,7 +5,7 @@ import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.xtextLanguage.xtext.psi.XtextAtom;
 import com.intellij.xtextLanguage.xtext.psi.XtextNegation;
-import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromNegationNegation;
+import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromNegationBranch2;
 import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
 import org.jetbrains.annotations.NotNull;
@@ -34,8 +34,8 @@ public class XtextNegationImpl extends XtextPsiCompositeElementImpl implements X
 
   @Override
   @Nullable
-  public XtextRuleFromNegationNegation getRuleFromNegationNegation() {
-      return findChildByClass(XtextRuleFromNegationNegation.class);
+  public XtextRuleFromNegationBranch2 getRuleFromNegationBranch2() {
+      return findChildByClass(XtextRuleFromNegationBranch2.class);
   }
 
 }

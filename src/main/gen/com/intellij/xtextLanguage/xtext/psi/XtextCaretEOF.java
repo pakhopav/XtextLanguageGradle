@@ -7,6 +7,6 @@ import org.jetbrains.annotations.NotNull;
 public interface XtextCaretEOF extends PsiElement {
 
   @NotNull
-  XtextRuleFromcaretEOFCaretEOF getRuleFromcaretEOFCaretEOF();
+  XtextRuleFromCaretEOFBranch1 getRuleFromCaretEOFBranch1();
 
 }

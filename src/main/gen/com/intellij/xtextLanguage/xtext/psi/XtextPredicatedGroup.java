@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface XtextPredicatedGroup extends PsiElement {
 
@@ -11,15 +11,15 @@ public interface XtextPredicatedGroup extends PsiElement {
   XtextAlternatives getAlternatives();
 
   @NotNull
-  PsiElement getLBracket();
+  PsiElement getLBracketKeyword();
 
   @Nullable
-  PsiElement getPred();
+  PsiElement getPredKeyword();
 
   @NotNull
-  PsiElement getRBracket();
+  PsiElement getRBracketKeyword();
 
   @Nullable
-  PsiElement getWeakPred();
+  PsiElement getWeakPredKeyword();
 
 }

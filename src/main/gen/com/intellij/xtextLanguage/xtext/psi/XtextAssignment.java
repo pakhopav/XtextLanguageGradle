@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface XtextAssignment extends PsiElement {
 
@@ -14,18 +14,18 @@ public interface XtextAssignment extends PsiElement {
   XtextValidID getValidID();
 
   @Nullable
-  PsiElement getEquals();
+  PsiElement getEqualsKeyword();
 
   @Nullable
-  PsiElement getPlusEquals();
+  PsiElement getPlusEqualsKeyword();
 
   @Nullable
-  PsiElement getPred();
+  PsiElement getPredKeyword();
 
   @Nullable
-  PsiElement getQuesEquals();
+  PsiElement getQuesEqualsKeyword();
 
   @Nullable
-  PsiElement getWeakPred();
+  PsiElement getWeakPredKeyword();
 
 }

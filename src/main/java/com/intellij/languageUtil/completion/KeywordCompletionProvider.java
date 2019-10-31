@@ -34,7 +34,7 @@ import java.util.List;
 public class KeywordCompletionProvider<T extends PsiFile, F extends IElementType> extends CompletionProvider<CompletionParameters> {
     final Class<F> fClass;
     final List<String> leftBraces = Arrays.asList("(", "{", "<");
-    final List<BracePair> myBraces = Arrays.asList(new BracePair(XtextTypes.L_BRACE, XtextTypes.R_BRACE, true), new BracePair(XtextTypes.L_BRACKET, XtextTypes.R_BRACKET, true), new BracePair(XtextTypes.L_ANGLE_BRACKET, XtextTypes.R_ANGLE_BRACKET, true));
+    final List<BracePair> myBraces = Arrays.asList(new BracePair(XtextTypes.L_BRACE_KEYWORD, XtextTypes.R_BRACE_KEYWORD, true), new BracePair(XtextTypes.L_BRACKET_KEYWORD, XtextTypes.R_BRACKET_KEYWORD, true), new BracePair(XtextTypes.L_ANGLE_BRACKET_KEYWORD, XtextTypes.R_ANGLE_BRACKET_KEYWORD, true));
     private Language language;
     private LanguageFileType fileType;
 

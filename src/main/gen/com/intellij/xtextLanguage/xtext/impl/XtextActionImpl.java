@@ -1,16 +1,18 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextAction;
+import com.intellij.xtextLanguage.xtext.psi.XtextTypeRef;
+import com.intellij.xtextLanguage.xtext.psi.XtextValidID;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
 
 public class XtextActionImpl extends XtextPsiCompositeElementImpl implements XtextAction {
 
@@ -41,38 +43,38 @@ public class XtextActionImpl extends XtextPsiCompositeElementImpl implements Xte
 
   @Override
   @Nullable
-  public PsiElement getCurrent() {
-    return findChildByType(CURRENT);
+  public PsiElement getCurrentKeyword() {
+      return findChildByType(CURRENT_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getDot() {
-    return findChildByType(DOT);
+  public PsiElement getDotKeyword() {
+      return findChildByType(DOT_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getEquals() {
-    return findChildByType(EQUALS);
+  public PsiElement getEqualsKeyword() {
+      return findChildByType(EQUALS_KEYWORD);
   }
 
   @Override
   @NotNull
-  public PsiElement getLBrace() {
-    return findNotNullChildByType(L_BRACE);
+  public PsiElement getLBraceKeyword() {
+      return findNotNullChildByType(L_BRACE_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getPlusEquals() {
-    return findChildByType(PLUS_EQUALS);
+  public PsiElement getPlusEqualsKeyword() {
+      return findChildByType(PLUS_EQUALS_KEYWORD);
   }
 
   @Override
   @NotNull
-  public PsiElement getRBrace() {
-    return findNotNullChildByType(R_BRACE);
+  public PsiElement getRBraceKeyword() {
+      return findNotNullChildByType(R_BRACE_KEYWORD);
   }
 
 }

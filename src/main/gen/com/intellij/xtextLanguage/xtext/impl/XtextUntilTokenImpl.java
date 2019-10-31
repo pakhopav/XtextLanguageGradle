@@ -1,16 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextTerminalTokenElement;
+import com.intellij.xtextLanguage.xtext.psi.XtextUntilToken;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.WEAK_PRED_KEYWORD;
 
 public class XtextUntilTokenImpl extends XtextPsiCompositeElementImpl implements XtextUntilToken {
 
@@ -35,8 +35,8 @@ public class XtextUntilTokenImpl extends XtextPsiCompositeElementImpl implements
 
   @Override
   @NotNull
-  public PsiElement getWeakPred() {
-    return findNotNullChildByType(WEAK_PRED);
+  public PsiElement getWeakPredKeyword() {
+      return findNotNullChildByType(WEAK_PRED_KEYWORD);
   }
 
 }

@@ -1,6 +1,5 @@
 package com.intellij.xtextLanguage.xtext.psi;
 
-
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.PsiBuilder;
 import com.intellij.lang.PsiBuilderFactory;
@@ -12,8 +11,7 @@ import com.intellij.xtextLanguage.xtext.XtextParserDefinition;
 import com.intellij.xtextLanguage.xtext.grammar.XtextLexer;
 import com.intellij.xtextLanguage.xtext.parser.XtextParser;
 
-public class XtextElementFactory {
-
+public abstract class XtextElementFactory {
     public static <T> T parseFromString(String text, IElementType type, Class<T> expectedClass) {
         PsiBuilderFactory factory = PsiBuilderFactory.getInstance();
         PsiBuilder psiBuilder = factory.createBuilder(new XtextParserDefinition(), new XtextLexer(), text);
@@ -27,22 +25,32 @@ public class XtextElementFactory {
         return expectedClass.isInstance(psiResult) ? expectedClass.cast(psiResult) : null;
     }
 
-    //    public static PsiElement createValidID(String name) {
-//        XtextRuleIdentifier ruleId =
-//                parseFromString(name, XtextTypes.RULE_IDENTIFIER, XtextRuleIdentifier.class);
-//        if (ruleId == null) {
-//            throw new IllegalStateException("Can't parse to RULE_IDENTIFIER declaration: " + name);
-//        }
-//        return ruleId.getValidID();
-//    }
-//
-    public static XtextParserRule createParserRule(String text) {
+    public static XtextParserRule createParserRule(String name) {
         XtextParserRule rule =
-                parseFromString(text, XtextTypes.PARSER_RULE, XtextParserRule.class);
+                parseFromString(name, XtextTypes.PARSER_RULE, XtextParserRule.class);
         if (rule == null) {
-            throw new IllegalStateException("Can't parse to XtextParserRuleHolder declaration: " + text);
+            throw new IllegalStateException("Can't parse to PARSER_RULE declaration: " + name);
         }
         return rule;
     }
+
+    public static XtextValidID createValidID(String name) {
+        XtextValidID validID =
+                parseFromString(name, XtextTypes.VALID_ID, XtextValidID.class);
+        if (validID == null) {
+            throw new IllegalStateException("Can't parse to VALID_ID declaration: " + name);
+        }
+        return validID;
+    }
+
+    public static XtextKeyword createKeyword(String name) {
+        XtextKeyword keyword =
+                parseFromString(name, XtextTypes.KEYWORD, XtextKeyword.class);
+        if (keyword == null) {
+            throw new IllegalStateException("Can't parse to KEYWORD declaration: " + name);
+        }
+        return keyword;
+    }
+
 
 }

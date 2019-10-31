@@ -1,18 +1,18 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextParameter;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
+import com.intellij.xtextLanguage.xtext.psi.impl.XtextNamedElementImpl;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
 
-public class XtextParameterImpl extends XtextPsiCompositeElementImpl implements XtextParameter {
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.ID;
+
+public class XtextParameterImpl extends XtextNamedElementImpl implements XtextParameter {
 
   public XtextParameterImpl(@NotNull ASTNode node) {
     super(node);
@@ -32,5 +32,20 @@ public class XtextParameterImpl extends XtextPsiCompositeElementImpl implements 
   public PsiElement getId() {
     return findNotNullChildByType(ID);
   }
+
+    @Override
+    public String getName() {
+        return XtextPsiImplUtil.getName(this);
+    }
+
+    @Override
+    public PsiElement setName(String newName) {
+        return XtextPsiImplUtil.setName(this, newName);
+    }
+
+    @Override
+    public PsiElement getNameIdentifier() {
+        return XtextPsiImplUtil.getNameIdentifier(this);
+    }
 
 }

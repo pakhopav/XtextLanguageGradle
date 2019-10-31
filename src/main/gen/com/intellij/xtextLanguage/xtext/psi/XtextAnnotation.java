@@ -1,14 +1,13 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
 
 public interface XtextAnnotation extends PsiElement {
 
   @NotNull
-  PsiElement getAtSign();
+  PsiElement getAtSignKeyword();
 
   @NotNull
   PsiElement getId();

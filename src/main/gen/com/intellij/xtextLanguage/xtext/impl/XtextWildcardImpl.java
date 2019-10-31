@@ -3,7 +3,7 @@ package com.intellij.xtextLanguage.xtext.impl;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromWildcardWildcard;
+import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromWildcardBranch1;
 import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.XtextWildcard;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
@@ -26,8 +26,8 @@ public class XtextWildcardImpl extends XtextPsiCompositeElementImpl implements X
 
   @Override
   @NotNull
-  public XtextRuleFromWildcardWildcard getRuleFromWildcardWildcard() {
-      return findNotNullChildByClass(XtextRuleFromWildcardWildcard.class);
+  public XtextRuleFromWildcardBranch1 getRuleFromWildcardBranch1() {
+      return findNotNullChildByClass(XtextRuleFromWildcardBranch1.class);
   }
 
 }

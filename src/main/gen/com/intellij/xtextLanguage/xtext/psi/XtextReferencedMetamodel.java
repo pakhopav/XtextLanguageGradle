@@ -1,9 +1,9 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface XtextReferencedMetamodel extends PsiElement {
 
@@ -14,9 +14,9 @@ public interface XtextReferencedMetamodel extends PsiElement {
   XtextValidID getValidID();
 
   @Nullable
-  PsiElement getAs();
+  PsiElement getAsKeyword();
 
   @NotNull
-  PsiElement getImport();
+  PsiElement getImportKeyword();
 
 }

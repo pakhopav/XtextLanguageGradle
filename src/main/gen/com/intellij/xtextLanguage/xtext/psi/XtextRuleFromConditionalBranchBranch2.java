@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-public interface XtextRuleFromConditionalBranchGroup extends PsiElement {
+public interface XtextRuleFromConditionalBranchBranch2 extends PsiElement {
 
     @NotNull
     List<XtextAbstractToken> getAbstractTokenList();
@@ -15,9 +15,9 @@ public interface XtextRuleFromConditionalBranchGroup extends PsiElement {
     XtextDisjunction getDisjunction();
 
     @NotNull
-    PsiElement getLAngleBracket();
+    PsiElement getLAngleBracketKeyword();
 
     @NotNull
-    PsiElement getRAngleBracket();
+    PsiElement getRAngleBracketKeyword();
 
 }

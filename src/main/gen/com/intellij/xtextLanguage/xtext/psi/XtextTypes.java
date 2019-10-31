@@ -32,6 +32,7 @@ public interface XtextTypes {
   IElementType ENUM_LITERAL_DECLARATION = new XtextElementType("ENUM_LITERAL_DECLARATION");
   IElementType ENUM_RULE = new XtextElementType("ENUM_RULE");
   IElementType GENERATED_METAMODEL = new XtextElementType("GENERATED_METAMODEL");
+    IElementType GRAMMAR = new XtextElementType("GRAMMAR");
   IElementType GRAMMAR_ID = new XtextElementType("GRAMMAR_ID");
   IElementType GROUP = new XtextElementType("GROUP");
   IElementType KEYWORD = new XtextElementType("KEYWORD");
@@ -58,11 +59,11 @@ public interface XtextTypes {
   IElementType REFERENCE_GRAMMAR_GRAMMAR_ID = new XtextElementType("REFERENCE_GRAMMAR_GRAMMAR_ID");
   IElementType REFERENCE_PARAMETER_ID = new XtextElementType("REFERENCE_PARAMETER_ID");
   IElementType RULE_CALL = new XtextElementType("RULE_CALL");
-    IElementType RULE_FROMCARET_EOF_CARET_EOF = new XtextElementType("RULE_FROMCARET_EOF_CARET_EOF");
-    IElementType RULE_FROM_CONDITIONAL_BRANCH_GROUP = new XtextElementType("RULE_FROM_CONDITIONAL_BRANCH_GROUP");
-    IElementType RULE_FROM_LITERAL_CONDITION_LITERAL_CONDITION = new XtextElementType("RULE_FROM_LITERAL_CONDITION_LITERAL_CONDITION");
-    IElementType RULE_FROM_NEGATION_NEGATION = new XtextElementType("RULE_FROM_NEGATION_NEGATION");
-    IElementType RULE_FROM_WILDCARD_WILDCARD = new XtextElementType("RULE_FROM_WILDCARD_WILDCARD");
+    IElementType RULE_FROM_CARET_EOF_BRANCH_1 = new XtextElementType("RULE_FROM_CARET_EOF_BRANCH_1");
+    IElementType RULE_FROM_CONDITIONAL_BRANCH_BRANCH_2 = new XtextElementType("RULE_FROM_CONDITIONAL_BRANCH_BRANCH_2");
+    IElementType RULE_FROM_LITERAL_CONDITION_BRANCH_1 = new XtextElementType("RULE_FROM_LITERAL_CONDITION_BRANCH_1");
+    IElementType RULE_FROM_NEGATION_BRANCH_2 = new XtextElementType("RULE_FROM_NEGATION_BRANCH_2");
+    IElementType RULE_FROM_WILDCARD_BRANCH_1 = new XtextElementType("RULE_FROM_WILDCARD_BRANCH_1");
   IElementType RULE_ID = new XtextElementType("RULE_ID");
   IElementType RULE_NAME_AND_PARAMS = new XtextElementType("RULE_NAME_AND_PARAMS");
   IElementType TERMINAL_ALTERNATIVES = new XtextElementType("TERMINAL_ALTERNATIVES");
@@ -77,52 +78,52 @@ public interface XtextTypes {
   IElementType VALID_ID = new XtextElementType("VALID_ID");
   IElementType WILDCARD = new XtextElementType("WILDCARD");
 
-  IElementType ACX_MARK = new XtextTokenType("!");
-  IElementType AMPERSAND = new XtextTokenType("&");
+    IElementType ACX_MARK_KEYWORD = new XtextTokenType("!");
+    IElementType AMPERSAND_KEYWORD = new XtextTokenType("&");
   IElementType ANY_OTHER = new XtextTokenType("ANY_OTHER");
-  IElementType AS = new XtextTokenType("as");
-  IElementType ASTERISK = new XtextTokenType("*");
-  IElementType AT_SIGN = new XtextTokenType("@");
-  IElementType COLON = new XtextTokenType(":");
-  IElementType COLONS = new XtextTokenType("::");
-  IElementType COMMA = new XtextTokenType(",");
-  IElementType CURRENT = new XtextTokenType("current");
-  IElementType DOT = new XtextTokenType(".");
-  IElementType ENUM = new XtextTokenType("enum");
-  IElementType EOF_KEY = new XtextTokenType("EOF");
-  IElementType EQUALS = new XtextTokenType("=");
-    IElementType FALSE = new XtextTokenType("false");
-  IElementType FRAGMENT = new XtextTokenType("fragment");
-  IElementType GENERATE = new XtextTokenType("generate");
-  IElementType GRAMMAR = new XtextTokenType("grammar");
-  IElementType HIDDEN = new XtextTokenType("hidden");
+    IElementType ASTERISK_KEYWORD = new XtextTokenType("*");
+    IElementType AS_KEYWORD = new XtextTokenType("as");
+    IElementType AT_SIGN_KEYWORD = new XtextTokenType("@");
+    IElementType COLONS_KEYWORD = new XtextTokenType("::");
+    IElementType COLON_KEYWORD = new XtextTokenType(":");
+    IElementType COMMA_KEYWORD = new XtextTokenType(",");
+    IElementType CURRENT_KEYWORD = new XtextTokenType("current");
+    IElementType DOT_KEYWORD = new XtextTokenType(".");
+    IElementType ENUM_KEYWORD = new XtextTokenType("enum");
+    IElementType EOF_KEY_KEYWORD = new XtextTokenType("EOF");
+    IElementType EQUALS_KEYWORD = new XtextTokenType("=");
+    IElementType FALSE_KEYWORD = new XtextTokenType("false");
+    IElementType FRAGMENT_KEYWORD = new XtextTokenType("fragment");
+    IElementType GENERATE_KEYWORD = new XtextTokenType("generate");
+    IElementType GRAMMAR_KEYWORD = new XtextTokenType("grammar");
+    IElementType HIDDEN_KEYWORD = new XtextTokenType("hidden");
   IElementType ID = new XtextTokenType("ID");
-  IElementType IMPORT = new XtextTokenType("import");
+    IElementType IMPORT_KEYWORD = new XtextTokenType("import");
   IElementType INT = new XtextTokenType("INT");
-  IElementType L_ANGLE_BRACKET = new XtextTokenType("<");
-  IElementType L_BRACE = new XtextTokenType("{");
-  IElementType L_BRACKET = new XtextTokenType("(");
-  IElementType L_SQUARE_BRACKET = new XtextTokenType("[");
+    IElementType L_ANGLE_BRACKET_KEYWORD = new XtextTokenType("<");
+    IElementType L_BRACE_KEYWORD = new XtextTokenType("{");
+    IElementType L_BRACKET_KEYWORD = new XtextTokenType("(");
+    IElementType L_SQUARE_BRACKET_KEYWORD = new XtextTokenType("[");
   IElementType ML_COMMENT = new XtextTokenType("ML_COMMENT");
-  IElementType PIPE = new XtextTokenType("|");
-  IElementType PLUS = new XtextTokenType("+");
-  IElementType PLUS_EQUALS = new XtextTokenType("+=");
-  IElementType PRED = new XtextTokenType("=>");
-  IElementType QUES_EQUALS = new XtextTokenType("?=");
-  IElementType QUES_MARK = new XtextTokenType("?");
-  IElementType RANGE = new XtextTokenType("..");
-  IElementType RETURNS = new XtextTokenType("returns");
-  IElementType R_ANGLE_BRACKET = new XtextTokenType(">");
-  IElementType R_BRACE = new XtextTokenType("}");
-  IElementType R_BRACKET = new XtextTokenType(")");
-  IElementType R_SQUARE_BRACKET = new XtextTokenType("]");
-  IElementType SEMICOLON = new XtextTokenType(";");
+    IElementType PIPE_KEYWORD = new XtextTokenType("|");
+    IElementType PLUS_EQUALS_KEYWORD = new XtextTokenType("+=");
+    IElementType PLUS_KEYWORD = new XtextTokenType("+");
+    IElementType PRED_KEYWORD = new XtextTokenType("=>");
+    IElementType QUES_EQUALS_KEYWORD = new XtextTokenType("?=");
+    IElementType QUES_MARK_KEYWORD = new XtextTokenType("?");
+    IElementType RANGE_KEYWORD = new XtextTokenType("..");
+    IElementType RETURNS_KEYWORD = new XtextTokenType("returns");
+    IElementType R_ANGLE_BRACKET_KEYWORD = new XtextTokenType(">");
+    IElementType R_BRACE_KEYWORD = new XtextTokenType("}");
+    IElementType R_BRACKET_KEYWORD = new XtextTokenType(")");
+    IElementType R_SQUARE_BRACKET_KEYWORD = new XtextTokenType("]");
+    IElementType SEMICOLON_KEYWORD = new XtextTokenType(";");
   IElementType SL_COMMENT = new XtextTokenType("SL_COMMENT");
   IElementType STRING = new XtextTokenType("STRING");
-  IElementType TERMINAL = new XtextTokenType("terminal");
-  IElementType TRUE = new XtextTokenType("true");
-  IElementType WEAK_PRED = new XtextTokenType("->");
-  IElementType WITH = new XtextTokenType("with");
+    IElementType TERMINAL_KEYWORD = new XtextTokenType("terminal");
+    IElementType TRUE_KEYWORD = new XtextTokenType("true");
+    IElementType WEAK_PRED_KEYWORD = new XtextTokenType("->");
+    IElementType WITH_KEYWORD = new XtextTokenType("with");
 
     class TokenMetaInfo {
 
@@ -218,6 +219,8 @@ public interface XtextTypes {
           return new XtextEnumRuleImpl(node);
       } else if (type == GENERATED_METAMODEL) {
           return new XtextGeneratedMetamodelImpl(node);
+      } else if (type == GRAMMAR) {
+          return new XtextGrammarImpl(node);
       } else if (type == GRAMMAR_ID) {
           return new XtextGrammarIDImpl(node);
       } else if (type == GROUP) {
@@ -270,16 +273,16 @@ public interface XtextTypes {
           return new XtextREFERENCEParameterIDImpl(node);
       } else if (type == RULE_CALL) {
           return new XtextRuleCallImpl(node);
-      } else if (type == RULE_FROMCARET_EOF_CARET_EOF) {
-          return new XtextRuleFromcaretEOFCaretEOFImpl(node);
-      } else if (type == RULE_FROM_CONDITIONAL_BRANCH_GROUP) {
-          return new XtextRuleFromConditionalBranchGroupImpl(node);
-      } else if (type == RULE_FROM_LITERAL_CONDITION_LITERAL_CONDITION) {
-          return new XtextRuleFromLiteralConditionLiteralConditionImpl(node);
-      } else if (type == RULE_FROM_NEGATION_NEGATION) {
-          return new XtextRuleFromNegationNegationImpl(node);
-      } else if (type == RULE_FROM_WILDCARD_WILDCARD) {
-          return new XtextRuleFromWildcardWildcardImpl(node);
+      } else if (type == RULE_FROM_CARET_EOF_BRANCH_1) {
+          return new XtextRuleFromCaretEOFBranch1Impl(node);
+      } else if (type == RULE_FROM_CONDITIONAL_BRANCH_BRANCH_2) {
+          return new XtextRuleFromConditionalBranchBranch2Impl(node);
+      } else if (type == RULE_FROM_LITERAL_CONDITION_BRANCH_1) {
+          return new XtextRuleFromLiteralConditionBranch1Impl(node);
+      } else if (type == RULE_FROM_NEGATION_BRANCH_2) {
+          return new XtextRuleFromNegationBranch2Impl(node);
+      } else if (type == RULE_FROM_WILDCARD_BRANCH_1) {
+          return new XtextRuleFromWildcardBranch1Impl(node);
       } else if (type == RULE_ID) {
           return new XtextRuleIDImpl(node);
       } else if (type == RULE_NAME_AND_PARAMS) {

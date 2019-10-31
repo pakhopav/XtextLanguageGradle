@@ -2,9 +2,10 @@
 package com.intellij.xtextLanguage.xtext.psi;
 
 import com.intellij.psi.PsiElement;
+import com.intellij.psi.PsiNameIdentifierOwner;
 import org.jetbrains.annotations.Nullable;
 
-public interface XtextAbstractRule extends PsiElement {
+public interface XtextAbstractRule extends PsiNameIdentifierOwner {
 
     @Nullable
     XtextEnumRule getEnumRule();
@@ -14,5 +15,11 @@ public interface XtextAbstractRule extends PsiElement {
 
     @Nullable
     XtextTerminalRule getTerminalRule();
+
+    String getName();
+
+    PsiElement setName(String newName);
+
+    PsiElement getNameIdentifier();
 
 }

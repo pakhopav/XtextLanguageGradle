@@ -7,7 +7,7 @@ import org.jetbrains.annotations.Nullable;
 public interface XtextConditionalBranch extends PsiElement {
 
   @Nullable
-  XtextRuleFromConditionalBranchGroup getRuleFromConditionalBranchGroup();
+  XtextRuleFromConditionalBranchBranch2 getRuleFromConditionalBranchBranch2();
 
   @Nullable
   XtextUnorderedGroup getUnorderedGroup();

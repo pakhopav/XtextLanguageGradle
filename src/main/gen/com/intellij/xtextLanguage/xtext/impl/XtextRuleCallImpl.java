@@ -1,16 +1,22 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextNamedArgument;
+import com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEAbstractRuleRuleID;
+import com.intellij.xtextLanguage.xtext.psi.XtextRuleCall;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.L_ANGLE_BRACKET_KEYWORD;
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.R_ANGLE_BRACKET_KEYWORD;
 
 public class XtextRuleCallImpl extends XtextPsiCompositeElementImpl implements XtextRuleCall {
 
@@ -41,14 +47,14 @@ public class XtextRuleCallImpl extends XtextPsiCompositeElementImpl implements X
 
   @Override
   @Nullable
-  public PsiElement getLAngleBracket() {
-    return findChildByType(L_ANGLE_BRACKET);
+  public PsiElement getLAngleBracketKeyword() {
+      return findChildByType(L_ANGLE_BRACKET_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getRAngleBracket() {
-    return findChildByType(R_ANGLE_BRACKET);
+  public PsiElement getRAngleBracketKeyword() {
+      return findChildByType(R_ANGLE_BRACKET_KEYWORD);
   }
 
 }

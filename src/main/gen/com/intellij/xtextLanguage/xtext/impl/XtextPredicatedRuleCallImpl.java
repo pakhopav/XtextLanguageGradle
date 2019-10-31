@@ -1,16 +1,21 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextNamedArgument;
+import com.intellij.xtextLanguage.xtext.psi.XtextPredicatedRuleCall;
+import com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEAbstractRuleRuleID;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
+
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
 
 public class XtextPredicatedRuleCallImpl extends XtextPsiCompositeElementImpl implements XtextPredicatedRuleCall {
 
@@ -41,26 +46,26 @@ public class XtextPredicatedRuleCallImpl extends XtextPsiCompositeElementImpl im
 
   @Override
   @Nullable
-  public PsiElement getLAngleBracket() {
-    return findChildByType(L_ANGLE_BRACKET);
+  public PsiElement getLAngleBracketKeyword() {
+      return findChildByType(L_ANGLE_BRACKET_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getPred() {
-    return findChildByType(PRED);
+  public PsiElement getPredKeyword() {
+      return findChildByType(PRED_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getRAngleBracket() {
-    return findChildByType(R_ANGLE_BRACKET);
+  public PsiElement getRAngleBracketKeyword() {
+      return findChildByType(R_ANGLE_BRACKET_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getWeakPred() {
-    return findChildByType(WEAK_PRED);
+  public PsiElement getWeakPredKeyword() {
+      return findChildByType(WEAK_PRED_KEYWORD);
   }
 
 }

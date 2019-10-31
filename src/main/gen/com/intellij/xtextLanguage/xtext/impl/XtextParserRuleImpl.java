@@ -61,50 +61,50 @@ public class XtextParserRuleImpl extends XtextPsiCompositeElementImpl implements
 
   @Override
   @Nullable
-  public PsiElement getAsterisk() {
-    return findChildByType(ASTERISK);
+  public PsiElement getAsteriskKeyword() {
+      return findChildByType(ASTERISK_KEYWORD);
   }
 
   @Override
   @NotNull
-  public PsiElement getColon() {
-      return findNotNullChildByType(COLON);
+  public PsiElement getColonKeyword() {
+      return findNotNullChildByType(COLON_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getFragment() {
-    return findChildByType(FRAGMENT);
+  public PsiElement getFragmentKeyword() {
+      return findChildByType(FRAGMENT_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getHidden() {
-    return findChildByType(HIDDEN);
+  public PsiElement getHiddenKeyword() {
+      return findChildByType(HIDDEN_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getLBracket() {
-    return findChildByType(L_BRACKET);
+  public PsiElement getLBracketKeyword() {
+      return findChildByType(L_BRACKET_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getReturns() {
-    return findChildByType(RETURNS);
+  public PsiElement getReturnsKeyword() {
+      return findChildByType(RETURNS_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getRBracket() {
-    return findChildByType(R_BRACKET);
+  public PsiElement getRBracketKeyword() {
+      return findChildByType(R_BRACKET_KEYWORD);
   }
 
   @Override
   @NotNull
-  public PsiElement getSemicolon() {
-    return findNotNullChildByType(SEMICOLON);
+  public PsiElement getSemicolonKeyword() {
+      return findNotNullChildByType(SEMICOLON_KEYWORD);
   }
 
 }

@@ -10,6 +10,6 @@ public interface XtextNegation extends PsiElement {
   XtextAtom getAtom();
 
   @Nullable
-  XtextRuleFromNegationNegation getRuleFromNegationNegation();
+  XtextRuleFromNegationBranch2 getRuleFromNegationBranch2();
 
 }

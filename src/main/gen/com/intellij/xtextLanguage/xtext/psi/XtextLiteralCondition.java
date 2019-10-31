@@ -7,6 +7,6 @@ import org.jetbrains.annotations.NotNull;
 public interface XtextLiteralCondition extends PsiElement {
 
     @NotNull
-    XtextRuleFromLiteralConditionLiteralCondition getRuleFromLiteralConditionLiteralCondition();
+    XtextRuleFromLiteralConditionBranch1 getRuleFromLiteralConditionBranch1();
 
 }

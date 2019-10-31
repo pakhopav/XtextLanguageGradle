@@ -1,16 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextNegatedToken;
+import com.intellij.xtextLanguage.xtext.psi.XtextTerminalTokenElement;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.ACX_MARK_KEYWORD;
 
 public class XtextNegatedTokenImpl extends XtextPsiCompositeElementImpl implements XtextNegatedToken {
 
@@ -35,8 +35,8 @@ public class XtextNegatedTokenImpl extends XtextPsiCompositeElementImpl implemen
 
   @Override
   @NotNull
-  public PsiElement getAcxMark() {
-    return findNotNullChildByType(ACX_MARK);
+  public PsiElement getAcxMarkKeyword() {
+      return findNotNullChildByType(ACX_MARK_KEYWORD);
   }
 
 }

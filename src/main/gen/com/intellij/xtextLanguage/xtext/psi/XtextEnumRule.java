@@ -22,15 +22,15 @@ public interface XtextEnumRule extends PsiElement {
   XtextValidID getValidID();
 
     @NotNull
-  PsiElement getColon();
+    PsiElement getColonKeyword();
 
   @NotNull
-  PsiElement getEnum();
+  PsiElement getEnumKeyword();
 
   @Nullable
-  PsiElement getReturns();
+  PsiElement getReturnsKeyword();
 
   @NotNull
-  PsiElement getSemicolon();
+  PsiElement getSemicolonKeyword();
 
 }

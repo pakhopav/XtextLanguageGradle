@@ -4,7 +4,7 @@ package com.intellij.xtextLanguage.xtext.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.xtextLanguage.xtext.psi.XtextLiteralCondition;
-import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromLiteralConditionLiteralCondition;
+import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromLiteralConditionBranch1;
 import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
 import org.jetbrains.annotations.NotNull;
@@ -26,8 +26,8 @@ public class XtextLiteralConditionImpl extends XtextPsiCompositeElementImpl impl
 
   @Override
   @NotNull
-  public XtextRuleFromLiteralConditionLiteralCondition getRuleFromLiteralConditionLiteralCondition() {
-      return findNotNullChildByClass(XtextRuleFromLiteralConditionLiteralCondition.class);
+  public XtextRuleFromLiteralConditionBranch1 getRuleFromLiteralConditionBranch1() {
+      return findNotNullChildByClass(XtextRuleFromLiteralConditionBranch1.class);
   }
 
 }

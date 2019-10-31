@@ -1,16 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextAnnotation;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.AT_SIGN_KEYWORD;
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.ID;
 
 public class XtextAnnotationImpl extends XtextPsiCompositeElementImpl implements XtextAnnotation {
 
@@ -29,8 +29,8 @@ public class XtextAnnotationImpl extends XtextPsiCompositeElementImpl implements
 
   @Override
   @NotNull
-  public PsiElement getAtSign() {
-    return findNotNullChildByType(AT_SIGN);
+  public PsiElement getAtSignKeyword() {
+      return findNotNullChildByType(AT_SIGN_KEYWORD);
   }
 
   @Override

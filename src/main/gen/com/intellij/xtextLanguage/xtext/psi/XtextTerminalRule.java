@@ -22,18 +22,18 @@ public interface XtextTerminalRule extends PsiElement {
   XtextValidID getValidID();
 
     @NotNull
-  PsiElement getColon();
+    PsiElement getColonKeyword();
 
   @Nullable
-  PsiElement getFragment();
+  PsiElement getFragmentKeyword();
 
   @Nullable
-  PsiElement getReturns();
+  PsiElement getReturnsKeyword();
 
     @NotNull
-  PsiElement getSemicolon();
+    PsiElement getSemicolonKeyword();
 
   @NotNull
-  PsiElement getTerminal();
+  PsiElement getTerminalKeyword();
 
 }

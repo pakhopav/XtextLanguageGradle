@@ -55,32 +55,32 @@ public class XtextTerminalRuleImpl extends XtextPsiCompositeElementImpl implemen
 
   @Override
   @NotNull
-  public PsiElement getColon() {
-      return findNotNullChildByType(COLON);
+  public PsiElement getColonKeyword() {
+      return findNotNullChildByType(COLON_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getFragment() {
-    return findChildByType(FRAGMENT);
+  public PsiElement getFragmentKeyword() {
+      return findChildByType(FRAGMENT_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getReturns() {
-    return findChildByType(RETURNS);
+  public PsiElement getReturnsKeyword() {
+      return findChildByType(RETURNS_KEYWORD);
   }
 
   @Override
   @NotNull
-  public PsiElement getSemicolon() {
-      return findNotNullChildByType(SEMICOLON);
+  public PsiElement getSemicolonKeyword() {
+      return findNotNullChildByType(SEMICOLON_KEYWORD);
   }
 
   @Override
   @NotNull
-  public PsiElement getTerminal() {
-    return findNotNullChildByType(TERMINAL);
+  public PsiElement getTerminalKeyword() {
+      return findNotNullChildByType(TERMINAL_KEYWORD);
   }
 
 }

@@ -1,9 +1,8 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.Nullable;
 
 public interface XtextAbstractTokenWithCardinality extends PsiElement {
 
@@ -14,12 +13,12 @@ public interface XtextAbstractTokenWithCardinality extends PsiElement {
   XtextAssignment getAssignment();
 
   @Nullable
-  PsiElement getAsterisk();
+  PsiElement getAsteriskKeyword();
 
   @Nullable
-  PsiElement getPlus();
+  PsiElement getPlusKeyword();
 
   @Nullable
-  PsiElement getQuesMark();
+  PsiElement getQuesMarkKeyword();
 
 }

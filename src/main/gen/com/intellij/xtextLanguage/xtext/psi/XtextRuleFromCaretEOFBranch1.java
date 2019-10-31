@@ -4,12 +4,9 @@ package com.intellij.xtextLanguage.xtext.psi;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public interface XtextRuleFromNegationNegation extends PsiElement {
+public interface XtextRuleFromCaretEOFBranch1 extends PsiElement {
 
     @NotNull
-    XtextNegation getNegation();
-
-    @NotNull
-    PsiElement getAcxMark();
+    PsiElement getEofKeyKeyword();
 
 }

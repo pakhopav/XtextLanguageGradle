@@ -1,7 +1,8 @@
 package com.intellij.xtextLanguage.xtext;
 
 import com.intellij.openapi.fileTypes.LanguageFileType;
-import org.jetbrains.annotations.*;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
@@ -33,6 +34,6 @@ public class XtextFileType extends LanguageFileType {
     @Nullable
     @Override
     public Icon getIcon() {
-        return XtextIcons.FILE;
+        return XtextIcons.FILE; 
     }
 }

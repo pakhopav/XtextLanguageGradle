@@ -7,24 +7,24 @@ import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.xtextLanguage.xtext.psi.XtextAbstractToken;
 import com.intellij.xtextLanguage.xtext.psi.XtextDisjunction;
-import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromConditionalBranchGroup;
+import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromConditionalBranchBranch2;
 import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.List;
 
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.L_ANGLE_BRACKET;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.R_ANGLE_BRACKET;
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.L_ANGLE_BRACKET_KEYWORD;
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.R_ANGLE_BRACKET_KEYWORD;
 
-public class XtextRuleFromConditionalBranchGroupImpl extends XtextPsiCompositeElementImpl implements XtextRuleFromConditionalBranchGroup {
+public class XtextRuleFromConditionalBranchBranch2Impl extends XtextPsiCompositeElementImpl implements XtextRuleFromConditionalBranchBranch2 {
 
-    public XtextRuleFromConditionalBranchGroupImpl(@NotNull ASTNode node) {
+    public XtextRuleFromConditionalBranchBranch2Impl(@NotNull ASTNode node) {
         super(node);
     }
 
     public void accept(@NotNull XtextVisitor visitor) {
-        visitor.visitRuleFromConditionalBranchGroup(this);
+        visitor.visitRuleFromConditionalBranchBranch2(this);
     }
 
     public void accept(@NotNull PsiElementVisitor visitor) {
@@ -46,14 +46,14 @@ public class XtextRuleFromConditionalBranchGroupImpl extends XtextPsiCompositeEl
 
     @Override
     @NotNull
-    public PsiElement getLAngleBracket() {
-        return findNotNullChildByType(L_ANGLE_BRACKET);
+    public PsiElement getLAngleBracketKeyword() {
+        return findNotNullChildByType(L_ANGLE_BRACKET_KEYWORD);
     }
 
     @Override
     @NotNull
-    public PsiElement getRAngleBracket() {
-        return findNotNullChildByType(R_ANGLE_BRACKET);
+    public PsiElement getRAngleBracketKeyword() {
+        return findNotNullChildByType(R_ANGLE_BRACKET_KEYWORD);
     }
 
 }

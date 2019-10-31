@@ -4,7 +4,7 @@ package com.intellij.xtextLanguage.xtext.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.xtextLanguage.xtext.psi.XtextConditionalBranch;
-import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromConditionalBranchGroup;
+import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromConditionalBranchBranch2;
 import com.intellij.xtextLanguage.xtext.psi.XtextUnorderedGroup;
 import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
@@ -28,8 +28,8 @@ public class XtextConditionalBranchImpl extends XtextPsiCompositeElementImpl imp
 
   @Override
   @Nullable
-  public XtextRuleFromConditionalBranchGroup getRuleFromConditionalBranchGroup() {
-      return findChildByClass(XtextRuleFromConditionalBranchGroup.class);
+  public XtextRuleFromConditionalBranchBranch2 getRuleFromConditionalBranchBranch2() {
+      return findChildByClass(XtextRuleFromConditionalBranchBranch2.class);
   }
 
   @Override

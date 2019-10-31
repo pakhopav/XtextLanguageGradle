@@ -25,6 +25,13 @@ repositories {
 
 dependencies {
     testCompile group: 'junit', name: 'junit', version: '4.12'
+    compile files('libs/org.eclipse.emf.common_2.16.0.v20190528-0845.jar')
+    compile files("libs/org.eclipse.emf.ecore.change_2.14.0.v20190528-0725.jar")
+    compile files("libs/org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar")
+    compile files("libs/org.eclipse.emf.ecore_2.18.0.v20190528-0845.jar")
+    compile files("libs/org.xtext.domainmodel.model.jar", "libs/org.xtext.xtext.model.jar")
+    
+
 }
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/

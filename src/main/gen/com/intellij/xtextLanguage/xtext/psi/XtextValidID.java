@@ -7,12 +7,12 @@ import org.jetbrains.annotations.Nullable;
 public interface XtextValidID extends PsiElement {
 
   @Nullable
-  PsiElement getFalse();
+  PsiElement getFalseKeyword();
 
   @Nullable
   PsiElement getId();
 
   @Nullable
-  PsiElement getTrue();
+  PsiElement getTrueKeyword();
 
 }

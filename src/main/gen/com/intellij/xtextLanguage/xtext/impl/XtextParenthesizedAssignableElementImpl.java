@@ -1,16 +1,17 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextAssignableAlternatives;
+import com.intellij.xtextLanguage.xtext.psi.XtextParenthesizedAssignableElement;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.L_BRACKET_KEYWORD;
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.R_BRACKET_KEYWORD;
 
 public class XtextParenthesizedAssignableElementImpl extends XtextPsiCompositeElementImpl implements XtextParenthesizedAssignableElement {
 
@@ -35,14 +36,14 @@ public class XtextParenthesizedAssignableElementImpl extends XtextPsiCompositeEl
 
   @Override
   @NotNull
-  public PsiElement getLBracket() {
-    return findNotNullChildByType(L_BRACKET);
+  public PsiElement getLBracketKeyword() {
+      return findNotNullChildByType(L_BRACKET_KEYWORD);
   }
 
   @Override
   @NotNull
-  public PsiElement getRBracket() {
-    return findNotNullChildByType(R_BRACKET);
+  public PsiElement getRBracketKeyword() {
+      return findNotNullChildByType(R_BRACKET_KEYWORD);
   }
 
 }

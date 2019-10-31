@@ -1,6 +1,5 @@
 package com.intellij.xtextLanguage.xtext.psi;
 
-
 import com.intellij.psi.tree.IElementType;
 import com.intellij.xtextLanguage.xtext.XtextLanguage;
 import org.jetbrains.annotations.NonNls;
@@ -16,8 +15,4 @@ public class XtextTokenType extends IElementType {
     public String getDebugName(){
         return myDebugName;
     }
-//    @Override
-//    public String toString() {
-//        return "XtextTokenType." + super.toString();
-//    }
 }

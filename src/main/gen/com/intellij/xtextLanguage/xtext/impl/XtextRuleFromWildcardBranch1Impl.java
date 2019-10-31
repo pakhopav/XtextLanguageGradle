@@ -4,22 +4,21 @@ package com.intellij.xtextLanguage.xtext.impl;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.xtextLanguage.xtext.psi.XtextNegation;
-import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromNegationNegation;
+import com.intellij.xtextLanguage.xtext.psi.XtextRuleFromWildcardBranch1;
 import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
 import org.jetbrains.annotations.NotNull;
 
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.ACX_MARK;
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.DOT_KEYWORD;
 
-public class XtextRuleFromNegationNegationImpl extends XtextPsiCompositeElementImpl implements XtextRuleFromNegationNegation {
+public class XtextRuleFromWildcardBranch1Impl extends XtextPsiCompositeElementImpl implements XtextRuleFromWildcardBranch1 {
 
-    public XtextRuleFromNegationNegationImpl(@NotNull ASTNode node) {
+    public XtextRuleFromWildcardBranch1Impl(@NotNull ASTNode node) {
         super(node);
     }
 
     public void accept(@NotNull XtextVisitor visitor) {
-        visitor.visitRuleFromNegationNegation(this);
+        visitor.visitRuleFromWildcardBranch1(this);
     }
 
     public void accept(@NotNull PsiElementVisitor visitor) {
@@ -29,14 +28,8 @@ public class XtextRuleFromNegationNegationImpl extends XtextPsiCompositeElementI
 
     @Override
     @NotNull
-    public XtextNegation getNegation() {
-        return findNotNullChildByClass(XtextNegation.class);
-    }
-
-    @Override
-    @NotNull
-    public PsiElement getAcxMark() {
-        return findNotNullChildByType(ACX_MARK);
+    public PsiElement getDotKeyword() {
+        return findNotNullChildByType(DOT_KEYWORD);
     }
 
 }

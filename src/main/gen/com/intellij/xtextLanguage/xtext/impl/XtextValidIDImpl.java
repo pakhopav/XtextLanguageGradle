@@ -29,8 +29,8 @@ public class XtextValidIDImpl extends XtextPsiCompositeElementImpl implements Xt
 
   @Override
   @Nullable
-  public PsiElement getFalse() {
-      return findChildByType(FALSE);
+  public PsiElement getFalseKeyword() {
+      return findChildByType(FALSE_KEYWORD);
   }
 
   @Override
@@ -41,8 +41,8 @@ public class XtextValidIDImpl extends XtextPsiCompositeElementImpl implements Xt
 
   @Override
   @Nullable
-  public PsiElement getTrue() {
-    return findChildByType(TRUE);
+  public PsiElement getTrueKeyword() {
+      return findChildByType(TRUE_KEYWORD);
   }
 
 }

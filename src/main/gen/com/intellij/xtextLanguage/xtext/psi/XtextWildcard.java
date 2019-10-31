@@ -7,6 +7,6 @@ import org.jetbrains.annotations.NotNull;
 public interface XtextWildcard extends PsiElement {
 
   @NotNull
-  XtextRuleFromWildcardWildcard getRuleFromWildcardWildcard();
+  XtextRuleFromWildcardBranch1 getRuleFromWildcardBranch1();
 
 }

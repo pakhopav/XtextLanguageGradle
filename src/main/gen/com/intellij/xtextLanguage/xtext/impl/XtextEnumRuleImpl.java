@@ -55,26 +55,26 @@ public class XtextEnumRuleImpl extends XtextPsiCompositeElementImpl implements X
 
   @Override
   @NotNull
-  public PsiElement getColon() {
-      return findNotNullChildByType(COLON);
+  public PsiElement getColonKeyword() {
+      return findNotNullChildByType(COLON_KEYWORD);
   }
 
   @Override
   @NotNull
-  public PsiElement getEnum() {
-    return findNotNullChildByType(ENUM);
+  public PsiElement getEnumKeyword() {
+      return findNotNullChildByType(ENUM_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getReturns() {
-    return findChildByType(RETURNS);
+  public PsiElement getReturnsKeyword() {
+      return findChildByType(RETURNS_KEYWORD);
   }
 
   @Override
   @NotNull
-  public PsiElement getSemicolon() {
-    return findNotNullChildByType(SEMICOLON);
+  public PsiElement getSemicolonKeyword() {
+      return findNotNullChildByType(SEMICOLON_KEYWORD);
   }
 
 }

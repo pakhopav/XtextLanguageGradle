@@ -4,9 +4,9 @@ package com.intellij.xtextLanguage.xtext.psi;
 import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 
-public interface XtextRuleFromWildcardWildcard extends PsiElement {
+public interface XtextRuleFromWildcardBranch1 extends PsiElement {
 
-    @NotNull
-    PsiElement getDot();
+  @NotNull
+  PsiElement getDotKeyword();
 
 }

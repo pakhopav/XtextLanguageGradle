@@ -1,13 +1,11 @@
 package com.intellij.xtextLanguage.xtext;
 
-
 import com.intellij.lexer.Lexer;
-import com.intellij.openapi.editor.*;
+import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
+import com.intellij.openapi.editor.HighlighterColors;
 import com.intellij.openapi.editor.colors.TextAttributesKey;
 import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
-import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IElementType;
-import com.intellij.xtextLanguage.xtext.XtextParserDefinition;
 import com.intellij.xtextLanguage.xtext.psi.XtextTypes;
 import org.jetbrains.annotations.NotNull;
 
@@ -23,7 +21,7 @@ public class XtextSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("XTEXT_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("XTEXT_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
-
+            
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
     private static final TextAttributesKey[] KEY_KEYS = new TextAttributesKey[]{KEYWORD};
     private static final TextAttributesKey[] VALUE_KEYS = new TextAttributesKey[]{VALUE};
@@ -33,7 +31,7 @@ public class XtextSyntaxHighlighter extends SyntaxHighlighterBase {
     @NotNull
     @Override
     public Lexer getHighlightingLexer() {
-        return new XtextlexerAdapter();
+        return new XtextLexerAdapter();
     }
 
     @NotNull

@@ -1,16 +1,17 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextTerminalToken;
+import com.intellij.xtextLanguage.xtext.psi.XtextTerminalTokenElement;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
+
+import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
 
 public class XtextTerminalTokenImpl extends XtextPsiCompositeElementImpl implements XtextTerminalToken {
 
@@ -35,20 +36,20 @@ public class XtextTerminalTokenImpl extends XtextPsiCompositeElementImpl impleme
 
   @Override
   @Nullable
-  public PsiElement getAsterisk() {
-    return findChildByType(ASTERISK);
+  public PsiElement getAsteriskKeyword() {
+      return findChildByType(ASTERISK_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getPlus() {
-    return findChildByType(PLUS);
+  public PsiElement getPlusKeyword() {
+      return findChildByType(PLUS_KEYWORD);
   }
 
   @Override
   @Nullable
-  public PsiElement getQuesMark() {
-    return findChildByType(QUES_MARK);
+  public PsiElement getQuesMarkKeyword() {
+      return findChildByType(QUES_MARK_KEYWORD);
   }
 
 }

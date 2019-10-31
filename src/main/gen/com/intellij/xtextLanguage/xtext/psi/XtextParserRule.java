@@ -25,27 +25,27 @@ public interface XtextParserRule extends PsiElement {
   XtextTypeRef getTypeRef();
 
   @Nullable
-  PsiElement getAsterisk();
+  PsiElement getAsteriskKeyword();
 
     @NotNull
-  PsiElement getColon();
+    PsiElement getColonKeyword();
 
   @Nullable
-  PsiElement getFragment();
+  PsiElement getFragmentKeyword();
 
   @Nullable
-  PsiElement getHidden();
+  PsiElement getHiddenKeyword();
 
   @Nullable
-  PsiElement getLBracket();
+  PsiElement getLBracketKeyword();
 
   @Nullable
-  PsiElement getReturns();
+  PsiElement getReturnsKeyword();
 
   @Nullable
-  PsiElement getRBracket();
+  PsiElement getRBracketKeyword();
 
   @NotNull
-  PsiElement getSemicolon();
+  PsiElement getSemicolonKeyword();
 
 }

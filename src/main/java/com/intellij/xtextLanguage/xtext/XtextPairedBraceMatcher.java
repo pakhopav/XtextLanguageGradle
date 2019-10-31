@@ -10,10 +10,10 @@ import org.jetbrains.annotations.Nullable;
 
 public class XtextPairedBraceMatcher implements PairedBraceMatcher {
     private static final BracePair[] PAIRS = {
-            new BracePair(XtextTypes.L_BRACKET, XtextTypes.R_BRACKET, true),
-            new BracePair(XtextTypes.L_BRACE, XtextTypes.R_BRACE, true),
-            new BracePair(XtextTypes.L_SQUARE_BRACKET, XtextTypes.R_SQUARE_BRACKET, true),
-            new BracePair(XtextTypes.L_ANGLE_BRACKET, XtextTypes.R_ANGLE_BRACKET, true)
+            new BracePair(XtextTypes.L_BRACKET_KEYWORD, XtextTypes.R_BRACKET_KEYWORD, true),
+            new BracePair(XtextTypes.L_BRACE_KEYWORD, XtextTypes.R_BRACE_KEYWORD, true),
+            new BracePair(XtextTypes.L_SQUARE_BRACKET_KEYWORD, XtextTypes.R_SQUARE_BRACKET_KEYWORD, true),
+            new BracePair(XtextTypes.L_ANGLE_BRACKET_KEYWORD, XtextTypes.R_ANGLE_BRACKET_KEYWORD, true)
     };
 
     @NotNull
