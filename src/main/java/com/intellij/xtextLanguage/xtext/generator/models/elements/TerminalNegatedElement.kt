@@ -3,43 +3,41 @@ package com.intellij.xtextLanguage.xtext.generator.models.elements
 import com.intellij.xtextLanguage.xtext.psi.XtextNegatedToken
 
 class TerminalNegatedElement(override val psiElement: XtextNegatedToken) : TerminalRuleElement(psiElement) {
+    val characterRanges: List<TerminalRangeElement>
+
+    init {
+        val ranges = mutableListOf<TerminalRangeElement>()
+        psiElement.terminalTokenElement.characterRange?.let {
+            ranges.add(TerminalRangeElement(it))
+        }
+        psiElement.terminalTokenElement.parenthesizedTerminalElement?.let {
+            it.terminalAlternatives.terminalGroupList.forEach {
+                if (it.terminalTokenList.size > 1) {
+                    throw Exception("Wrong negated terminal")
+
+                } else {
+                    it.terminalTokenList.first().terminalTokenElement.characterRange?.let {
+                        ranges.add(TerminalRangeElement(it))
+                    } ?: throw Exception("Wrong negated terminal")
+
+                }
+            }
+        }
+        characterRanges = ranges
+    }
+
     override fun getFlexName(): String {
         return getBnfName()
     }
 
     override fun getBnfName(): String {
-        psiElement.terminalTokenElement.characterRange?.let {
-            if (it.keywordList.size == 2) {
-                return "[^${TerminalRangeElement(it).getBnfName().substring(1, TerminalRangeElement(it).getBnfName().length - 1)}]"
-            } else {
-                return "[^${it.keywordList.get(0)}]"
-            }
+        val sb = StringBuilder()
+        sb.append("[^")
+        characterRanges.forEach {
+            sb.append(it.getBnfName())
         }
-        psiElement.terminalTokenElement.parenthesizedTerminalElement?.let {
-            val sb = StringBuilder()
-            sb.append("[^")
-            it.terminalAlternatives.terminalGroupList.forEach {
-                if (it.terminalTokenList.size > 1) {
-                    return ""
-                } else {
-                    it.terminalTokenList.first().terminalTokenElement.characterRange?.let {
-                        it.keywordList.forEach {
-                            if (!isOneCharacterString(it.string.text)) {
-                                return ""
-                            }
-                        }
-                        sb.append(TerminalKeywordElement(it.keywordList.get(0)).getBnfName())
-                        if (it.keywordList.size > 1) {
-                            sb.append("-" + TerminalKeywordElement(it.keywordList.get(1)).getBnfName())
-                        }
-
-                    } ?: return ""
-                }
-            }
-            sb.append("]")
-            return sb.toString()
-        }
-        return ""
+        sb.append(("]"))
+        return sb.toString()
     }
 
     private fun isOneCharacterString(string: String): Boolean {

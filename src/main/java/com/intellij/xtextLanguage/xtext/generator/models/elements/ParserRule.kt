@@ -25,7 +25,6 @@ class ParserRule(val myRule: XtextParserRule) {
             }
         }
 
-
         override fun visitAbstractTokenWithCardinality(o: XtextAbstractTokenWithCardinality) {
             o.abstractTerminal?.let {
                 visitAbstractTerminal(it)
@@ -88,6 +87,13 @@ class ParserRule(val myRule: XtextParserRule) {
             return null
         }
 
+        override fun visitUnorderedGroup(o: XtextUnorderedGroup) {
+            if (o.groupList.size == 1) {
+                visitGroup(o.groupList.first())
+            } else {
+                throw Exception("Plugin does not support unordered groups")
+            }
+        }
 
         override fun visitKeyword(o: XtextKeyword) {
             listOfAlternativesElements.add(ParserSimpleElement(o.string))
