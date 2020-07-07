@@ -28,6 +28,7 @@
 
     <fileTypeFactory implementation="com.intellij.xtextLanguage.xtext.XtextFileTypeFactory" />
     <lang.parserDefinition language="Xtext" implementationClass="com.intellij.xtextLanguage.xtext.XtextParserDefinition"/>
+
     <lang.syntaxHighlighterFactory language="Xtext" implementationClass="com.intellij.xtextLanguage.xtext.XtextSyntaxHighlighterFactory"/>
       <psi.referenceContributor language="Xtext"
                                 implementation="com.intellij.xtextLanguage.xtext.XtextReferenceContributor"/>
@@ -36,6 +37,30 @@
                          implementationClass="com.intellij.xtextLanguage.xtext.XtextPairedBraceMatcher"/>
       <completion.contributor language="Xtext"
                               implementationClass="com.intellij.xtextLanguage.xtext.XtextCompletionContributor"/>
+
+
+    <!--    <fileTypeFactory implementation="com.intellij.exprLanguage.expr.exprFileTypeFactory" />-->
+    <!--    <lang.parserDefinition language="expr" implementationClass="com.intellij.exprLanguage.expr.exprParserDefinition"/>-->
+
+    <!--    <lang.syntaxHighlighterFactory language="expr" implementationClass="com.intellij.exprLanguage.expr.exprSyntaxHighlighterFactory"/>-->
+    <!--    <psi.referenceContributor language="expr"-->
+    <!--                              implementation="com.intellij.exprLanguage.expr.exprReferenceContributor"/>-->
+
+    <!--    <completion.contributor language="expr"-->
+    <!--                            implementationClass="com.intellij.exprLanguage.expr.exprCompletionContributor"/>-->
+    <!--    <fileTypeFactory implementation="com.intellij.entityLanguage.entity.EntityFileTypeFactory"/>-->
+    <!--    <lang.parserDefinition language="Entity" implementationClass="com.intellij.entityLanguage.entity.EntityParserDefinition"/>-->
+    <!--    <lang.syntaxHighlighterFactory language="Entity" implementationClass="com.intellij.entityLanguage.entity.EntitySyntaxHighlighterFactory"/>-->
+    <!--    <completion.contributor language="Entity" implementationClass="com.intellij.entityLanguage.entity.EntityCompletionContributor"/>-->
+    <!--    <psi.referenceContributor language="Entity" implementation="com.intellij.entityLanguage.entity.EntityReferenceContributor"/>-->
+
+
+    <!--    <fileTypeFactory implementation="com.intellij.calcLanguage.calc.calcFileTypeFactory"/>-->
+    <!--    <lang.parserDefinition language="calc" implementationClass="com.intellij.calcLanguage.calc.calcParserDefinition"/>-->
+    <!--    <lang.syntaxHighlighterFactory language="calc" implementationClass="com.intellij.calcLanguage.calc.calcSyntaxHighlighterFactory"/>-->
+    <!--    <completion.contributor language="calc" implementationClass="com.intellij.calcLanguage.calc.calcCompletionContributor"/>-->
+    <!--    <psi.referenceContributor language="calc" implementation="com.intellij.calcLanguage.calc.calcReferenceContributor"/>-->
+
 
   </extensions>
 

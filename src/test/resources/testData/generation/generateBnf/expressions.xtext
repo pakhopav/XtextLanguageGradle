@@ -1,0 +1,42 @@
+grammar org.xtext.example.expresssions.Expressions with Terminals
+
+generate myDsl "http://www.xtext.org/example/mydsl1/MyDsl"
+
+Model:
+	elements+=AbstractElement*;
+
+AbstractElement: Addition| Condition| Entity;
+Addition returns Expression:
+	Multiplication ({AdditionalExpression.left=current} "+" right=Multiplication)*
+;
+
+Multiplication returns Expression:
+	PrimaryExpression ({MultiplyExpression.left=current}  "*" right=PrimaryExpression)*
+;
+
+PrimaryExpression returns Expression:
+	{NumberLiteral} value=INT|
+	"(" Addition ")"
+;
+
+
+
+Condition:
+    'if' '(' condition=BooleanExpression ')'
+    then=Expression2
+    ('else' else=Expression2)?
+;
+
+BooleanExpression:
+	left=[Entity] ("=" right=BooleanExpressionRightSide)?
+;
+
+Expression2:
+	"expression" value=ID| Condition
+;
+BooleanExpressionRightSide:
+	 "true"| "false"| ref=[Entity]
+;
+Entity:
+	name=ID ("=" value=INT)
+;

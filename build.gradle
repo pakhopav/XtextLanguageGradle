@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.jetbrains.intellij' version '0.4.10'
     id 'org.jetbrains.kotlin.jvm' version '1.3.50'
+
 }
 def genRoot = file("src/main/gen")
 sourceSets {
@@ -30,7 +31,8 @@ dependencies {
     compile files("libs/org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar")
     compile files("libs/org.eclipse.emf.ecore_2.18.0.v20190528-0845.jar")
     compile files("libs/org.xtext.domainmodel.model.jar", "libs/org.xtext.xtext.model.jar")
-    
+    implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
+
 
 }
 
@@ -44,4 +46,14 @@ patchPluginXml {
     changeNotes """
       Add change notes here.<br>
       <em>most HTML tags may be used</em>"""
+}
+compileKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
+}
+compileTestKotlin {
+    kotlinOptions {
+        jvmTarget = "1.8"
+    }
 }
