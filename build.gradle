@@ -13,6 +13,7 @@ sourceSets {
         // both source roots below are not included into IDEA distribution,
         // so we have to copy them as sources, but only in the gradle version
         java.srcDirs "src/test/java"
+
     }
 }
 group 'com.intellij'
@@ -30,6 +31,7 @@ dependencies {
     compile files("libs/org.eclipse.emf.ecore.change_2.14.0.v20190528-0725.jar")
     compile files("libs/org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar")
     compile files("libs/org.eclipse.emf.ecore_2.18.0.v20190528-0845.jar")
+    compile files("libs/EntityEmf.jar")
     compile files("libs/org.xtext.domainmodel.model.jar", "libs/org.xtext.xtext.model.jar")
     implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk8"
 

@@ -48,11 +48,15 @@
 
     <!--    <completion.contributor language="expr"-->
     <!--                            implementationClass="com.intellij.exprLanguage.expr.exprCompletionContributor"/>-->
-    <!--    <fileTypeFactory implementation="com.intellij.entityLanguage.entity.EntityFileTypeFactory"/>-->
-    <!--    <lang.parserDefinition language="Entity" implementationClass="com.intellij.entityLanguage.entity.EntityParserDefinition"/>-->
-    <!--    <lang.syntaxHighlighterFactory language="Entity" implementationClass="com.intellij.entityLanguage.entity.EntitySyntaxHighlighterFactory"/>-->
-    <!--    <completion.contributor language="Entity" implementationClass="com.intellij.entityLanguage.entity.EntityCompletionContributor"/>-->
-    <!--    <psi.referenceContributor language="Entity" implementation="com.intellij.entityLanguage.entity.EntityReferenceContributor"/>-->
+    <fileTypeFactory implementation="com.intellij.entityLanguage.entity.EntityFileTypeFactory"/>
+    <lang.parserDefinition language="Entity"
+                           implementationClass="com.intellij.entityLanguage.entity.EntityParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="Entity"
+                                   implementationClass="com.intellij.entityLanguage.entity.EntitySyntaxHighlighterFactory"/>
+    <completion.contributor language="Entity"
+                            implementationClass="com.intellij.entityLanguage.entity.EntityCompletionContributor"/>
+    <psi.referenceContributor language="Entity"
+                              implementation="com.intellij.entityLanguage.entity.EntityReferenceContributor"/>
 
 
     <!--    <fileTypeFactory implementation="com.intellij.calcLanguage.calc.calcFileTypeFactory"/>-->
