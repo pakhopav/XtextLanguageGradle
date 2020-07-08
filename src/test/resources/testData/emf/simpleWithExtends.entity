@@ -1,0 +1,7 @@
+<?xml version="1.0" encoding="ASCII"?>
+<entity:Domainmodel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:entity="http://www.xtext.org/example/entity/Entity">
+  <elements xsi:type="entity:Entity" name="A">
+    <superType href="__synthetic0.entity#|0"/>
+  </elements>
+  <elements xsi:type="entity:Entity" name="B"/>
+</entity:Domainmodel>
