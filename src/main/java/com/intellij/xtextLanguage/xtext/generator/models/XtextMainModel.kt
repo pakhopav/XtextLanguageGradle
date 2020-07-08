@@ -95,7 +95,7 @@ class XtextMainModel(xtextFiles: List<XtextFile>) {
         fun getNewRuleFromBrunch(mainRule: XtextParserRule, branch: XtextConditionalBranch, action: XtextAction): XtextParserRule {
             val branchNumber = getBranchNumber(branch)
             val ruleName = mainRule.ruleNameAndParams.text.replace("^", "Caret").capitalize()
-            val newRuleName = "RuleFrom${ruleName}Branch$branchNumber"
+            val newRuleName = "${ruleName}_${action.typeRef.text}"
             val newRule = XtextElementFactory.createParserRule("$newRuleName returns ${action.typeRef.text} : ${branch.text};")
 
             return newRule
