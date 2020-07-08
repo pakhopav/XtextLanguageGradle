@@ -44,5 +44,10 @@ class EntityEmfTests : EntityEmfTestsBase("/emf") {
 
     }
 
+    fun testSimpleEntityWithDatatypes() {
+        val myRes = getEntityEmfModel()
+        myRes?.let { persistEntityEmfModel(it) }
+        assertEqualXmi("simpleWithDatatypes.entity")
 
+    }
 }

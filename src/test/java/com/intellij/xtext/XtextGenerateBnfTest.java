@@ -4,12 +4,6 @@ package com.intellij.xtext;
 
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.TestDataPath;
-import com.intellij.xtextLanguage.xtext.generator.generators.Generator;
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel;
-import com.intellij.xtextLanguage.xtext.psi.XtextFile;
-
-import java.io.IOException;
-import java.util.List;
 
 @TestDataPath("$CONTENT_ROOT/testData/generation/generateBnf")
 public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
@@ -22,14 +16,56 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         assertTrue(file != null);
     }
 
-    public void testCheckErrorsCorrect() {
-        PsiFile file = getXtextFile();
-        XtextFile xtextFile = (XtextFile) file;
-        MyErrorFinder errorFinder = new MyErrorFinder();
-        errorFinder.visitFile(file);
 
-        assertFalse(errorFinder.wasError);
-    }
+//    public void testXtext() {
+//        List<XtextFile> allXtextFiles = findAllFiles();
+//        XtextMainModel model = new XtextMainModel(allXtextFiles);
+//        Generator generator = new Generator("newXtext", model);
+//        try {
+//            generator.generate();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//
+//
+//    }
+
+//    public void testInvalidRules() {
+//        List<XtextFile> allXtextFiles = findAllFiles();
+//        XtextMainModel model = new XtextMainModel(allXtextFiles);
+//        Generator generator = new Generator("ErrRules", model);
+//        try {
+//            generator.generate();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+//    public void testExpressions() {
+//        List<XtextFile> allXtextFiles = findAllFiles();
+//        XtextMainModel model = new XtextMainModel(allXtextFiles);
+//        Generator generator = new Generator("expr", model);
+//        try {
+//            generator.generate();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
+//    public void testArithmetics() {
+//        List<XtextFile> allXtextFiles = findAllFiles();
+//        XtextMainModel model = new XtextMainModel(allXtextFiles);
+//        Generator generator = new Generator("calc", model);
+//        try {
+//            generator.generate();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
+
+    //==========================================Old commented tests
 
     //    public void testComputingRules1() throws IOException {
 //        PsiFile file = getXtextFile();
@@ -247,20 +283,9 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
 ////
 ////
 ////    }
-    public void testXtext() {
-        List<XtextFile> allXtextFiles = findAllFiles();
-        XtextMainModel model = new XtextMainModel(allXtextFiles);
-        Generator generator = new Generator("newXtext", model);
-        try {
-            generator.generate();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
 
 
-    }
-
-    public void testEntityExampleReferencesImplementation() {
+//    public void testEntityExampleReferencesImplementation() {
 //        EntityFile entityFile = getEntityFile("entityLanguage");
 //        EmfObjectFactory factory = new EmfObjectFactory();
 //        Domainmodel domainmodel = factory.createEmfModel(Objects.requireNonNull(PsiTreeUtil.findChildOfType(entityFile, EntityDomainmodel.class)));
@@ -283,56 +308,21 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
 //            // TODO Auto-generated catch block
 //            e.printStackTrace();
 //        }
-        List<XtextFile> allXtextFiles = findAllFiles();
-        XtextMainModel model = new XtextMainModel(allXtextFiles);
-
-        Generator generator = new Generator("Entity", model);
-        try {
-            generator.generate();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
+//        List<XtextFile> allXtextFiles = findAllFiles();
+//        XtextMainModel model = new XtextMainModel(allXtextFiles);
 //
+//        Generator generator = new Generator("Entity", model);
+//        try {
+//            generator.generate();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+////
+//
+//    }
 
-    }
 
-    public void testInvalidRules() {
-        List<XtextFile> allXtextFiles = findAllFiles();
-        XtextMainModel model = new XtextMainModel(allXtextFiles);
-        Generator generator = new Generator("ErrRules", model);
-        try {
-            generator.generate();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public void testExpressions() {
-        List<XtextFile> allXtextFiles = findAllFiles();
-        XtextMainModel model = new XtextMainModel(allXtextFiles);
-        Generator generator = new Generator("expr", model);
-        try {
-            generator.generate();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
 
-    public void testArithmetics() {
-        List<XtextFile> allXtextFiles = findAllFiles();
-        XtextMainModel model = new XtextMainModel(allXtextFiles);
-        Generator generator = new Generator("calc", model);
-        try {
-            generator.generate();
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-    }
-
-    public void testEntityBasedGrammar() {
-        List<XtextFile> allXtextFiles = findAllFiles();
-        XtextMainModel model = new XtextMainModel(allXtextFiles);
-
-    }
 
 }

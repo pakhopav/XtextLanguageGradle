@@ -63,18 +63,18 @@ public class XtextCompletionTest extends XtextCompletionTestBase {
 
     }
 
-    public void testAfterSinglelineCommentEnd() {
-        checkHasCompletions("enum", "terminal", "fragment");
-        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
+//    public void testAfterSinglelineCommentEnd() {
+//        checkHasCompletions("enum", "terminal", "fragment");
+//        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
+//
+//    }
 
-    }
-
-    public void testAfterMultilineCommentMiddle() {
-        checkHasCompletions("enum", "terminal", "fragment");
-        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
-
-
-    }
+//    public void testAfterMultilineCommentMiddle() {
+//        checkHasCompletions("enum", "terminal", "fragment");
+//        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
+//
+//
+//    }
 
     public void testAfterWhitespacesEnd1() {
         checkHasCompletions("enum", "terminal", "hidden (", "fragment", "generate", "import");
@@ -128,55 +128,55 @@ public class XtextCompletionTest extends XtextCompletionTestBase {
         checkEmptyResolve();
     }
 
-    public void testErrorRecoveryInAbstractRuleId() {
+//    public void testErrorRecoveryInAbstractRuleId() {
+//
+//        checkHasCompletions("enum", "terminal", "fragment");
+//        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
+//
+//    }
 
-        checkHasCompletions("enum", "terminal", "fragment");
-        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
+//    public void testErrorRecoveryInAbstractRuleColonMiss() {
+//
+//        checkHasCompletions("enum", "terminal", "fragment");
+//        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
+//
+//    }
 
-    }
-
-    public void testErrorRecoveryInAbstractRuleColonMiss() {
-
-        checkHasCompletions("enum", "terminal", "fragment");
-        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
-
-    }
-
-    public void testErrorRecoveryInAbstractRuleAlternatives() {
-
-        checkHasCompletions("enum", "terminal", "fragment");
-        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
-
-    }
+//    public void testErrorRecoveryInAbstractRuleAlternatives() {
+//
+//        checkHasCompletions("enum", "terminal", "fragment");
+//        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
+//
+//    }
 
     public void testErrorInEnumRuleId() {
         checkEmptyResolve();
     }
 
-    public void testErrorRecoveryInEnumRuleId() {
-
-        checkHasCompletions("enum", "terminal", "fragment");
-        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
-
-    }
+//    public void testErrorRecoveryInEnumRuleId() {
+//
+//        checkHasCompletions("enum", "terminal", "fragment");
+//        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
+//
+//    }
 
     public void testErrorInTerminalRuleId() {
         checkEmptyResolve();
     }
 
-    public void testErrorRecoveryInTerminalRuleId() {
+//    public void testErrorRecoveryInTerminalRuleId() {
+//
+//        checkHasCompletions("enum", "terminal", "fragment");
+//        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
+//
+//    }
 
-        checkHasCompletions("enum", "terminal", "fragment");
-        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
-
-    }
-
-    public void testErrorRecoveryAfterTwoErrorRules() {
-
-        checkHasCompletions("enum", "terminal", "fragment");
-        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
-
-    }
+//    public void testErrorRecoveryAfterTwoErrorRules() {
+//
+//        checkHasCompletions("enum", "terminal", "fragment");
+//        checkDoesnotContain("generate", "import", "returns", "hidden (", "ID");
+//
+//    }
 
     public void testAfterRuleKeyword() {
         checkHasCompletions("true", "false", "fragment");

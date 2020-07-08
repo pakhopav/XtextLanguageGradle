@@ -1,0 +1,4 @@
+entity B{}
+datatype C
+entity A {}
+datatype dt
