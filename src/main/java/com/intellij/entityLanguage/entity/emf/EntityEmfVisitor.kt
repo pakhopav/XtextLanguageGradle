@@ -3,9 +3,7 @@ package com.intellij.entityLanguage.entity.emf
 import com.intellij.entityLanguage.entity.emf.scope.EntityScope
 import com.intellij.entityLanguage.entity.psi.*
 import com.intellij.xtextLanguage.xtext.emf.ObjectDescription
-import com.intellij.xtextLanguage.xtext.emf.Scope
 import com.intellij.xtextLanguage.xtext.emf.impl.ObjectDescriptionImpl
-import org.eclipse.emf.ecore.EObject
 import org.xtext.example.entity.entity.*
 
 class EntityEmfVisitor {
@@ -18,7 +16,7 @@ class EntityEmfVisitor {
 
     fun createModel(psiDomainmodel: EntityDomainmodel): Domainmodel? {
         visitDomainmodel(psiDomainmodel)
-        completeRawModel(emfRoot, referencedEntities, referencedTypes, EntityScope(modelDescriptions))
+        completeRawModel()
         return emfRoot
     }
 
@@ -74,20 +72,19 @@ class EntityEmfVisitor {
     }
 
 
-    private fun completeRawModel(rawModel: EObject?, referensedEntities: Map<Entity, String>, referensedTypes: Map<Feature, String>, scope: Scope) {
-        if (rawModel is Domainmodel) {
+    private fun completeRawModel() {
+        val scope = EntityScope(modelDescriptions)
+        referencedEntities.forEach {
+            val container = it.key
+            val resolvedEntity = scope.getSingleElement(it.value)?.obj
+            resolvedEntity?.let { container.superType = it as Entity }
+        }
 
-            referensedEntities.forEach {
-                val container = it.key
-                val resolvedEntity = scope.getSingleElement(it.value)?.obj
-                resolvedEntity?.let { container.superType = it as Entity }
-            }
+        referencedTypes.forEach {
+            val container = it.key
+            val resolvedType = scope.getSingleElement(it.value)?.obj
+            resolvedType?.let { container.type = it as Type }
 
-            referensedTypes.forEach {
-                val container = it.key
-                val resolvedType = scope.getSingleElement(it.value)?.obj
-                resolvedType?.let { container.type = it as Type }
-            }
         }
     }
 }
