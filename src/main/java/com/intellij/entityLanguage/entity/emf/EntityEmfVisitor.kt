@@ -1,73 +1,93 @@
 package com.intellij.entityLanguage.entity.emf
 
+import com.intellij.entityLanguage.entity.emf.scope.EntityScope
 import com.intellij.entityLanguage.entity.psi.*
 import com.intellij.xtextLanguage.xtext.emf.ObjectDescription
+import com.intellij.xtextLanguage.xtext.emf.Scope
 import com.intellij.xtextLanguage.xtext.emf.impl.ObjectDescriptionImpl
-import org.xtext.example.entity.entity.Domainmodel
-import org.xtext.example.entity.entity.Entity
-import org.xtext.example.entity.entity.EntityFactory
-import org.xtext.example.entity.entity.Feature
+import org.eclipse.emf.ecore.EObject
+import org.xtext.example.entity.entity.*
 
 class EntityEmfVisitor {
-    var emfRoot: Domainmodel? = null
-    var referencedEntities = mutableMapOf<Entity, String>()
-    var referencedTypes = mutableMapOf<Feature, String>()
-    var modelDescriptions = mutableListOf<ObjectDescription>()
-    val factory = EntityFactory.eINSTANCE
+    private var emfRoot: Domainmodel? = null
+    private var referencedEntities = mutableMapOf<Entity, String>()
+    private var referencedTypes = mutableMapOf<Feature, String>()
+    private var modelDescriptions = mutableListOf<ObjectDescription>()
+    private val factory = EntityFactory.eINSTANCE
 
 
-    fun createModel(o: EntityDomainmodel) {
-        visitDomainmodel(o)
+    fun createModel(psiDomainmodel: EntityDomainmodel): Domainmodel? {
+        visitDomainmodel(psiDomainmodel)
+        completeRawModel(emfRoot, referencedEntities, referencedTypes, EntityScope(modelDescriptions))
+        return emfRoot
     }
 
 
-    fun visitDomainmodel(o: EntityDomainmodel) {
+    fun visitDomainmodel(psiDomainmodel: EntityDomainmodel) {
         val domainModel = factory.createDomainmodel()
-        o.typeList.forEach {
+        psiDomainmodel.typeList.forEach {
             visitType(it, domainModel)
         }
         emfRoot = domainModel
     }
 
-    fun visitEntity(o: EntityEntity, p: Domainmodel) {
+    fun visitEntity(psiEntity: EntityEntity, emfDomainmodel: Domainmodel) {
         val entity = factory.createEntity()
-        o.name?.let { entity.name = it }
-        o.referenceEntityID?.let { visitREFERENCEEntityID(it, entity) }
-        o.featureList.forEach {
+        psiEntity.name?.let { entity.name = it }
+        psiEntity.referenceEntityID?.let { visitREFERENCEEntityID(it, entity) }
+        psiEntity.featureList.forEach {
             visitFeature(it, entity)
         }
-        p.elements.add(entity)
+        emfDomainmodel.elements.add(entity)
         modelDescriptions.add(ObjectDescriptionImpl(entity, entity.name))
     }
 
-    fun visitFeature(o: EntityFeature, p: Entity) {
+    fun visitFeature(psiFeature: EntityFeature, emfEntity: Entity) {
         val feature = factory.createFeature()
-        feature.name = o.id.text
-        o.referenceTypeID?.let { visitREFERENCETypeID(it, feature) }
-        p.features.add(feature)
+        feature.name = psiFeature.id.text
+        psiFeature.referenceTypeID?.let { visitREFERENCETypeID(it, feature) }
+        emfEntity.features.add(feature)
     }
 
-    fun visitDataType(o: EntityDataType, p: Domainmodel) {
+    fun visitDataType(psiDataType: EntityDataType, emfDomainmodel: Domainmodel) {
         val dataType = factory.createDataType()
-        dataType.name = o.id.text
-        p.elements.add(dataType)
+        dataType.name = psiDataType.id.text
+        emfDomainmodel.elements.add(dataType)
         modelDescriptions.add(ObjectDescriptionImpl(dataType, dataType.name))
     }
 
-    fun visitType(o: EntityType, p: Domainmodel) {
-        o.dataType?.let {
-            visitDataType(it, p)
+    fun visitType(psiType: EntityType, emfDomainmodel: Domainmodel) {
+        psiType.dataType?.let {
+            visitDataType(it, emfDomainmodel)
         }
-        o.entity?.let {
-            visitEntity(it, p)
+        psiType.entity?.let {
+            visitEntity(it, emfDomainmodel)
         }
     }
 
-    fun visitREFERENCEEntityID(o: EntityREFERENCEEntityID, p: Entity) {
-        referencedEntities.put(p, o.text)
+    fun visitREFERENCEEntityID(psiReferenceEntity: EntityREFERENCEEntityID, emfEntity: Entity) {
+        referencedEntities.put(emfEntity, psiReferenceEntity.text)
     }
 
-    fun visitREFERENCETypeID(o: EntityREFERENCETypeID, p: Feature) {
-        referencedTypes.put(p, o.text)
+    fun visitREFERENCETypeID(psiReferenceType: EntityREFERENCETypeID, emfFeature: Feature) {
+        referencedTypes.put(emfFeature, psiReferenceType.text)
+    }
+
+
+    private fun completeRawModel(rawModel: EObject?, referensedEntities: Map<Entity, String>, referensedTypes: Map<Feature, String>, scope: Scope) {
+        if (rawModel is Domainmodel) {
+
+            referensedEntities.forEach {
+                val container = it.key
+                val resolvedEntity = scope.getSingleElement(it.value)?.obj
+                resolvedEntity?.let { container.superType = it as Entity }
+            }
+
+            referensedTypes.forEach {
+                val container = it.key
+                val resolvedType = scope.getSingleElement(it.value)?.obj
+                resolvedType?.let { container.type = it as Type }
+            }
+        }
     }
 }
