@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="ASCII"?>
+<entity:Domainmodel xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:entity="http://www.xtext.org/example/entity/Entity">
+  <elements xsi:type="entity:Entity" name="B">
+    <features name="parent" type="//@elements.2"/>
+    <features name="feature" type="//@elements.1"/>
+  </elements>
+  <elements xsi:type="entity:DataType" name="C"/>
+  <elements xsi:type="entity:Entity" name="A" superType="//@elements.4"/>
+  <elements xsi:type="entity:DataType" name="dt"/>
+  <elements xsi:type="entity:Entity" name="G">
+    <features name="name" type="//@elements.1"/>
+    <features name="age" type="//@elements.3"/>
+  </elements>
+</entity:Domainmodel>

@@ -1,0 +1,12 @@
+entity B{
+    parent : A
+    feature : C
+}
+datatype C
+entity A extends G{}
+datatype dt
+entity G {
+    name : C
+    age : dt
+}
+

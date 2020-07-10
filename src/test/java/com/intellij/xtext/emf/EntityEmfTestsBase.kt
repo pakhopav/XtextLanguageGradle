@@ -1,8 +1,6 @@
 package com.intellij.xtext.emf
 
-import com.intellij.entityLanguage.entity.emf.EntityEmfVisitor
-import com.intellij.entityLanguage.entity.psi.EntityDomainmodel
-import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.entityLanguage.entity.psi.EntityFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.xtext.AllTests
 import junit.framework.TestCase
@@ -46,11 +44,8 @@ open class EntityEmfTestsBase(val myDataFolder: String) : BasePlatformTestCase()
     fun getEntityEmfModel(): Domainmodel? {
         val fileName = getCurrentInputFileName()
         fileName?.let {
-            val file = myFixture.configureByFile(it)
-            val dm = PsiTreeUtil.findChildOfAnyType(file, EntityDomainmodel::class.java)
-            dm?.let {
-                EntityEmfVisitor.getEmfModel(it)?.let { return it }
-            }
+            val file = myFixture.configureByFile(it) as EntityFile
+            return file.getEmfRoot() as Domainmodel
         }
         return null
     }
@@ -76,7 +71,7 @@ open class EntityEmfTestsBase(val myDataFolder: String) : BasePlatformTestCase()
         val testFileName = getCurrentInputFileName()
         val myFileContent = Files.readAllLines(Paths.get("$basePath/$testFileName"))
         val expectedContent = Files.readAllLines(Paths.get("$basePath/$compareWith"))
-        TestCase.assertTrue(myFileContent.equals(expectedContent))
+        TestCase.assertEquals(myFileContent, expectedContent)
     }
 
 }

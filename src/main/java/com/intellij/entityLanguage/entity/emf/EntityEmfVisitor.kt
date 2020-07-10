@@ -4,19 +4,20 @@ import com.intellij.entityLanguage.entity.psi.*
 import org.xtext.example.entity.entity.Domainmodel
 import org.xtext.example.entity.entity.Entity
 import org.xtext.example.entity.entity.EntityFactory
-import org.xtext.example.entity.entity.EntityPackage
+import org.xtext.example.entity.entity.Feature
 
 class EntityEmfVisitor {
     var emfRoot: Domainmodel? = null
     val factory = EntityFactory.eINSTANCE
-    val ePackage = EntityPackage.eINSTANCE
+
 
     companion object {
-        fun getEmfModel(o: EntityDomainmodel): Domainmodel? {
+        fun getRawEmfModel(o: EntityDomainmodel): Domainmodel? {
 
             val visitor = EntityEmfVisitor()
             visitor.visitDomainmodel(o)
             return visitor.emfRoot
+
 
         }
     }
@@ -32,7 +33,7 @@ class EntityEmfVisitor {
     fun visitEntity(o: EntityEntity, p: Domainmodel) {
         val entity = factory.createEntity()
         o.name?.let { entity.name = it }
-        o.extendsKeyword?.let {}
+        o.referenceEntityID?.let { visitREFERENCEEntityID(it, entity) }
         o.featureList.forEach {
             visitFeature(it, entity)
         }
@@ -42,7 +43,7 @@ class EntityEmfVisitor {
     fun visitFeature(o: EntityFeature, p: Entity) {
         val feature = factory.createFeature()
         feature.name = o.id.text
-        o.referenceTypeID?.let {}
+        o.referenceTypeID?.let { visitREFERENCETypeID(it, feature) }
         p.features.add(feature)
     }
 
@@ -61,11 +62,15 @@ class EntityEmfVisitor {
         }
     }
 
-    fun visitREFERENCEEntityID(o: EntityREFERENCEEntityID) {
-
+    fun visitREFERENCEEntityID(o: EntityREFERENCEEntityID, p: Entity) {
+        val proxy = EntityProxy()
+        proxy.name = o.text
+        p.superType = proxy
     }
 
-    fun visitREFERENCETypeID(o: EntityREFERENCETypeID) {
-
+    fun visitREFERENCETypeID(o: EntityREFERENCETypeID, p: Feature) {
+        val proxy = TypeProxy()
+        proxy.name = o.text
+        p.type = proxy
     }
 }
