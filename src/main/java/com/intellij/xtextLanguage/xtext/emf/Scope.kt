@@ -2,7 +2,7 @@ package com.intellij.xtextLanguage.xtext.emf
 
 import org.eclipse.emf.ecore.EObject
 
-interface EmfFileBase {
+interface Scope {
 
-    fun getEmfRoot(): EObject
+    fun getSingleElement(name: String): EObject?
 }

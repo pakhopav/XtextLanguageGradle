@@ -1,6 +1,8 @@
 package com.intellij.entityLanguage.entity.emf
 
 import com.intellij.entityLanguage.entity.psi.*
+import com.intellij.xtextLanguage.xtext.emf.ObjectDescription
+import com.intellij.xtextLanguage.xtext.emf.impl.ObjectDescriptionImpl
 import org.xtext.example.entity.entity.Domainmodel
 import org.xtext.example.entity.entity.Entity
 import org.xtext.example.entity.entity.EntityFactory
@@ -8,19 +10,16 @@ import org.xtext.example.entity.entity.Feature
 
 class EntityEmfVisitor {
     var emfRoot: Domainmodel? = null
+    var referencedEntities = mutableMapOf<Entity, String>()
+    var referencedTypes = mutableMapOf<Feature, String>()
+    var modelDescriptions = mutableListOf<ObjectDescription>()
     val factory = EntityFactory.eINSTANCE
 
 
-    companion object {
-        fun getRawEmfModel(o: EntityDomainmodel): Domainmodel? {
-
-            val visitor = EntityEmfVisitor()
-            visitor.visitDomainmodel(o)
-            return visitor.emfRoot
-
-
-        }
+    fun createModel(o: EntityDomainmodel) {
+        visitDomainmodel(o)
     }
+
 
     fun visitDomainmodel(o: EntityDomainmodel) {
         val domainModel = factory.createDomainmodel()
@@ -38,6 +37,7 @@ class EntityEmfVisitor {
             visitFeature(it, entity)
         }
         p.elements.add(entity)
+        modelDescriptions.add(ObjectDescriptionImpl(entity, entity.name))
     }
 
     fun visitFeature(o: EntityFeature, p: Entity) {
@@ -51,6 +51,7 @@ class EntityEmfVisitor {
         val dataType = factory.createDataType()
         dataType.name = o.id.text
         p.elements.add(dataType)
+        modelDescriptions.add(ObjectDescriptionImpl(dataType, dataType.name))
     }
 
     fun visitType(o: EntityType, p: Domainmodel) {
@@ -63,14 +64,10 @@ class EntityEmfVisitor {
     }
 
     fun visitREFERENCEEntityID(o: EntityREFERENCEEntityID, p: Entity) {
-        val proxy = EntityProxy()
-        proxy.name = o.text
-        p.superType = proxy
+        referencedEntities.put(p, o.text)
     }
 
     fun visitREFERENCETypeID(o: EntityREFERENCETypeID, p: Feature) {
-        val proxy = TypeProxy()
-        proxy.name = o.text
-        p.type = proxy
+        referencedTypes.put(p, o.text)
     }
 }

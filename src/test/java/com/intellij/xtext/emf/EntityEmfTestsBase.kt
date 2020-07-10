@@ -1,5 +1,6 @@
 package com.intellij.xtext.emf
 
+import com.intellij.entityLanguage.entity.emf.EntityEmfBridge
 import com.intellij.entityLanguage.entity.psi.EntityFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.xtext.AllTests
@@ -45,7 +46,8 @@ open class EntityEmfTestsBase(val myDataFolder: String) : BasePlatformTestCase()
         val fileName = getCurrentInputFileName()
         fileName?.let {
             val file = myFixture.configureByFile(it) as EntityFile
-            return file.getEmfRoot() as Domainmodel
+            val bridge = EntityEmfBridge()
+            return bridge.createEmfModel(file) as Domainmodel
         }
         return null
     }
