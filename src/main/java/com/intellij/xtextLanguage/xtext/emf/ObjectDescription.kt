@@ -7,5 +7,5 @@ interface ObjectDescription {
 
     fun getName(): String
 
-    fun getObjectOrProxy(): EObject
+    fun getObject(): EObject
 }

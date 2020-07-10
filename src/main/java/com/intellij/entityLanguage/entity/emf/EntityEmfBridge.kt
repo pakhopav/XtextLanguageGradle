@@ -24,10 +24,8 @@ class EntityEmfBridge : EmfBridge {
                 visitor.createModel(it)
                 return completeRawModel(visitor.emfRoot, visitor.referencedEntities.toMap(), visitor.referencedTypes.toMap(), EntityScope(visitor.modelDescriptions))
             }
-
         }
         return null
-
     }
 
     private fun completeRawModel(rawModel: EObject?, referensedEntities: Map<Entity, String>, referensedTypes: Map<Feature, String>, scope: Scope): EObject? {
@@ -44,8 +42,6 @@ class EntityEmfBridge : EmfBridge {
                 val resolvedType = scope.getSingleElement(it.value)
                 resolvedType?.let { container.type = it as Type }
             }
-
-
         }
         return rawModel
     }

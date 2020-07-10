@@ -9,7 +9,7 @@ class ObjectDescriptionImpl(val obj: EObject, val objectName: String) : ObjectDe
         return objectName
     }
 
-    override fun getObjectOrProxy(): EObject {
+    override fun getObject(): EObject {
         return obj
     }
 }

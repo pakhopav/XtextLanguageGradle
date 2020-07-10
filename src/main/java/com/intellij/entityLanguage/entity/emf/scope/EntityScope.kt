@@ -10,6 +10,6 @@ class EntityScope(val descriptions: List<ObjectDescription>) : Scope {
         return descriptions.stream()
                 .filter { it.getName() == name }
                 .findFirst()
-                .get().getObjectOrProxy()
+                .get().getObject()
     }
 }
