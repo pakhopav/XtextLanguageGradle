@@ -8,7 +8,7 @@ class BnfGenerator(extention: String, fileModel: XtextMainModel) : Generator(ext
 
 
     fun generateBnf() {
-        val file = Generator.createFile(extention + ".bnf", myGenDir + "/grammar")
+        val file = Generator.createFile(extention.capitalize() + ".bnf", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
         out.print("{\n")
         generateTerminalRules(out)

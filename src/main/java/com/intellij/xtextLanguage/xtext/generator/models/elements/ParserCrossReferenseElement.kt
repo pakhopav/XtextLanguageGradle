@@ -22,7 +22,9 @@ class ParserCrossReferenseElement(override val psiElement: XtextCrossReference) 
     }
 
     fun createReferenceName(): String {
-        var name = "REFERENCE_${refetenceTarget.text.replace("::", "-")}"
+        var targetText = refetenceTarget.text
+        if (targetText.contains("::")) targetText = targetText.slice(targetText.indexOf(":") + 2..targetText.length - 1)
+        var name = "REFERENCE_${targetText}"
         referenceType?.let { name = name + "_$it" }
         return name
     }
