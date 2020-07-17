@@ -1,0 +1,68 @@
+{
+    tokens = [
+NUMBER="regexp:([0-9])*(\.([0-9])+)?"
+INT="regexp:this one has been deactivated"
+ID="regexp:\^?([a-z]|[A-Z]|_)([a-z]|[A-Z]|_|[0-9])*"
+INT="regexp:([0-9])+"
+STRING="regexp:\"(\\.|[^\\\"])*\"|'(\\.|[^\\'])*'"
+ML_COMMENT="regexp:/\*(?s).*\*/"
+SL_COMMENT="regexp://[^\n\r]*(\r?\n)?"
+WS="regexp:( |\t|\r|\n)+"
+ANY_OTHER="regexp:."
+      MODULE_KEYWORD = 'module'
+      IMPORT_KEYWORD = 'import'
+      DEF_KEYWORD = 'def'
+      L_BRACKET_KEYWORD = '('
+      COMMA_KEYWORD = ','
+      R_BRACKET_KEYWORD = ')'
+      COLON_KEYWORD = ':'
+      SEMICOLON_KEYWORD = ';'
+      PLUS_KEYWORD = '+'
+      KEYWORD_0 = '-'
+      ASTERISK_KEYWORD = '*'
+      KEYWORD_1 = '/'
+    ]
+    parserClass="com.intellij.calcLanguage.calc.parser.calcParser"
+        
+    extends="com.intellij.calcLanguage.calc.psi.impl.calcPsiCompositeElementImpl"
+    psiClassPrefix="calc"
+    psiImplClassSuffix="Impl"
+    psiPackage="com.intellij.calcLanguage.calc.psi"
+    psiImplPackage="com.intellij.calcLanguage.calc.impl"
+
+    elementTypeHolderClass="com.intellij.calcLanguage.calc.psi.calcTypes"
+    elementTypeClass="com.intellij.calcLanguage.calc.psi.calcElementType"
+    tokenTypeClass="com.intellij.calcLanguage.calc.psi.calcTokenType"
+    parserUtilClass= "com.intellij.languageUtil.parserUtilBase.GeneratedParserUtilBaseCopy"
+    psiImplUtilClass="com.intellij.calcLanguage.calc.psi.impl.calcPsiImplUtil"
+    generateTokenAccessors=true
+    generateTokens=true
+    extraRoot(".*")= true
+}
+calcFile ::= Module
+Module ::= 'module' ID ( Import ) * ( Statement ) * 
+{
+mixin="com.intellij.calcLanguage.calc.psi.impl.calcNamedElementImpl"
+implements="com.intellij.psi.PsiNameIdentifierOwner"
+methods=[ getName setName getNameIdentifier ]
+}
+Import ::= 'import' REFERENCE_Module_ID 
+Statement ::= Definition | Evaluation 
+Definition ::= 'def' ID ( '(' DeclaredParameter ( ',' DeclaredParameter ) * ')' ) ? ':' Expression ';' 
+DeclaredParameter ::= ID 
+AbstractDefinition ::= Definition | DeclaredParameter 
+{
+mixin="com.intellij.calcLanguage.calc.psi.impl.calcNamedElementImpl"
+implements="com.intellij.psi.PsiNameIdentifierOwner"
+methods=[ getName setName getNameIdentifier ]
+}
+Evaluation ::= Expression ';' 
+Expression ::= Addition 
+Addition ::= Multiplication ( ( '+' | '-' ) Multiplication ) *
+Multiplication ::= PrimaryExpression ( ( '*' | '/' ) PrimaryExpression ) *
+PrimaryExpression1 ::= '(' Expression ')' 
+PrimaryExpression2 ::= NUMBER 
+PrimaryExpression3 ::= REFERENCE_AbstractDefinition_ID ( '(' Expression ( ',' Expression ) * ')' ) ? 
+PrimaryExpression ::= PrimaryExpression1 | PrimaryExpression2 | PrimaryExpression3 
+REFERENCE_Module_ID ::= ID
+REFERENCE_AbstractDefinition_ID ::= ID
