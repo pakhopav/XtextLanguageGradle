@@ -1,0 +1,5 @@
+module A 
+def simple : 2 + 3;
+def M (arg1) : arg1 * 8;
+5 + M(9/3) - 1;
+def CCC : simple - M(5);

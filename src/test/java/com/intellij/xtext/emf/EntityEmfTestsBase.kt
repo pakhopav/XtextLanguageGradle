@@ -1,5 +1,9 @@
 package com.intellij.xtext.emf
 
+import arithmetics.ArithmeticsPackage
+import arithmetics.Module
+import com.intellij.calcLanguage.calc.emf.CalcEmfBridge
+import com.intellij.calcLanguage.calc.psi.calcFile
 import com.intellij.entityLanguage.entity.emf.EntityEmfBridge
 import com.intellij.entityLanguage.entity.psi.EntityFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -17,8 +21,8 @@ import java.nio.file.Paths
 
 open class EntityEmfTestsBase(val myDataFolder: String) : BasePlatformTestCase() {
 
-    open fun getCurrentInputFileName(): String? {
-        return getTestName(true) + ".entity"
+    open fun getCurrentInputFileName(extention: String): String? {
+        return getTestName(true) + ".$extention"
     }
 
     override fun getTestDataPath(): String {
@@ -43,7 +47,7 @@ open class EntityEmfTestsBase(val myDataFolder: String) : BasePlatformTestCase()
     }
 
     fun getEntityEmfModel(): Domainmodel? {
-        val fileName = getCurrentInputFileName()
+        val fileName = getCurrentInputFileName("entity")
         fileName?.let {
             val file = myFixture.configureByFile(it) as EntityFile
             val bridge = EntityEmfBridge()
@@ -52,8 +56,18 @@ open class EntityEmfTestsBase(val myDataFolder: String) : BasePlatformTestCase()
         return null
     }
 
+    fun getCalcEmfModel(): Module? {
+        val fileName = getCurrentInputFileName("calc")
+        fileName?.let {
+            val file = myFixture.configureByFile(it) as calcFile
+            val bridge = CalcEmfBridge()
+            return bridge.createEmfModel(file) as Module
+        }
+        return null
+    }
+
     fun persistEntityEmfModel(model: EObject) {
-        val testFileName = getCurrentInputFileName()
+        val testFileName = getCurrentInputFileName("entity")
         EntityPackage.eINSTANCE.eClass()
         val reg = Resource.Factory.Registry.INSTANCE
         val m = reg.getExtensionToFactoryMap()
@@ -68,9 +82,25 @@ open class EntityEmfTestsBase(val myDataFolder: String) : BasePlatformTestCase()
         resource.save(null);
     }
 
+    fun persistCalcEmfModel(model: EObject) {
+        val testFileName = getCurrentInputFileName("calc")
+        ArithmeticsPackage.eINSTANCE.eClass()
+        val reg = Resource.Factory.Registry.INSTANCE
+        val m = reg.getExtensionToFactoryMap()
+        m.put("calc", XMIResourceFactoryImpl())
+        val resSet = ResourceSetImpl()
 
-    fun assertEqualXmi(compareWith: String) {
-        val testFileName = getCurrentInputFileName()
+        val resource = resSet.createResource(
+                URI.createFileURI(
+                        "$basePath/$testFileName"))
+
+        resource.getContents().add(model);
+        resource.save(null);
+    }
+
+
+    fun assertEqualXmi(compareWith: String, extention: String) {
+        val testFileName = getCurrentInputFileName(extention)
         val myFileContent = Files.readAllLines(Paths.get("$basePath/$testFileName"))
         val expectedContent = Files.readAllLines(Paths.get("$basePath/$compareWith"))
         TestCase.assertEquals(myFileContent, expectedContent)

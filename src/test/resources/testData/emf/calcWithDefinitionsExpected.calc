@@ -1,0 +1,38 @@
+<?xml version="1.0" encoding="ASCII"?>
+<arithmetics:Module xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:arithmetics="http://www.eclipse.org/Xtext/example/Arithmetics" name="A">
+  <statements xsi:type="arithmetics:Definition" name="simple">
+    <expr xsi:type="arithmetics:Plus">
+      <left xsi:type="arithmetics:NumberLiteral" value="2"/>
+      <right xsi:type="arithmetics:NumberLiteral" value="3"/>
+    </expr>
+  </statements>
+  <statements xsi:type="arithmetics:Definition" name="M">
+    <args name="arg1"/>
+    <expr xsi:type="arithmetics:Multi">
+      <left xsi:type="arithmetics:FunctionCall" func="//@statements.1/@args.0"/>
+      <right xsi:type="arithmetics:NumberLiteral" value="8"/>
+    </expr>
+  </statements>
+  <statements xsi:type="arithmetics:Evaluation">
+    <expression xsi:type="arithmetics:Minus">
+      <left xsi:type="arithmetics:Plus">
+        <left xsi:type="arithmetics:NumberLiteral" value="5"/>
+        <right xsi:type="arithmetics:FunctionCall" func="//@statements.1">
+          <args xsi:type="arithmetics:Div">
+            <left xsi:type="arithmetics:NumberLiteral" value="9"/>
+            <right xsi:type="arithmetics:NumberLiteral" value="3"/>
+          </args>
+        </right>
+      </left>
+      <right xsi:type="arithmetics:NumberLiteral" value="1"/>
+    </expression>
+  </statements>
+  <statements xsi:type="arithmetics:Definition" name="CCC">
+    <expr xsi:type="arithmetics:Minus">
+      <left xsi:type="arithmetics:FunctionCall" func="//@statements.0"/>
+      <right xsi:type="arithmetics:FunctionCall" func="//@statements.1">
+        <args xsi:type="arithmetics:NumberLiteral" value="5"/>
+      </right>
+    </expr>
+  </statements>
+</arithmetics:Module>

@@ -1,20 +1,7 @@
 package com.intellij.xtext.emf
 
-import com.intellij.entityLanguage.entity.psi.EntityDomainmodel
-import com.intellij.psi.util.PsiTreeUtil
-import junit.framework.TestCase
-
 class EntityEmfTests : EntityEmfTestsBase("/emf") {
 
-    fun testParsedFile() {
-        val fileName = getCurrentInputFileName()
-        fileName?.let {
-            val file = myFixture.configureByFile(it)
-            val dm = PsiTreeUtil.findChildOfAnyType(file, EntityDomainmodel::class.java)
-            TestCase.assertNotNull(dm)
-        }
-
-    }
 
 //    fun testSimpleEntityEmfInstance() {
 //        val fileName = getCurrentInputFileName()
@@ -34,27 +21,44 @@ class EntityEmfTests : EntityEmfTestsBase("/emf") {
     fun testSimpleEntityEmfInstance() {
         val myRes = getEntityEmfModel()
         myRes?.let { persistEntityEmfModel(it) }
-        assertEqualXmi("test.entity")
+        assertEqualXmi("test.entity", "entity")
     }
 
     fun testSimpleEntityWithExtends() {
         val myRes = getEntityEmfModel()
         myRes?.let { persistEntityEmfModel(it) }
-        assertEqualXmi("simpleWithExtends.entity")
+        assertEqualXmi("simpleWithExtends.entity", "entity")
 
     }
 
     fun testSimpleEntityWithDatatypes() {
         val myRes = getEntityEmfModel()
         myRes?.let { persistEntityEmfModel(it) }
-        assertEqualXmi("simpleWithDatatypes.entity")
+        assertEqualXmi("simpleWithDatatypes.entity", "entity")
 
     }
 
     fun testEntityAll() {
         val myRes = getEntityEmfModel()
         myRes?.let { persistEntityEmfModel(it) }
-        assertEqualXmi("entityAllExpected.entity")
+        assertEqualXmi("entityAllExpected.entity", "entity")
 
+    }
+
+    fun testCalcAll() {
+        val myRes = getCalcEmfModel()
+        myRes?.let { persistEntityEmfModel(it) }
+    }
+
+    fun testCalcMultiPluses() {
+        val myRes = getCalcEmfModel()
+        myRes?.let { persistCalcEmfModel(it) }
+        assertEqualXmi("calcMultiPlusesExpected.calc", "calc")
+    }
+
+    fun testCalcWithDefinitions() {
+        val myRes = getCalcEmfModel()
+        myRes?.let { persistCalcEmfModel(it) }
+        assertEqualXmi("calcWithDefinitionsExpected.calc", "calc")
     }
 }
