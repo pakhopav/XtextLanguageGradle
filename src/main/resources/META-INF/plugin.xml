@@ -16,7 +16,7 @@
   <!--  </change-notes>-->
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-  <idea-version since-build="145.0"/>
+<!--  <idea-version since-build="145.0"/>-->
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
@@ -65,6 +65,13 @@
     <!--    <completion.contributor language="calc" implementationClass="com.intellij.calcLanguage.calc.calcCompletionContributor"/>-->
     <!--    <psi.referenceContributor language="calc" implementation="com.intellij.calcLanguage.calc.calcReferenceContributor"/>-->
 
+    <fileTypeFactory implementation="com.intellij.calcLanguage.calc.calcFileTypeFactory"/>
+    <lang.parserDefinition language="calc" implementationClass="com.intellij.calcLanguage.calc.calcParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="calc"
+                                   implementationClass="com.intellij.calcLanguage.calc.calcSyntaxHighlighterFactory"/>
+    <completion.contributor language="calc"
+                            implementationClass="com.intellij.calcLanguage.calc.calcCompletionContributor"/>
+    <psi.referenceContributor language="calc" implementation="com.intellij.calcLanguage.calc.calcReferenceContributor"/>
 
   </extensions>
 

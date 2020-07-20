@@ -9,7 +9,6 @@ import java.util.Optional;
 
 public class calcPsiImplUtil {
     static calcNameVisitor nameVisitor = new calcNameVisitor();
-
     public static PsiElement setName(calcModule element, String newName) {
         //TODO
         return element;

@@ -4,6 +4,7 @@ import com.intellij.entityLanguage.entity.emf.scope.EntityScope
 import com.intellij.entityLanguage.entity.psi.*
 import com.intellij.xtextLanguage.xtext.emf.ObjectDescription
 import com.intellij.xtextLanguage.xtext.emf.impl.ObjectDescriptionImpl
+import org.eclipse.emf.common.util.EList
 import org.xtext.example.entity.entity.*
 
 class EntityEmfVisitor {
@@ -12,6 +13,7 @@ class EntityEmfVisitor {
     private var referencedTypes = mutableMapOf<Feature, String>()
     private var modelDescriptions = mutableListOf<ObjectDescription>()
     private val factory = EntityFactory.eINSTANCE
+    private val ePackage = EntityPackage.eINSTANCE
 
 
     fun createModel(psiDomainmodel: EntityDomainmodel): Domainmodel? {
@@ -30,12 +32,14 @@ class EntityEmfVisitor {
     }
 
     fun visitEntity(psiEntity: EntityEntity, emfDomainmodel: Domainmodel) {
-        val entity = factory.createEntity()
-        psiEntity.name?.let { entity.name = it }
-        psiEntity.referenceEntityID?.let { visitREFERENCEEntityID(it, entity) }
-        psiEntity.featureList.forEach {
-            visitFeature(it, entity)
+        val entity = factory.create(ePackage.entity) as Entity
+        psiEntity.name?.let {
+            entity.eSet(ePackage.type_Name, it)
         }
+        psiEntity.referenceEntityID?.let { visitREFERENCEEntityID(it, entity) }
+        psiEntity.featureList.forEach { visitFeature(it, entity) }
+
+        (emfDomainmodel.eGet(ePackage.domainmodel_Elements) as EList<Type>).add(entity)
         emfDomainmodel.elements.add(entity)
         modelDescriptions.add(ObjectDescriptionImpl(entity, entity.name))
     }
@@ -43,6 +47,7 @@ class EntityEmfVisitor {
     fun visitFeature(psiFeature: EntityFeature, emfEntity: Entity) {
         val feature = factory.createFeature()
         feature.name = psiFeature.id.text
+        psiFeature.manyKeyword?.let { feature.isMany = true }
         psiFeature.referenceTypeID?.let { visitREFERENCETypeID(it, feature) }
         emfEntity.features.add(feature)
     }
