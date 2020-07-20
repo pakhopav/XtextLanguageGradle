@@ -2,12 +2,17 @@ package com.intellij.calcLanguage.calc.emf
 
 
 import arithmetics.*
+import com.intellij.calcLanguage.calc.emf.util.CalcEmfBridgeUtil
 import com.intellij.calcLanguage.calc.psi.*
 import com.intellij.entityLanguage.entity.emf.scope.EntityScope
+import com.intellij.psi.PsiElement
+import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import com.intellij.xtextLanguage.xtext.emf.ObjectDescription
 import com.intellij.xtextLanguage.xtext.emf.impl.ObjectDescriptionImpl
 import org.eclipse.emf.common.util.EList
+import org.eclipse.emf.ecore.EObject
 import java.math.BigDecimal
+
 
 
 class CalcEmfVisitor {
@@ -18,7 +23,6 @@ class CalcEmfVisitor {
     private var modelDescriptions = mutableListOf<ObjectDescription>()
     private val factory = ArithmeticsFactory.eINSTANCE
     private val ePackage = ArithmeticsPackage.eINSTANCE
-    private val util = CalcBridgeUtil()
 
 
     fun createModel(psiModule: calcModule): Module? {
@@ -27,25 +31,40 @@ class CalcEmfVisitor {
         return emfRoot
     }
 
-
-    fun visitAddition(psiAddition: calcAddition): Expression? {
-        var current = visitMultiplication(psiAddition.multiplicationList[0])
-        val keywords = util.getKeywordsList(psiAddition)
-        for (i in 1 until psiAddition.multiplicationList.size) {
-            var temp: Expression
-            if (keywords[i - 1].text == "+") {
-                temp = factory.create(ePackage.plus) as Plus
-                temp.eSet(ePackage.plus_Left, current)
-                temp.eSet(ePackage.plus_Right, visitMultiplication(psiAddition.multiplicationList[i]))
-            } else {
-                temp = factory.create(ePackage.minus) as Minus
-                temp.eSet(ePackage.minus_Left, current)
-                temp.eSet(ePackage.minus_Right, visitMultiplication(psiAddition.multiplicationList[i]))
+    fun visitAddition(psiAddition: calcAddition): Expression {
+        val utilRule = CalcEmfBridgeUtil.ADDITION
+        var current = CalcEmfBridgeUtil.eFACTORY.create(CalcEmfBridgeUtil.ePACKAGE.expression) as Expression
+        getAllChildren(psiAddition).forEach {
+            val rewrite = utilRule.findRewrite(it)
+            if (rewrite != null) current = rewrite(current) as Expression
+            val emfObject = createEmfObjectIfPossible(it)
+            if (emfObject != null) {
+                val assigment = utilRule.findAssignment(it)
+                if (assigment != null) assigment(current, emfObject)
+                else current = emfObject as Expression
             }
-            current = temp
         }
         return current
     }
+
+//    fun visitAddition(psiAddition: calcAddition): Expression? {
+//        var current = visitMultiplication(psiAddition.multiplicationList[0])
+//        val keywords = util.getKeywordsList(psiAddition)
+//        for (i in 1 until psiAddition.multiplicationList.size) {
+//            var temp: Expression
+//            if (keywords[i - 1].text == "+") {
+//                temp = factory.create(ePackage.plus) as Plus
+//                temp.eSet(ePackage.plus_Left, current)
+//                temp.eSet(ePackage.plus_Right, visitMultiplication(psiAddition.multiplicationList[i]))
+//            } else {
+//                temp = factory.create(ePackage.minus) as Minus
+//                temp.eSet(ePackage.minus_Left, current)
+//                temp.eSet(ePackage.minus_Right, visitMultiplication(psiAddition.multiplicationList[i]))
+//            }
+//            current = temp
+//        }
+//        return current
+//    }
 
     fun visitDeclaredParameter(psiDeclaredParameter: calcDeclaredParameter): DeclaredParameter {
         val current = factory.create(ePackage.declaredParameter) as DeclaredParameter
@@ -71,45 +90,55 @@ class CalcEmfVisitor {
     }
 
     fun visitExpression(psiExpression: calcExpression): Expression {
-        return visitAddition(psiExpression.addition)!!
+        return visitAddition(psiExpression.addition)
     }
 
     fun visitImport(psiImport: calcImport): Import {
-        val current = factory.create(ePackage.import) as Import
-        visitREFERENCEModuleID(psiImport.referenceModuleID, current)
+        val utilRule = CalcEmfBridgeUtil.IMPORT
+        var current = CalcEmfBridgeUtil.eFACTORY.create(CalcEmfBridgeUtil.ePACKAGE.import) as Import
+        getAllChildren(psiImport).forEach {
+            val rewrite = utilRule.findRewrite(it)
+            if (rewrite != null) current = rewrite(current) as Import
+            val emfObject = createEmfObjectIfPossible(it)
+            if (emfObject != null) {
+                val assigment = utilRule.findAssignment(it)
+                if (assigment != null) assigment(current, emfObject)
+                else current = emfObject as Import
+            }
+        }
         return current
     }
 
     fun visitModule(psiModule: calcModule): Module {
-        val module = factory.create(ePackage.module) as Module
-        module.eSet(ePackage.module_Name, psiModule.name)
-        val statementsList = module.eGet(ePackage.module_Statements) as EList<Statement>
-        val importsList = module.eGet(ePackage.module_Imports) as EList<Import>
-        psiModule.importList.forEach { importsList.add(visitImport(it)) }
-        psiModule.statementList.forEach { statementsList.add(visitStatement(it)) }
-        emfRoot = module
-        modelDescriptions.add(ObjectDescriptionImpl(module, module.eGet(ePackage.module_Name) as String))
-        return module
+        val utilRule = CalcEmfBridgeUtil.MODULE
+        var current = CalcEmfBridgeUtil.eFACTORY.create(CalcEmfBridgeUtil.ePACKAGE.module) as Module
+        getAllChildren(psiModule).forEach {
+            val rewrite = utilRule.findRewrite(it)
+            if (rewrite != null) current = rewrite(current) as Module
+            val emfObject = createEmfObjectIfPossible(it)
+            if (emfObject != null) {
+                val assigment = utilRule.findAssignment(it)
+                if (assigment != null) current?.let { assigment(it, emfObject) }
+                else current = emfObject as Module
+            }
+        }
+        return current
     }
 
     fun visitMultiplication(psiMultiplication: calcMultiplication): Expression? {
-        var current = visitPrimaryExpression(psiMultiplication.primaryExpressionList[0])
-        val keywords = util.getKeywordsList(psiMultiplication)
-        for (i in 1 until psiMultiplication.primaryExpressionList.size) {
-            var temp: Expression
-            if (keywords[i - 1].text == "*") {
-                temp = factory.create(ePackage.multi) as Multi
-                temp.eSet(ePackage.multi_Left, current)
-                temp.eSet(ePackage.multi_Right, visitPrimaryExpression(psiMultiplication.primaryExpressionList[i]))
-            } else {
-                temp = factory.create(ePackage.div) as Div
-                temp.eSet(ePackage.div_Left, current)
-                temp.eSet(ePackage.div_Right, visitPrimaryExpression(psiMultiplication.primaryExpressionList[i]))
+        val utilRule = CalcEmfBridgeUtil.MULTIPLICATION
+        var current = CalcEmfBridgeUtil.eFACTORY.create(CalcEmfBridgeUtil.ePACKAGE.expression) as Expression
+        getAllChildren(psiMultiplication).forEach {
+            val rewrite = utilRule.findRewrite(it)
+            if (rewrite != null) current = rewrite(current) as Expression
+            val emfObject = createEmfObjectIfPossible(it)
+            if (emfObject != null) {
+                val assigment = utilRule.findAssignment(it)
+                if (assigment != null) current?.let { assigment(it, emfObject) }
+                else current = emfObject as Expression
             }
-            current = temp
         }
         return current
-
     }
 
     fun visitPrimaryExpression(psiPrimaryExpression: calcPrimaryExpression): Expression? {
@@ -134,16 +163,16 @@ class CalcEmfVisitor {
         val current = factory.create(ePackage.functionCall) as FunctionCall
         val args = current.eGet(ePackage.functionCall_Args) as EList<Expression>
         psiPrimaryExpression3.expressionList.forEach { args.add(visitExpression(it)) }
-        visitREFERENCEAbstractDefinitionID(psiPrimaryExpression3.referenceAbstractDefinitionID, current)
+        visitREFERENCEAbstractDefinitionID(psiPrimaryExpression3.referenceAbstractDefinitionID)
         return current
     }
 
-    fun visitREFERENCEAbstractDefinitionID(psiAbstractDefinitionID: calcREFERENCEAbstractDefinitionID, emfFunctionCall: FunctionCall) {
-        referencedAbstractDefinitions.put(emfFunctionCall, psiAbstractDefinitionID.text)
+    fun visitREFERENCEAbstractDefinitionID(psiAbstractDefinitionID: calcREFERENCEAbstractDefinitionID) {
+        referencedAbstractDefinitions.put(psiAbstractDefinitionID.context as FunctionCall, psiAbstractDefinitionID.text)
     }
 
-    fun visitREFERENCEModuleID(psiModuleID: calcREFERENCEModuleID, emfImport: Import) {
-        referencedModules.put(emfImport, psiModuleID.text)
+    fun visitREFERENCEModuleID(psiModuleID: calcREFERENCEModuleID) {
+        referencedModules.put(psiModuleID.context as Import, psiModuleID.text)
     }
 
     fun visitStatement(psiStatement: calcStatement): Statement? {
@@ -167,5 +196,32 @@ class CalcEmfVisitor {
             resolvedModule?.let { container.eSet(ePackage.import_Module, resolvedModule) }
 
         }
+    }
+
+
+    fun createEmfObjectIfPossible(psiElement: PsiElement): EObject? {
+        if (psiElement is calcMultiplication) {
+            return visitMultiplication(psiElement)
+        } else if (psiElement is calcPrimaryExpression) {
+            return visitPrimaryExpression(psiElement)
+        } else if (psiElement is calcImport) {
+            return visitImport(psiElement)
+        } else if (psiElement is calcStatement) {
+            return visitStatement(psiElement)
+        } else if (psiElement is calcREFERENCEModuleID) {
+            visitREFERENCEModuleID(psiElement)
+        }
+        return null
+    }
+
+
+    fun getAllChildren(psiElement: PsiElement): List<PsiElement> {
+        var temp: PsiElement? = psiElement.firstChild
+        val result = mutableListOf<PsiElement>()
+        while (temp != null) {
+            if (temp !is PsiWhiteSpaceImpl) result.add(temp)
+            temp = temp.nextSibling
+        }
+        return result
     }
 }
