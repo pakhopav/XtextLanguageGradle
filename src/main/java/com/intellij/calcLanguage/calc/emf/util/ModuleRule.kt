@@ -7,21 +7,14 @@ import com.intellij.psi.PsiElement
 import com.intellij.xtextLanguage.xtext.emf.LiteralAssignment
 import com.intellij.xtextLanguage.xtext.emf.ObjectAssignment
 import com.intellij.xtextLanguage.xtext.emf.Rewrite
+import com.intellij.xtextLanguage.xtext.emf.StringLiteralAssignment
 import org.eclipse.emf.common.util.EList
 import org.eclipse.emf.ecore.EObject
 
 class ModuleRule : CalcEmfBridgeRule() {
     override fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment? {
         if (pointer.node.elementType == calcTypes.ID) {
-            return object : LiteralAssignment {
-                override fun assign(obj: EObject) {
-                    obj.eSet(ePACKAGE.module_Name, pointer.text)
-                }
-
-                override fun isName(): Boolean {
-                    return true
-                }
-            }
+            return StringLiteralAssignment(ePACKAGE.module_Name)
         }
         return null
     }

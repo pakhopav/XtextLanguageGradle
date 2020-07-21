@@ -56,4 +56,5 @@ class AdditionRule : CalcEmfBridgeRule() {
     override fun createObject(): EObject {
         return eFACTORY.create(ePACKAGE.expression)
     }
+
 }
