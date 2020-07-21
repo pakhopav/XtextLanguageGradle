@@ -5,11 +5,11 @@ import org.eclipse.emf.ecore.EObject
 
 interface EmfBridgeRule {
 
-    fun findLiteralAssignment(pointer: PsiElement): ((EObject) -> Unit)?
+    fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment?
 
-    fun findAssignment(pointer: PsiElement): ((EObject, EObject) -> Unit)?
+    fun findObjectAssignment(pointer: PsiElement): ObjectAssignment?
 
-    fun findRewrite(pointer: PsiElement): ((EObject?) -> EObject)?
+    fun findRewrite(pointer: PsiElement): Rewrite?
 
     fun createObject(): EObject
 }

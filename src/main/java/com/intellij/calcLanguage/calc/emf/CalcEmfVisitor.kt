@@ -28,76 +28,76 @@ class CalcEmfVisitor {
         return emfRoot
     }
 
-    fun visitAddition(psiAddition: calcAddition): Expression {
+    fun visitAddition(psiAddition: calcAddition): EObject? {
         val utilRule = AdditionRule()
-        return visitElement(psiAddition, utilRule) as Expression
+        return visitElement(psiAddition, utilRule)
     }
 
 
-    fun visitDeclaredParameter(psiDeclaredParameter: calcDeclaredParameter): DeclaredParameter {
+    fun visitDeclaredParameter(psiDeclaredParameter: calcDeclaredParameter): EObject {
         val utilRule = DeclaredParameterRule()
         val declaredParameter = visitElement(psiDeclaredParameter, utilRule) as DeclaredParameter
         modelDescriptions.add(ObjectDescriptionImpl(declaredParameter, declaredParameter.eGet(ePackage.abstractDefinition_Name).toString()))
         return declaredParameter
     }
 
-    fun visitDefinition(psiDefinition: calcDefinition): Definition {
+    fun visitDefinition(psiDefinition: calcDefinition): EObject {
         val utilRule = DefinitionRule()
-        val definition = visitElement(psiDefinition, utilRule) as Definition
+        val definition = visitElement(psiDefinition, utilRule)!!
         modelDescriptions.add(ObjectDescriptionImpl(definition, definition.eGet(ePackage.abstractDefinition_Name).toString()))
         return definition
     }
 
-    fun visitEvaluation(psiEvaluation: calcEvaluation): Evaluation {
+    fun visitEvaluation(psiEvaluation: calcEvaluation): EObject? {
         val utilRule = EvaluationRule()
-        return visitElement(psiEvaluation, utilRule) as Evaluation
+        return visitElement(psiEvaluation, utilRule)
     }
 
-    fun visitExpression(psiExpression: calcExpression): Expression {
+    fun visitExpression(psiExpression: calcExpression): EObject? {
         val utilRule = ExpressionRule()
-        return visitElement(psiExpression, utilRule) as Expression
+        return visitElement(psiExpression, utilRule)
     }
 
-    fun visitImport(psiImport: calcImport): Import {
+    fun visitImport(psiImport: calcImport): EObject? {
         val utilRule = ImportRule()
-        return visitElement(psiImport, utilRule) as Import
+        return visitElement(psiImport, utilRule)
     }
 
-    fun visitModule(psiModule: calcModule): Module? {
+    fun visitModule(psiModule: calcModule): EObject? {
         val utilRule = ModuleRule()
         emfRoot = visitElement(psiModule, utilRule) as Module
         modelDescriptions.add(ObjectDescriptionImpl(emfRoot!!, emfRoot!!.eGet(ePackage.module_Name).toString()))
         return emfRoot
     }
 
-    fun visitMultiplication(psiMultiplication: calcMultiplication): Expression {
+    fun visitMultiplication(psiMultiplication: calcMultiplication): EObject? {
         val utilRule = MultiplicationRule()
-        return visitElement(psiMultiplication, utilRule) as Expression
+        return visitElement(psiMultiplication, utilRule)
     }
 
-    fun visitPrimaryExpression(psiPrimaryExpression: calcPrimaryExpression): Expression {
+    fun visitPrimaryExpression(psiPrimaryExpression: calcPrimaryExpression): EObject? {
         val utilRule = PrimaryExpressionRule()
-        return visitElement(psiPrimaryExpression, utilRule) as Expression
+        return visitElement(psiPrimaryExpression, utilRule)
     }
 
-    fun visitPrimaryExpression1(psiPrimaryExpression1: calcPrimaryExpression1): Expression {
+    fun visitPrimaryExpression1(psiPrimaryExpression1: calcPrimaryExpression1): EObject? {
         val utilRule = PrimaryExpression1Rule()
-        return visitElement(psiPrimaryExpression1, utilRule) as Expression
+        return visitElement(psiPrimaryExpression1, utilRule)
     }
 
-    fun visitPrimaryExpression2(psiPrimaryExpression2: calcPrimaryExpression2): NumberLiteral {
+    fun visitPrimaryExpression2(psiPrimaryExpression2: calcPrimaryExpression2): EObject? {
         val utilRule = PrimaryExpression2Rule()
-        return visitElement(psiPrimaryExpression2, utilRule) as NumberLiteral
+        return visitElement(psiPrimaryExpression2, utilRule)
     }
 
-    fun visitPrimaryExpression3(psiPrimaryExpression3: calcPrimaryExpression3): FunctionCall {
+    fun visitPrimaryExpression3(psiPrimaryExpression3: calcPrimaryExpression3): EObject? {
         val utilRule = PrimaryExpression3Rule()
-        return visitElement(psiPrimaryExpression3, utilRule) as FunctionCall
+        return visitElement(psiPrimaryExpression3, utilRule)
     }
 
-    fun visitStatement(psiStatement: calcStatement): Statement {
+    fun visitStatement(psiStatement: calcStatement): EObject? {
         val utilRule = StatementRule()
-        return visitElement(psiStatement, utilRule) as Statement
+        return visitElement(psiStatement, utilRule)
     }
 
     fun visitREFERENCEAbstractDefinitionID(psiAbstractDefinitionID: calcREFERENCEAbstractDefinitionID, functionCall: FunctionCall) {
@@ -178,18 +178,18 @@ class CalcEmfVisitor {
         var current: EObject? = null
         getAllChildren(element).forEach {
             val rewrite = utilRule.findRewrite(it)
-            if (rewrite != null) current = rewrite(current)
+            if (rewrite != null) current = rewrite.rewrite(current)
             val literalAssignment = utilRule.findLiteralAssignment(it)
             if (literalAssignment != null) {
                 if (current == null) current = utilRule.createObject()
-                literalAssignment(current!!)
+                literalAssignment.assign(current!!)
             } else {
                 val newObject = createEmfObjectIfPossible(it)
                 if (newObject != null) {
-                    val assigment = utilRule.findAssignment(it)
+                    val assigment = utilRule.findObjectAssignment(it)
                     if (assigment != null) {
                         if (current == null) current = utilRule.createObject()
-                        assigment(current!!, newObject)
+                        assigment.assign(current!!, newObject)
                     } else
                         current = newObject
                 } else if (isCrossReference(it)) {
