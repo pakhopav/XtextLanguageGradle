@@ -17,6 +17,10 @@ class DefinitionRule : CalcEmfBridgeRule() {
                     obj.eSet(ePACKAGE.abstractDefinition_Name, pointer.text)
                 }
 
+                override fun isName(): Boolean {
+                    return true
+                }
+
             }
         }
         return null

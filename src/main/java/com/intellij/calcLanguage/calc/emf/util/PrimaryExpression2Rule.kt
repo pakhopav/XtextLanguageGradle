@@ -15,6 +15,10 @@ class PrimaryExpression2Rule : CalcEmfBridgeRule() {
                 override fun assign(obj: EObject) {
                     obj.eSet(ePACKAGE.numberLiteral_Value, BigDecimal(pointer.text))
                 }
+
+                override fun isName(): Boolean {
+                    return false
+                }
             }
         }
         return null

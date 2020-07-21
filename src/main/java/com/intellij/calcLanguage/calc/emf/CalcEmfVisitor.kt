@@ -1,7 +1,10 @@
 package com.intellij.calcLanguage.calc.emf
 
 
-import arithmetics.*
+import arithmetics.ArithmeticsPackage
+import arithmetics.FunctionCall
+import arithmetics.Import
+import arithmetics.Module
 import com.intellij.calcLanguage.calc.emf.util.*
 import com.intellij.calcLanguage.calc.psi.*
 import com.intellij.entityLanguage.entity.emf.scope.EntityScope
@@ -19,92 +22,33 @@ class CalcEmfVisitor {
     private var referencedAbstractDefinitions = mutableMapOf<FunctionCall, String>()
     private var referencedModules = mutableMapOf<Import, String>()
     private var modelDescriptions = mutableListOf<ObjectDescription>()
-    private val ePackage = ArithmeticsPackage.eINSTANCE
+
+    private val MODULE = ModuleRule()
+    private val EVALUATION = EvaluationRule()
+    private val DEFINITION = DefinitionRule()
+    private val STATEMENT = StatementRule()
+    private val DECLARED_PARAMETER = DeclaredParameterRule()
+    private val EXPRESSION = ExpressionRule()
+    private val MULTIPLICATION = MultiplicationRule()
+    private val ADDITION = AdditionRule()
+    private val PRIMARY_EXPRESSION = PrimaryExpressionRule()
+    private val PRIMARY_EXPRESSION1 = PrimaryExpression1Rule()
+    private val PRIMARY_EXPRESSION2 = PrimaryExpression2Rule()
+    private val PRIMARY_EXPRESSION3 = PrimaryExpression3Rule()
+    private val IMPORT = ImportRule()
 
 
     fun createModel(psiModule: calcModule): Module? {
-        visitModule(psiModule)
+        emfRoot = visitElement(psiModule) as Module
         completeRawModel()
         return emfRoot
     }
 
-    fun visitAddition(psiAddition: calcAddition): EObject? {
-        val utilRule = AdditionRule()
-        return visitElement(psiAddition, utilRule)
-    }
-
-
-    fun visitDeclaredParameter(psiDeclaredParameter: calcDeclaredParameter): EObject {
-        val utilRule = DeclaredParameterRule()
-        val declaredParameter = visitElement(psiDeclaredParameter, utilRule) as DeclaredParameter
-        modelDescriptions.add(ObjectDescriptionImpl(declaredParameter, declaredParameter.eGet(ePackage.abstractDefinition_Name).toString()))
-        return declaredParameter
-    }
-
-    fun visitDefinition(psiDefinition: calcDefinition): EObject {
-        val utilRule = DefinitionRule()
-        val definition = visitElement(psiDefinition, utilRule)!!
-        modelDescriptions.add(ObjectDescriptionImpl(definition, definition.eGet(ePackage.abstractDefinition_Name).toString()))
-        return definition
-    }
-
-    fun visitEvaluation(psiEvaluation: calcEvaluation): EObject? {
-        val utilRule = EvaluationRule()
-        return visitElement(psiEvaluation, utilRule)
-    }
-
-    fun visitExpression(psiExpression: calcExpression): EObject? {
-        val utilRule = ExpressionRule()
-        return visitElement(psiExpression, utilRule)
-    }
-
-    fun visitImport(psiImport: calcImport): EObject? {
-        val utilRule = ImportRule()
-        return visitElement(psiImport, utilRule)
-    }
-
-    fun visitModule(psiModule: calcModule): EObject? {
-        val utilRule = ModuleRule()
-        emfRoot = visitElement(psiModule, utilRule) as Module
-        modelDescriptions.add(ObjectDescriptionImpl(emfRoot!!, emfRoot!!.eGet(ePackage.module_Name).toString()))
-        return emfRoot
-    }
-
-    fun visitMultiplication(psiMultiplication: calcMultiplication): EObject? {
-        val utilRule = MultiplicationRule()
-        return visitElement(psiMultiplication, utilRule)
-    }
-
-    fun visitPrimaryExpression(psiPrimaryExpression: calcPrimaryExpression): EObject? {
-        val utilRule = PrimaryExpressionRule()
-        return visitElement(psiPrimaryExpression, utilRule)
-    }
-
-    fun visitPrimaryExpression1(psiPrimaryExpression1: calcPrimaryExpression1): EObject? {
-        val utilRule = PrimaryExpression1Rule()
-        return visitElement(psiPrimaryExpression1, utilRule)
-    }
-
-    fun visitPrimaryExpression2(psiPrimaryExpression2: calcPrimaryExpression2): EObject? {
-        val utilRule = PrimaryExpression2Rule()
-        return visitElement(psiPrimaryExpression2, utilRule)
-    }
-
-    fun visitPrimaryExpression3(psiPrimaryExpression3: calcPrimaryExpression3): EObject? {
-        val utilRule = PrimaryExpression3Rule()
-        return visitElement(psiPrimaryExpression3, utilRule)
-    }
-
-    fun visitStatement(psiStatement: calcStatement): EObject? {
-        val utilRule = StatementRule()
-        return visitElement(psiStatement, utilRule)
-    }
-
-    fun visitREFERENCEAbstractDefinitionID(psiAbstractDefinitionID: calcREFERENCEAbstractDefinitionID, functionCall: FunctionCall) {
+    private fun visitREFERENCEAbstractDefinitionID(psiAbstractDefinitionID: calcREFERENCEAbstractDefinitionID, functionCall: FunctionCall) {
         referencedAbstractDefinitions.put(functionCall, psiAbstractDefinitionID.text)
     }
 
-    fun visitREFERENCEModuleID(psiModuleID: calcREFERENCEModuleID, import: Import) {
+    private fun visitREFERENCEModuleID(psiModuleID: calcREFERENCEModuleID, import: Import) {
         referencedModules.put(import, psiModuleID.text)
     }
 
@@ -113,49 +57,48 @@ class CalcEmfVisitor {
         referencedAbstractDefinitions.forEach {
             val container = it.key
             val resolvedDefinition = scope.getSingleElement(it.value)?.obj
-            resolvedDefinition?.let { container.eSet(ePackage.functionCall_Func, resolvedDefinition) }
+            resolvedDefinition?.let { container.eSet(ArithmeticsPackage.eINSTANCE.functionCall_Func, resolvedDefinition) }
         }
 
         referencedModules.forEach {
             val container = it.key
             val resolvedModule = scope.getSingleElement(it.value)?.obj
-            resolvedModule?.let { container.eSet(ePackage.import_Module, resolvedModule) }
+            resolvedModule?.let { container.eSet(ArithmeticsPackage.eINSTANCE.import_Module, resolvedModule) }
         }
     }
 
 
-    fun createEmfObjectIfPossible(psiElement: PsiElement): EObject? {
-        if (psiElement is calcMultiplication) {
-            return visitMultiplication(psiElement)
+    private fun getUtilRuleClass(psiElement: PsiElement): EmfBridgeRule {
+        if (psiElement is calcModule) {
+            return MODULE
+        } else if (psiElement is calcMultiplication) {
+            return MULTIPLICATION
         } else if (psiElement is calcPrimaryExpression) {
-            return visitPrimaryExpression(psiElement)
+            return PRIMARY_EXPRESSION
         } else if (psiElement is calcImport) {
-            return visitImport(psiElement)
+            return IMPORT
         } else if (psiElement is calcStatement) {
-            return visitStatement(psiElement)
+            return STATEMENT
         } else if (psiElement is calcDeclaredParameter) {
-            return visitDeclaredParameter(psiElement)
+            return DECLARED_PARAMETER
         } else if (psiElement is calcExpression) {
-            return visitExpression(psiElement)
+            return EXPRESSION
         } else if (psiElement is calcPrimaryExpression1) {
-            return visitPrimaryExpression1(psiElement)
+            return PRIMARY_EXPRESSION1
         } else if (psiElement is calcPrimaryExpression2) {
-            return visitPrimaryExpression2(psiElement)
+            return PRIMARY_EXPRESSION2
         } else if (psiElement is calcPrimaryExpression3) {
-            return visitPrimaryExpression3(psiElement)
+            return PRIMARY_EXPRESSION3
         } else if (psiElement is calcEvaluation) {
-            return visitEvaluation(psiElement)
+            return EVALUATION
         } else if (psiElement is calcDefinition) {
-            return visitDefinition(psiElement)
-        } else if (psiElement is calcAddition) {
-            return visitAddition(psiElement)
+            return DEFINITION
+        } else {
+            return ADDITION
         }
-
-        return null
     }
 
-
-    fun getAllChildren(psiElement: PsiElement): List<PsiElement> {
+    private fun getAllChildren(psiElement: PsiElement): List<PsiElement> {
         var temp: PsiElement? = psiElement.firstChild
         val result = mutableListOf<PsiElement>()
         while (temp != null) {
@@ -165,16 +108,17 @@ class CalcEmfVisitor {
         return result
     }
 
-    fun isCrossReference(psiElement: PsiElement): Boolean {
+    private fun isCrossReference(psiElement: PsiElement): Boolean {
         return psiElement is calcREFERENCEAbstractDefinitionID || psiElement is calcREFERENCEModuleID
     }
 
-    fun createCrossReference(psiElement: PsiElement, container: EObject) {
+    private fun createCrossReference(psiElement: PsiElement, container: EObject) {
         if (psiElement is calcREFERENCEModuleID) visitREFERENCEModuleID(psiElement, container as Import)
         else if (psiElement is calcREFERENCEAbstractDefinitionID) visitREFERENCEAbstractDefinitionID(psiElement, container as FunctionCall)
     }
 
-    fun visitElement(element: PsiElement, utilRule: EmfBridgeRule): EObject? {
+    private fun visitElement(element: PsiElement): EObject? {
+        val utilRule = getUtilRuleClass(element)
         var current: EObject? = null
         getAllChildren(element).forEach {
             val rewrite = utilRule.findRewrite(it)
@@ -183,8 +127,11 @@ class CalcEmfVisitor {
             if (literalAssignment != null) {
                 if (current == null) current = utilRule.createObject()
                 literalAssignment.assign(current!!)
+                if (literalAssignment.isName()) {
+                    modelDescriptions.add(ObjectDescriptionImpl(current!!, it.text))
+                }
             } else {
-                val newObject = createEmfObjectIfPossible(it)
+                val newObject = visitElement(it)
                 if (newObject != null) {
                     val assigment = utilRule.findObjectAssignment(it)
                     if (assigment != null) {

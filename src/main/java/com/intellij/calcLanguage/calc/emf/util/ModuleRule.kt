@@ -17,6 +17,10 @@ class ModuleRule : CalcEmfBridgeRule() {
                 override fun assign(obj: EObject) {
                     obj.eSet(ePACKAGE.module_Name, pointer.text)
                 }
+
+                override fun isName(): Boolean {
+                    return true
+                }
             }
         }
         return null

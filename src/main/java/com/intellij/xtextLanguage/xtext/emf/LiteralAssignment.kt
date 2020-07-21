@@ -5,4 +5,5 @@ import org.eclipse.emf.ecore.EObject
 @FunctionalInterface
 interface LiteralAssignment {
     fun assign(obj: EObject)
+    fun isName(): Boolean
 }
