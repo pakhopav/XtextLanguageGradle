@@ -11,5 +11,5 @@ interface EmfBridgeRule {
 
     fun findRewrite(pointer: PsiElement): ((EObject?) -> EObject)?
 
-    fun createMyEmfObject(): EObject
+    fun createObject(): EObject
 }

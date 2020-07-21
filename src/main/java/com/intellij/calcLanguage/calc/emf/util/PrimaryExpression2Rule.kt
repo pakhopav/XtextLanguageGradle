@@ -3,18 +3,19 @@ package com.intellij.calcLanguage.calc.emf.util
 import com.intellij.calcLanguage.calc.psi.calcTypes
 import com.intellij.psi.PsiElement
 import org.eclipse.emf.ecore.EObject
+import java.math.BigDecimal
 
-class EvaluationRule : CalcEmfBridgeRule() {
+class PrimaryExpression2Rule : CalcEmfBridgeRule() {
     override fun findLiteralAssignment(pointer: PsiElement): ((EObject) -> Unit)? {
+        if (pointer.node.elementType == calcTypes.NUMBER) {
+            return {
+                it.eSet(ePACKAGE.numberLiteral_Value, BigDecimal(pointer.text))
+            }
+        }
         return null
     }
 
     override fun findAssignment(pointer: PsiElement): ((EObject, EObject) -> Unit)? {
-        if (pointer.node.elementType == calcTypes.EXPRESSION) {
-            return { current: EObject, toAssign: EObject ->
-                current.eSet(ePACKAGE.evaluation_Expression, toAssign)
-            }
-        }
         return null
     }
 
@@ -23,6 +24,6 @@ class EvaluationRule : CalcEmfBridgeRule() {
     }
 
     override fun createObject(): EObject {
-        return eFACTORY.create(ePACKAGE.evaluation)
+        return eFACTORY.create(ePACKAGE.numberLiteral)
     }
 }

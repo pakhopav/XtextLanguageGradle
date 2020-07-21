@@ -17,7 +17,7 @@ class ImportRule : CalcEmfBridgeRule() {
         return null
     }
 
-    override fun createMyEmfObject(): EObject {
+    override fun createObject(): EObject {
         return eFACTORY.create(ePACKAGE.import)
     }
 }

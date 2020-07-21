@@ -34,7 +34,7 @@ class DefinitionRule : CalcEmfBridgeRule() {
         return null
     }
 
-    override fun createMyEmfObject(): EObject {
+    override fun createObject(): EObject {
         return eFACTORY.create(ePACKAGE.definition)
     }
 }

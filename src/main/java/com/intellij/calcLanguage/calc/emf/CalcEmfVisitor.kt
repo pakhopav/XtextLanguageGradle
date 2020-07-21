@@ -11,7 +11,6 @@ import com.intellij.xtextLanguage.xtext.emf.EmfBridgeRule
 import com.intellij.xtextLanguage.xtext.emf.ObjectDescription
 import com.intellij.xtextLanguage.xtext.emf.impl.ObjectDescriptionImpl
 import org.eclipse.emf.ecore.EObject
-import java.math.BigDecimal
 
 
 class CalcEmfVisitor {
@@ -20,7 +19,6 @@ class CalcEmfVisitor {
     private var referencedAbstractDefinitions = mutableMapOf<FunctionCall, String>()
     private var referencedModules = mutableMapOf<Import, String>()
     private var modelDescriptions = mutableListOf<ObjectDescription>()
-    private val factory = ArithmeticsFactory.eINSTANCE
     private val ePackage = ArithmeticsPackage.eINSTANCE
 
 
@@ -31,7 +29,7 @@ class CalcEmfVisitor {
     }
 
     fun visitAddition(psiAddition: calcAddition): Expression {
-        val utilRule = CalcEmfBridgeUtil.ADDITION
+        val utilRule = AdditionRule()
         return visitElement(psiAddition, utilRule) as Expression
     }
 
@@ -56,47 +54,50 @@ class CalcEmfVisitor {
     }
 
     fun visitExpression(psiExpression: calcExpression): Expression {
-        return visitAddition(psiExpression.addition)
+        val utilRule = ExpressionRule()
+        return visitElement(psiExpression, utilRule) as Expression
     }
 
     fun visitImport(psiImport: calcImport): Import {
-        val utilRule = CalcEmfBridgeUtil.IMPORT
+        val utilRule = ImportRule()
         return visitElement(psiImport, utilRule) as Import
     }
 
     fun visitModule(psiModule: calcModule): Module? {
-        val utilRule = CalcEmfBridgeUtil.MODULE
+        val utilRule = ModuleRule()
         emfRoot = visitElement(psiModule, utilRule) as Module
         modelDescriptions.add(ObjectDescriptionImpl(emfRoot!!, emfRoot!!.eGet(ePackage.module_Name).toString()))
         return emfRoot
     }
 
-    fun visitMultiplication(psiMultiplication: calcMultiplication): Expression? {
-        val utilRule = CalcEmfBridgeUtil.MULTIPLICATION
+    fun visitMultiplication(psiMultiplication: calcMultiplication): Expression {
+        val utilRule = MultiplicationRule()
         return visitElement(psiMultiplication, utilRule) as Expression
     }
 
-    fun visitPrimaryExpression(psiPrimaryExpression: calcPrimaryExpression): Expression? {
-        psiPrimaryExpression.primaryExpression1?.let { return visitPrimaryExpression1(it) }
-        psiPrimaryExpression.primaryExpression2?.let { return visitPrimaryExpression2(it) }
-        psiPrimaryExpression.primaryExpression3?.let { return visitPrimaryExpression3(it) }
-        return null
+    fun visitPrimaryExpression(psiPrimaryExpression: calcPrimaryExpression): Expression {
+        val utilRule = PrimaryExpressionRule()
+        return visitElement(psiPrimaryExpression, utilRule) as Expression
     }
 
     fun visitPrimaryExpression1(psiPrimaryExpression1: calcPrimaryExpression1): Expression {
-        return visitExpression(psiPrimaryExpression1.expression)
+        val utilRule = PrimaryExpression1Rule()
+        return visitElement(psiPrimaryExpression1, utilRule) as Expression
     }
 
     fun visitPrimaryExpression2(psiPrimaryExpression2: calcPrimaryExpression2): NumberLiteral {
-        val current = factory.create(ePackage.numberLiteral) as NumberLiteral
-        val number = BigDecimal(psiPrimaryExpression2.number.text)
-        current.eSet(ePackage.numberLiteral_Value, number)
-        return current
+        val utilRule = PrimaryExpression2Rule()
+        return visitElement(psiPrimaryExpression2, utilRule) as NumberLiteral
     }
 
     fun visitPrimaryExpression3(psiPrimaryExpression3: calcPrimaryExpression3): FunctionCall {
         val utilRule = PrimaryExpression3Rule()
         return visitElement(psiPrimaryExpression3, utilRule) as FunctionCall
+    }
+
+    fun visitStatement(psiStatement: calcStatement): Statement {
+        val utilRule = StatementRule()
+        return visitElement(psiStatement, utilRule) as Statement
     }
 
     fun visitREFERENCEAbstractDefinitionID(psiAbstractDefinitionID: calcREFERENCEAbstractDefinitionID, functionCall: FunctionCall) {
@@ -106,13 +107,6 @@ class CalcEmfVisitor {
     fun visitREFERENCEModuleID(psiModuleID: calcREFERENCEModuleID, import: Import) {
         referencedModules.put(import, psiModuleID.text)
     }
-
-    fun visitStatement(psiStatement: calcStatement): Statement? {
-        psiStatement.definition?.let { return visitDefinition(it) }
-        psiStatement.evaluation?.let { return visitEvaluation(it) }
-        return null
-    }
-
 
     private fun completeRawModel() {
         val scope = EntityScope(modelDescriptions)
@@ -126,7 +120,6 @@ class CalcEmfVisitor {
             val container = it.key
             val resolvedModule = scope.getSingleElement(it.value)?.obj
             resolvedModule?.let { container.eSet(ePackage.import_Module, resolvedModule) }
-
         }
     }
 
@@ -144,6 +137,18 @@ class CalcEmfVisitor {
             return visitDeclaredParameter(psiElement)
         } else if (psiElement is calcExpression) {
             return visitExpression(psiElement)
+        } else if (psiElement is calcPrimaryExpression1) {
+            return visitPrimaryExpression1(psiElement)
+        } else if (psiElement is calcPrimaryExpression2) {
+            return visitPrimaryExpression2(psiElement)
+        } else if (psiElement is calcPrimaryExpression3) {
+            return visitPrimaryExpression3(psiElement)
+        } else if (psiElement is calcEvaluation) {
+            return visitEvaluation(psiElement)
+        } else if (psiElement is calcDefinition) {
+            return visitDefinition(psiElement)
+        } else if (psiElement is calcAddition) {
+            return visitAddition(psiElement)
         }
 
         return null
@@ -176,19 +181,19 @@ class CalcEmfVisitor {
             if (rewrite != null) current = rewrite(current)
             val literalAssignment = utilRule.findLiteralAssignment(it)
             if (literalAssignment != null) {
-                if (current == null) current = utilRule.createMyEmfObject()
+                if (current == null) current = utilRule.createObject()
                 literalAssignment(current!!)
             } else {
                 val newObject = createEmfObjectIfPossible(it)
                 if (newObject != null) {
                     val assigment = utilRule.findAssignment(it)
                     if (assigment != null) {
-                        if (current == null) current = utilRule.createMyEmfObject()
+                        if (current == null) current = utilRule.createObject()
                         assigment(current!!, newObject)
                     } else
                         current = newObject
                 } else if (isCrossReference(it)) {
-                    if (current == null) current = utilRule.createMyEmfObject()
+                    if (current == null) current = utilRule.createObject()
                     createCrossReference(it, current!!)
                 }
             }
