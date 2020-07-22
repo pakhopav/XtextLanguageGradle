@@ -40,19 +40,19 @@ class BnfGenerator(extention: String, fileModel: XtextMainModel) : Generator(ext
 
     private fun generateAttributes(out: PrintWriter) {
         out.print("""
-          |    parserClass="$packageDir.parser.${extention}Parser"
+          |    parserClass="$packageDir.parser.${extention.capitalize()}Parser"
         
-          |    extends="$packageDir.psi.impl.${extention}PsiCompositeElementImpl"
-          |    psiClassPrefix="${extention}"
+          |    extends="$packageDir.psi.impl.${extention.capitalize()}PsiCompositeElementImpl"
+          |    psiClassPrefix="${extention.capitalize()}"
           |    psiImplClassSuffix="Impl"
           |    psiPackage="$packageDir.psi"
           |    psiImplPackage="$packageDir.impl"
 
-          |    elementTypeHolderClass="$packageDir.psi.${extention}Types"
-          |    elementTypeClass="$packageDir.psi.${extention}ElementType"
-          |    tokenTypeClass="$packageDir.psi.${extention}TokenType"
+          |    elementTypeHolderClass="$packageDir.psi.${extention.capitalize()}Types"
+          |    elementTypeClass="$packageDir.psi.${extention.capitalize()}ElementType"
+          |    tokenTypeClass="$packageDir.psi.${extention.capitalize()}TokenType"
           |    parserUtilClass= "com.intellij.languageUtil.parserUtilBase.GeneratedParserUtilBaseCopy"
-          |    psiImplUtilClass="$packageDir.psi.impl.${extention}PsiImplUtil"
+          |    psiImplUtilClass="$packageDir.psi.impl.${extention.capitalize()}PsiImplUtil"
           |    generateTokenAccessors=true
           |    generateTokens=true
           |    extraRoot(".*")= true
@@ -84,7 +84,7 @@ class BnfGenerator(extention: String, fileModel: XtextMainModel) : Generator(ext
         fileModel.parserRules.forEach {
 
             if (it == fileModel.parserRules.first()) {
-                out.print("${extention}File ::= ${it.name}\n")
+                out.print("${extention.capitalize()}File ::= ${it.name}\n")
             }
             out.print("${createGkitRuleName(it.name)} ::= ")
 
@@ -95,7 +95,7 @@ class BnfGenerator(extention: String, fileModel: XtextMainModel) : Generator(ext
             out.print("\n")
             if (it.isReferenced) out.print("""
                 |{
-                |mixin="$packageDir.psi.impl.${extention}NamedElementImpl"
+                |mixin="$packageDir.psi.impl.${extention.capitalize()}NamedElementImpl"
                 |implements="com.intellij.psi.PsiNameIdentifierOwner"
                 |methods=[ getName setName getNameIdentifier ]
                 |}

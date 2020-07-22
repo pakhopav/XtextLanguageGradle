@@ -6,7 +6,7 @@ import java.io.PrintWriter
 
 class FlexFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
     fun generateFlexFile() {
-        val file = createFile(extention + ".flex", myGenDir + "/grammar")
+        val file = createFile(extention.capitalize() + ".flex", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
@@ -15,18 +15,18 @@ class FlexFileGenerator(extention: String, fileModel: XtextMainModel) : Generato
             |import com.intellij.psi.tree.IElementType;
             |import static com.intellij.psi.TokenType.BAD_CHARACTER; // Pre-defined bad character token.
             |import static com.intellij.psi.TokenType.WHITE_SPACE; // Pre-defined whitespace character token.
-            |import static $packageDir.psi.${extention}Types.*; // Note that is the class which is specified as `elementTypeHolderClass`
+            |import static $packageDir.psi.${extention.capitalize()}Types.*; // Note that is the class which is specified as `elementTypeHolderClass`
             
             |%%
             
             |%public
-            |%class _${extention}Lexer // Name of the lexer class which will be generated.
+            |%class _${extention.capitalize()}Lexer // Name of the lexer class which will be generated.
             |%implements FlexLexer
             |%function advance
             |%type IElementType
             |%unicode
             |%{
-            |    public _${extention}Lexer(){
+            |    public _${extention.capitalize()}Lexer(){
             |        this((java.io.Reader)null);
             |    }
             |%}

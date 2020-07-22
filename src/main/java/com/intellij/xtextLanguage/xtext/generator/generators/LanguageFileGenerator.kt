@@ -8,18 +8,18 @@ class LanguageFileGenerator(extention: String, fileModel: XtextMainModel) : Gene
 
 
     fun generateLanguageFile() {
-        val file = createFile(extention + "Language.java", myGenDir)
+        val file = createFile(extention.capitalize() + "Language.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
 
             |import com.intellij.lang.Language;
 
-            |public class ${extention}Language extends Language {
-            |    public static final ${extention}Language INSTANCE = new ${extention}Language();
+            |public class ${extention.capitalize()}Language extends Language {
+            |    public static final ${extention.capitalize()}Language INSTANCE = new ${extention.capitalize()}Language();
 
-            |    private ${extention}Language() {
-            |        super("${extention}");
+            |    private ${extention.capitalize()}Language() {
+            |        super("${extention.capitalize()}");
 
             |    }
             |}

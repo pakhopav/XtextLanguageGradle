@@ -6,7 +6,7 @@ import java.io.PrintWriter
 
 class SyntaxHighlighterFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
     fun generateSyntaxHighlighterFile() {
-        val file = createFile(extention + "SyntaxHighlighter.java", myGenDir)
+        val file = createFile(extention.capitalize() + "SyntaxHighlighter.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
@@ -15,12 +15,12 @@ class SyntaxHighlighterFileGenerator(extention: String, fileModel: XtextMainMode
             |import com.intellij.openapi.editor.colors.TextAttributesKey;
             |import com.intellij.openapi.fileTypes.SyntaxHighlighterBase;
             |import com.intellij.psi.tree.IElementType;
-            |import $packageDir.psi.${extention}Types;
+            |import $packageDir.psi.${extention.capitalize()}Types;
             |import org.jetbrains.annotations.NotNull;
             
             |import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
             
-            |public class ${extention}SyntaxHighlighter extends SyntaxHighlighterBase {
+            |public class ${extention.capitalize()}SyntaxHighlighter extends SyntaxHighlighterBase {
             
             |    public static final TextAttributesKey KEYWORD =
             |        createTextAttributesKey("${extention.toUpperCase()}_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
@@ -40,22 +40,22 @@ class SyntaxHighlighterFileGenerator(extention: String, fileModel: XtextMainMode
             |    @NotNull
             |    @Override
             |    public Lexer getHighlightingLexer() {
-            |        return new ${extention}LexerAdapter();
+            |        return new ${extention.capitalize()}LexerAdapter();
             |    }
             
             |    @NotNull
             |    @Override
             |    public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
-            |        if (${extention}ParserDefinition.KEYWORDS.contains(tokenType)) {
+            |        if (${extention.capitalize()}ParserDefinition.KEYWORDS.contains(tokenType)) {
             |            return KEY_KEYS;""".trimMargin("|"))
         if (fileModel.ruleResolver.getTerminalRuleByName("STRING") != null) {
             out.print("""
-            |        } else if (tokenType.equals(${extention}Types.STRING)) {
+            |        } else if (tokenType.equals(${extention.capitalize()}Types.STRING)) {
             |            return VALUE_KEYS;
         """.trimMargin("|"))
         }
         out.print("""
-            |        } else if (${extention}ParserDefinition.COMMENTS.contains(tokenType)) {
+            |        } else if (${extention.capitalize()}ParserDefinition.COMMENTS.contains(tokenType)) {
             |            return COMMENT_KEYS;
             |        }  else {
             |            return EMPTY_KEYS;

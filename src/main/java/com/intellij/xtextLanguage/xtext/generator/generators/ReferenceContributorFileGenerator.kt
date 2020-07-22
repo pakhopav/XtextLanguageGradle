@@ -6,7 +6,7 @@ import java.io.PrintWriter
 
 class ReferenceContributorFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
     fun generateReferenceContributorFile() {
-        val file = createFile(extention + "ReferenceContributor.java", myGenDir)
+        val file = createFile(extention.capitalize() + "ReferenceContributor.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
@@ -22,7 +22,7 @@ class ReferenceContributorFileGenerator(extention: String, fileModel: XtextMainM
             |import java.util.Arrays;
             |import java.util.Collection;
             
-            |public class ${extention}ReferenceContributor extends PsiReferenceContributor {
+            |public class ${extention.capitalize()}ReferenceContributor extends PsiReferenceContributor {
             |@Override
             |public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
             
@@ -31,25 +31,25 @@ class ReferenceContributorFileGenerator(extention: String, fileModel: XtextMainM
             if (it.targets.size == 0) return@forEach
             val referenceName = it.name.replace("_", "")
             out.print("""
-            |registrar.registerReferenceProvider(PlatformPatterns.psiElement(${extention}${referenceName}.class).withLanguage(${extention}Language.INSTANCE),
+            |registrar.registerReferenceProvider(PlatformPatterns.psiElement(${extention.capitalize()}${referenceName}.class).withLanguage(${extention.capitalize()}Language.INSTANCE),
             |    new PsiReferenceProvider() {
             |        @NotNull
             |        @Override
             |        public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
             |                                                     @NotNull ProcessingContext context){
-            |            ${extention}${referenceName} reference = (${extention}${referenceName}) element;
+            |            ${extention.capitalize()}${referenceName} reference = (${extention.capitalize()}${referenceName}) element;
             |            String value = reference.getText();
             |            ArrayList<Class<? extends PsiNameIdentifierOwner>> list = new ArrayList<>((Collection<? extends Class<? extends PsiNameIdentifierOwner>>)Arrays.asList(
             """.trimMargin("|"))
             val targets = it.targets
             targets.forEach {
-                out.print("${extention}${it.name}.class")
+                out.print("${extention.capitalize()}${it.name}.class")
                 if (it !== targets.last()) out.print(", ")
             }
             out.print("));\n")
             out.print("""
             |            return new PsiReference[]{
-            |                new ${extention}Reference(element, new TextRange(0, value.length()), list)};
+            |                new ${extention.capitalize()}Reference(element, new TextRange(0, value.length()), list)};
             |            }
             |        });
             """.trimMargin("|"))

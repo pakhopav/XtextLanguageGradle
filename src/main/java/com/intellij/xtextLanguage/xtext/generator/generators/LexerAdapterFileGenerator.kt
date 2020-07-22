@@ -6,16 +6,16 @@ import java.io.PrintWriter
 
 class LexerAdapterFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
     fun generateLexerAdapterFile() {
-        val file = createFile(extention + "LexerAdapter.java", myGenDir)
+        val file = createFile(extention.capitalize() + "LexerAdapter.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
             |import com.intellij.lexer.FlexAdapter;
             |import java.io.Reader;
             
-            |public class ${extention}LexerAdapter extends FlexAdapter {
-            |    public ${extention}LexerAdapter() {
-            |        super(new _${extention}Lexer((Reader) null));
+            |public class ${extention.capitalize()}LexerAdapter extends FlexAdapter {
+            |    public ${extention.capitalize()}LexerAdapter() {
+            |        super(new _${extention.capitalize()}Lexer((Reader) null));
             |    }
             |}
 

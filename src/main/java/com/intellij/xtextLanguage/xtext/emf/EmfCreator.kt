@@ -1,7 +1,7 @@
 package com.intellij.xtextLanguage.xtext.emf
 
 import com.intellij.calcLanguage.calc.emf.util.CalcEmfBridgeRule
-import com.intellij.calcLanguage.calc.psi.calcModule
+import com.intellij.calcLanguage.calc.psi.CalcModule
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.eclipse.emf.ecore.EObject
@@ -18,7 +18,7 @@ abstract class EmfCreator {
 
     protected abstract fun createCrossReference(psiElement: PsiElement, context: EObject)
 
-    fun createModel(psiModule: calcModule): EObject? {
+    fun createModel(psiModule: CalcModule): EObject? {
         emfRoot = visitElement(psiModule)
         completeRawModel()
         return emfRoot

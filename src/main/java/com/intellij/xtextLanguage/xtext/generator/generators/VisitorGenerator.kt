@@ -13,7 +13,7 @@ class VisitorGenerator(extention: String, fileModel: XtextMainModel) : Generator
 
     fun generateNameVisitor() {
         val path = File(myGenDir + "/psi")
-        val file = File(myGenDir + "/psi/${extention}NameVisitor.kt")
+        val file = File(myGenDir + "/psi/${extention.capitalize()}NameVisitor.kt")
         path.mkdirs()
         file.createNewFile()
         val out = PrintWriter(FileOutputStream(file))
@@ -23,13 +23,13 @@ class VisitorGenerator(extention: String, fileModel: XtextMainModel) : Generator
             |import $packageDir.psi.*
             |import com.intellij.psi.PsiElement
             
-            |class ${extention}NameVisitor {
+            |class ${extention.capitalize()}NameVisitor {
         """.trimMargin("|"))
         out.print("\n")
         model.rules.forEach {
             val rule = it
             val methodName = "visit${it.name}"
-            out.print("    fun $methodName (node : ${extention}${it.name}): PsiElement?{\n")
+            out.print("    fun $methodName (node : ${extention.capitalize()}${it.name}): PsiElement?{\n")
             it.uniqueName?.let {
                 if (rule.ruleCallsList.contains(it)) {
                     if (it == "ID") {

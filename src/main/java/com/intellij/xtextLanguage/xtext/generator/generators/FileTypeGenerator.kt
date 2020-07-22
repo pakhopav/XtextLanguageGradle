@@ -6,7 +6,7 @@ import java.io.PrintWriter
 
 class FileTypeGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
     fun generateFileTypeFile() {
-        val file = createFile(extention + "FileType.java", myGenDir)
+        val file = createFile(extention.capitalize() + "FileType.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
@@ -15,23 +15,23 @@ class FileTypeGenerator(extention: String, fileModel: XtextMainModel) : Generato
             |import org.jetbrains.annotations.*;
             |import javax.swing.*;
 
-            |public class ${extention}FileType extends LanguageFileType {
-            |    public static final ${extention}FileType INSTANCE = new ${extention}FileType();
+            |public class ${extention.capitalize()}FileType extends LanguageFileType {
+            |    public static final ${extention.capitalize()}FileType INSTANCE = new ${extention.capitalize()}FileType();
 
-            |    private ${extention}FileType() {
-            |        super(${extention}Language.INSTANCE);
+            |    private ${extention.capitalize()}FileType() {
+            |        super(${extention.capitalize()}Language.INSTANCE);
             |    }
 
             |    @NotNull
             |    @Override
             |    public String getName() {
-            |        return "${extention} file";
+            |        return "${extention.capitalize()} file";
             |    }
             
             |    @NotNull
             |    @Override
             |    public String getDescription() {
-            |        return "${extention} language file";
+            |        return "${extention.capitalize()} language file";
             |    }
             
             |    @NotNull
@@ -43,7 +43,7 @@ class FileTypeGenerator(extention: String, fileModel: XtextMainModel) : Generato
             |    @Nullable
             |    @Override
             |    public Icon getIcon() {
-            |        return ${extention}Icons.FILE; 
+            |        return ${extention.capitalize()}Icons.FILE; 
             |    }
             |}
         """.trimMargin("|"))

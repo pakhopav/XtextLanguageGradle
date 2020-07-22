@@ -6,7 +6,7 @@ import java.io.PrintWriter
 
 class RootFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
     fun generateRootFileFile() {
-        val file = createFile(extention + "File.java", myGenDir + "/psi")
+        val file = createFile(extention.capitalize() + "File.java", myGenDir + "/psi")
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir.psi;
@@ -17,20 +17,20 @@ class RootFileGenerator(extention: String, fileModel: XtextMainModel) : Generato
             |import org.jetbrains.annotations.NotNull;
             |import javax.swing.*;
             
-            |public class ${extention}File extends PsiFileBase {
-            |    public ${extention}File(@NotNull FileViewProvider viewProvider) {
-            |        super(viewProvider, ${extention}Language.INSTANCE);
+            |public class ${extention.capitalize()}File extends PsiFileBase {
+            |    public ${extention.capitalize()}File(@NotNull FileViewProvider viewProvider) {
+            |        super(viewProvider, ${extention.capitalize()}Language.INSTANCE);
             |    }
                 
             |    @NotNull
             |    @Override
             |    public FileType getFileType() {
-            |        return ${extention}FileType.INSTANCE;
+            |        return ${extention.capitalize()}FileType.INSTANCE;
             |    }
             
             |    @Override
             |    public String toString() {
-            |        return "${extention} File";
+            |        return "${extention.capitalize()} File";
             |    }
             
             |    @Override

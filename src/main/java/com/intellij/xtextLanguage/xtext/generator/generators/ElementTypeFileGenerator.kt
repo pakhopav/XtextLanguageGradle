@@ -6,19 +6,19 @@ import java.io.PrintWriter
 
 class ElementTypeFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
     fun generateElementTypeFile() {
-        val file = createFile(extention + "ElementType.java", myGenDir + "/psi")
+        val file = createFile(extention.capitalize() + "ElementType.java", myGenDir + "/psi")
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir.psi;
             
-            |import $packageDir.${extention}Language;
+            |import $packageDir.${extention.capitalize()}Language;
             |import com.intellij.psi.tree.IElementType;
             |import org.jetbrains.annotations.*;
             
-            |public class ${extention}ElementType extends IElementType {
+            |public class ${extention.capitalize()}ElementType extends IElementType {
             |    private String debugName;
-            |    public ${extention}ElementType(@NotNull @NonNls String debugName) {
-            |        super(debugName, ${extention}Language.INSTANCE);
+            |    public ${extention.capitalize()}ElementType(@NotNull @NonNls String debugName) {
+            |        super(debugName, ${extention.capitalize()}Language.INSTANCE);
             |        this.debugName = debugName;
             |    }
             |    public String getDebugName(){

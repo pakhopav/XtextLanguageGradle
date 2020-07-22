@@ -6,25 +6,25 @@ import java.io.PrintWriter
 
 class CompletionContributorFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
     fun generateCompletionContributorFile() {
-        val file = createFile(extention + "CompletionContributor.java", myGenDir)
+        val file = createFile(extention.capitalize() + "CompletionContributor.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
             |import com.intellij.codeInsight.completion.CompletionContributor;
             |import com.intellij.codeInsight.completion.CompletionType;
             |import com.intellij.languageUtil.completion.KeywordCompletionProvider;
-            |import $packageDir.psi.${extention}TokenType;
-            |import $packageDir.psi.${extention}File;
+            |import $packageDir.psi.${extention.capitalize()}TokenType;
+            |import $packageDir.psi.${extention.capitalize()}File;
             
             |import static com.intellij.patterns.PlatformPatterns.psiElement;
             
             
-            |public class ${extention}CompletionContributor extends CompletionContributor {
-            |public ${extention}CompletionContributor() {
+            |public class ${extention.capitalize()}CompletionContributor extends CompletionContributor {
+            |public ${extention.capitalize()}CompletionContributor() {
             
-            |extend(CompletionType.BASIC, psiElement().withLanguage(${extention}Language.INSTANCE)
+            |extend(CompletionType.BASIC, psiElement().withLanguage(${extention.capitalize()}Language.INSTANCE)
             |,
-            |new KeywordCompletionProvider<${extention}File, ${extention}TokenType>(${extention}Language.INSTANCE, ${extention}FileType.INSTANCE, ${extention}TokenType.class));
+            |new KeywordCompletionProvider<${extention.capitalize()}File, ${extention.capitalize()}TokenType>(${extention.capitalize()}Language.INSTANCE, ${extention.capitalize()}FileType.INSTANCE, ${extention.capitalize()}TokenType.class));
             
             |}
             |}

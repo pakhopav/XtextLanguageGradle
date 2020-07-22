@@ -6,7 +6,7 @@ import java.io.PrintWriter
 
 class IconsFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
     fun generateIconsFile() {
-        val file = createFile(extention + "Icons.java", myGenDir)
+        val file = createFile(extention.capitalize() + "Icons.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
@@ -15,7 +15,7 @@ class IconsFileGenerator(extention: String, fileModel: XtextMainModel) : Generat
             
             |import javax.swing.*;
             
-            |public class ${extention}Icons {
+            |public class ${extention.capitalize()}Icons {
             |    public static final Icon FILE = IconLoader.getIcon("/icons/simpleIcon.png");
             |}
         """.trimMargin("|"))

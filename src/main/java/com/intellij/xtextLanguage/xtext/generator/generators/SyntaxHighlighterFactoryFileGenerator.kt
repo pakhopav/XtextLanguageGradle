@@ -6,7 +6,7 @@ import java.io.PrintWriter
 
 class SyntaxHighlighterFactoryFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
     fun generateSyntaxHighlighterFactoryFile() {
-        val file = createFile(extention + "SyntaxHighlighterFactory.java", myGenDir)
+        val file = createFile(extention.capitalize() + "SyntaxHighlighterFactory.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
@@ -15,11 +15,11 @@ class SyntaxHighlighterFactoryFileGenerator(extention: String, fileModel: XtextM
             |import com.intellij.openapi.vfs.VirtualFile;
             |import org.jetbrains.annotations.NotNull;
             
-            |public class ${extention}SyntaxHighlighterFactory extends SyntaxHighlighterFactory {
+            |public class ${extention.capitalize()}SyntaxHighlighterFactory extends SyntaxHighlighterFactory {
             |    @NotNull
             |    @Override
             |    public SyntaxHighlighter getSyntaxHighlighter(Project project, VirtualFile virtualFile) {
-            |        return new ${extention}SyntaxHighlighter();
+            |        return new ${extention.capitalize()}SyntaxHighlighter();
             |    }
             |}
 
