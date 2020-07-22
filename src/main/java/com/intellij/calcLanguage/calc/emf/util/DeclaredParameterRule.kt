@@ -1,6 +1,6 @@
 package com.intellij.calcLanguage.calc.emf.util
 
-import com.intellij.calcLanguage.calc.psi.calcTypes
+import com.intellij.calcLanguage.calc.psi.CalcTypes
 import com.intellij.psi.PsiElement
 import com.intellij.xtextLanguage.xtext.emf.LiteralAssignment
 import com.intellij.xtextLanguage.xtext.emf.ObjectAssignment
@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.EObject
 
 class DeclaredParameterRule : CalcEmfBridgeRule() {
     override fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment? {
-        if (pointer.node.elementType == calcTypes.ID) {
+        if (pointer.node.elementType == CalcTypes.ID) {
             return StringLiteralAssignment(ePACKAGE.abstractDefinition_Name)
         }
         return null

@@ -1,6 +1,6 @@
 package com.intellij.calcLanguage.calc;
 
-import com.intellij.calcLanguage.calc.psi.calcTypes;
+import com.intellij.calcLanguage.calc.psi.CalcTypes;
 import com.intellij.lexer.Lexer;
 import com.intellij.openapi.editor.DefaultLanguageHighlighterColors;
 import com.intellij.openapi.editor.HighlighterColors;
@@ -11,7 +11,7 @@ import org.jetbrains.annotations.NotNull;
 
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
-public class calcSyntaxHighlighter extends SyntaxHighlighterBase {
+public class CalcSyntaxHighlighter extends SyntaxHighlighterBase {
 
     public static final TextAttributesKey KEYWORD =
             createTextAttributesKey("CALC_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
@@ -31,17 +31,17 @@ public class calcSyntaxHighlighter extends SyntaxHighlighterBase {
     @NotNull
     @Override
     public Lexer getHighlightingLexer() {
-        return new calcLexerAdapter();
+        return new CalcLexerAdapter();
     }
 
     @NotNull
     @Override
     public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
-        if (calcParserDefinition.KEYWORDS.contains(tokenType)) {
+        if (CalcParserDefinition.KEYWORDS.contains(tokenType)) {
             return KEY_KEYS;
-        } else if (tokenType.equals(calcTypes.STRING)) {
+        } else if (tokenType.equals(CalcTypes.STRING)) {
             return VALUE_KEYS;
-        } else if (calcParserDefinition.COMMENTS.contains(tokenType)) {
+        } else if (CalcParserDefinition.COMMENTS.contains(tokenType)) {
             return COMMENT_KEYS;
         } else {
             return EMPTY_KEYS;

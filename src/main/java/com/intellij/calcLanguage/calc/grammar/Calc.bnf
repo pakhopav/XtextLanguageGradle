@@ -22,27 +22,27 @@ ANY_OTHER="regexp:."
       ASTERISK_KEYWORD = '*'
       KEYWORD_1 = '/'
     ]
-    parserClass="com.intellij.calcLanguage.calc.parser.calcParser"
+    parserClass="com.intellij.calcLanguage.calc.parser.CalcParser"
         
-    extends="com.intellij.calcLanguage.calc.psi.impl.calcPsiCompositeElementImpl"
-    psiClassPrefix="calc"
+    extends="com.intellij.calcLanguage.calc.psi.impl.CalcPsiCompositeElementImpl"
+    psiClassPrefix="Calc"
     psiImplClassSuffix="Impl"
     psiPackage="com.intellij.calcLanguage.calc.psi"
     psiImplPackage="com.intellij.calcLanguage.calc.impl"
 
-    elementTypeHolderClass="com.intellij.calcLanguage.calc.psi.calcTypes"
-    elementTypeClass="com.intellij.calcLanguage.calc.psi.calcElementType"
-    tokenTypeClass="com.intellij.calcLanguage.calc.psi.calcTokenType"
+    elementTypeHolderClass="com.intellij.calcLanguage.calc.psi.CalcTypes"
+    elementTypeClass="com.intellij.calcLanguage.calc.psi.CalcElementType"
+    tokenTypeClass="com.intellij.calcLanguage.calc.psi.CalcTokenType"
     parserUtilClass= "com.intellij.languageUtil.parserUtilBase.GeneratedParserUtilBaseCopy"
-    psiImplUtilClass="com.intellij.calcLanguage.calc.psi.impl.calcPsiImplUtil"
+    psiImplUtilClass="com.intellij.calcLanguage.calc.psi.impl.CalcPsiImplUtil"
     generateTokenAccessors=true
     generateTokens=true
     extraRoot(".*")= true
 }
-calcFile ::= Module
+CalcFile ::= Module
 Module ::= 'module' ID ( Import ) * ( Statement ) * 
 {
-mixin="com.intellij.calcLanguage.calc.psi.impl.calcNamedElementImpl"
+mixin="com.intellij.calcLanguage.calc.psi.impl.CalcNamedElementImpl"
 implements="com.intellij.psi.PsiNameIdentifierOwner"
 methods=[ getName setName getNameIdentifier ]
 }
@@ -52,14 +52,14 @@ Definition ::= 'def' ID ( '(' DeclaredParameter ( ',' DeclaredParameter ) * ')' 
 DeclaredParameter ::= ID 
 AbstractDefinition ::= Definition | DeclaredParameter 
 {
-mixin="com.intellij.calcLanguage.calc.psi.impl.calcNamedElementImpl"
+mixin="com.intellij.calcLanguage.calc.psi.impl.CalcNamedElementImpl"
 implements="com.intellij.psi.PsiNameIdentifierOwner"
 methods=[ getName setName getNameIdentifier ]
 }
 Evaluation ::= Expression ';' 
 Expression ::= Addition 
-Addition ::= Multiplication ( ( '+' | '-' ) Multiplication ) *
-Multiplication ::= PrimaryExpression ( ( '*' | '/' ) PrimaryExpression ) *
+Addition ::= Multiplication ( ( '+' | '-' ) Multiplication ) * 
+Multiplication ::= PrimaryExpression ( ( '*' | '/' ) PrimaryExpression ) * 
 PrimaryExpression1 ::= '(' Expression ')' 
 PrimaryExpression2 ::= NUMBER 
 PrimaryExpression3 ::= REFERENCE_AbstractDefinition_ID ( '(' Expression ( ',' Expression ) * ')' ) ? 

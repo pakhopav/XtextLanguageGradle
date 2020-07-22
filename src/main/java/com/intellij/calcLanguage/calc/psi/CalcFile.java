@@ -1,7 +1,7 @@
 package com.intellij.calcLanguage.calc.psi;
 
-import com.intellij.calcLanguage.calc.calcFileType;
-import com.intellij.calcLanguage.calc.calcLanguage;
+import com.intellij.calcLanguage.calc.CalcFileType;
+import com.intellij.calcLanguage.calc.CalcLanguage;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
@@ -9,20 +9,20 @@ import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class calcFile extends PsiFileBase {
-    public calcFile(@NotNull FileViewProvider viewProvider) {
-        super(viewProvider, calcLanguage.INSTANCE);
+public class CalcFile extends PsiFileBase {
+    public CalcFile(@NotNull FileViewProvider viewProvider) {
+        super(viewProvider, CalcLanguage.INSTANCE);
     }
 
     @NotNull
     @Override
     public FileType getFileType() {
-        return calcFileType.INSTANCE;
+        return CalcFileType.INSTANCE;
     }
 
     @Override
     public String toString() {
-        return "calc File";
+        return "Calc File";
     }
 
     @Override

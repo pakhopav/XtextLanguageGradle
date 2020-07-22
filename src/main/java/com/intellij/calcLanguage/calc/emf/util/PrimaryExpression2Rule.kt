@@ -1,6 +1,6 @@
 package com.intellij.calcLanguage.calc.emf.util
 
-import com.intellij.calcLanguage.calc.psi.calcTypes
+import com.intellij.calcLanguage.calc.psi.CalcTypes
 import com.intellij.psi.PsiElement
 import com.intellij.xtextLanguage.xtext.emf.BigDecialLiteralAssignment
 import com.intellij.xtextLanguage.xtext.emf.LiteralAssignment
@@ -10,7 +10,7 @@ import org.eclipse.emf.ecore.EObject
 
 class PrimaryExpression2Rule : CalcEmfBridgeRule() {
     override fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment? {
-        if (pointer.node.elementType == calcTypes.NUMBER) {
+        if (pointer.node.elementType == CalcTypes.NUMBER) {
             return BigDecialLiteralAssignment(ePACKAGE.numberLiteral_Value)
         }
         return null

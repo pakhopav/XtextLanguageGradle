@@ -6,23 +6,23 @@ import org.jetbrains.annotations.Nullable;
 
 import javax.swing.*;
 
-public class calcFileType extends LanguageFileType {
-    public static final calcFileType INSTANCE = new calcFileType();
+public class CalcFileType extends LanguageFileType {
+    public static final CalcFileType INSTANCE = new CalcFileType();
 
-    private calcFileType() {
-        super(calcLanguage.INSTANCE);
+    private CalcFileType() {
+        super(CalcLanguage.INSTANCE);
     }
 
     @NotNull
     @Override
     public String getName() {
-        return "calc file";
+        return "Calc file";
     }
 
     @NotNull
     @Override
     public String getDescription() {
-        return "calc language file";
+        return "Calc language file";
     }
 
     @NotNull
@@ -34,6 +34,6 @@ public class calcFileType extends LanguageFileType {
     @Nullable
     @Override
     public Icon getIcon() {
-        return calcIcons.FILE;
+        return CalcIcons.FILE;
     }
 }

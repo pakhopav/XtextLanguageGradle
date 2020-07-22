@@ -1,7 +1,7 @@
 package com.intellij.calcLanguage.calc.emf.util
 
-import com.intellij.calcLanguage.calc.psi.calcAddition
-import com.intellij.calcLanguage.calc.psi.calcMultiplication
+import com.intellij.calcLanguage.calc.psi.CalcAddition
+import com.intellij.calcLanguage.calc.psi.CalcMultiplication
 import com.intellij.psi.PsiElement
 import com.intellij.xtextLanguage.xtext.emf.LiteralAssignment
 import com.intellij.xtextLanguage.xtext.emf.ObjectAssignment
@@ -14,8 +14,8 @@ class AdditionRule : CalcEmfBridgeRule() {
     }
 
     override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {
-        val context = pointer.context as calcAddition
-        if (pointer is calcMultiplication) {
+        val context = pointer.context as CalcAddition
+        if (pointer is CalcMultiplication) {
             if (context.multiplicationList.first() != pointer) {
                 return object : ObjectAssignment {
                     override fun assign(obj: EObject, toAssign: EObject) {

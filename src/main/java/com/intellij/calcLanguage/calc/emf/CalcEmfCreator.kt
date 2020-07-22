@@ -4,8 +4,8 @@ package com.intellij.calcLanguage.calc.emf
 import arithmetics.ArithmeticsPackage
 import arithmetics.FunctionCall
 import arithmetics.Import
-import com.intellij.calcLanguage.calc.psi.calcREFERENCEAbstractDefinitionID
-import com.intellij.calcLanguage.calc.psi.calcREFERENCEModuleID
+import com.intellij.calcLanguage.calc.psi.CalcREFERENCEAbstractDefinitionID
+import com.intellij.calcLanguage.calc.psi.CalcREFERENCEModuleID
 import com.intellij.entityLanguage.entity.emf.scope.EntityScope
 import com.intellij.psi.PsiElement
 import com.intellij.xtextLanguage.xtext.emf.EmfCreator
@@ -18,11 +18,11 @@ class CalcEmfCreator : EmfCreator() {
     private var referencedModules = mutableMapOf<Import, String>()
 
 
-    private fun visitREFERENCEAbstractDefinitionID(psiAbstractDefinitionID: calcREFERENCEAbstractDefinitionID, functionCall: FunctionCall) {
+    private fun visitREFERENCEAbstractDefinitionID(psiAbstractDefinitionID: CalcREFERENCEAbstractDefinitionID, functionCall: FunctionCall) {
         referencedAbstractDefinitions.put(functionCall, psiAbstractDefinitionID.text)
     }
 
-    private fun visitREFERENCEModuleID(psiModuleID: calcREFERENCEModuleID, import: Import) {
+    private fun visitREFERENCEModuleID(psiModuleID: CalcREFERENCEModuleID, import: Import) {
         referencedModules.put(import, psiModuleID.text)
     }
 
@@ -43,12 +43,12 @@ class CalcEmfCreator : EmfCreator() {
 
 
     override fun isCrossReference(psiElement: PsiElement): Boolean {
-        return psiElement is calcREFERENCEAbstractDefinitionID || psiElement is calcREFERENCEModuleID
+        return psiElement is CalcREFERENCEAbstractDefinitionID || psiElement is CalcREFERENCEModuleID
     }
 
     override fun createCrossReference(psiElement: PsiElement, container: EObject) {
-        if (psiElement is calcREFERENCEModuleID) visitREFERENCEModuleID(psiElement, container as Import)
-        else if (psiElement is calcREFERENCEAbstractDefinitionID) visitREFERENCEAbstractDefinitionID(psiElement, container as FunctionCall)
+        if (psiElement is CalcREFERENCEModuleID) visitREFERENCEModuleID(psiElement, container as Import)
+        else if (psiElement is CalcREFERENCEAbstractDefinitionID) visitREFERENCEAbstractDefinitionID(psiElement, container as FunctionCall)
     }
 
 }

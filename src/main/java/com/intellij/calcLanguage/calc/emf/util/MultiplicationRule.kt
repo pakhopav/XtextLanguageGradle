@@ -1,7 +1,7 @@
 package com.intellij.calcLanguage.calc.emf.util
 
-import com.intellij.calcLanguage.calc.psi.calcMultiplication
-import com.intellij.calcLanguage.calc.psi.calcPrimaryExpression
+import com.intellij.calcLanguage.calc.psi.CalcMultiplication
+import com.intellij.calcLanguage.calc.psi.CalcPrimaryExpression
 import com.intellij.psi.PsiElement
 import com.intellij.xtextLanguage.xtext.emf.LiteralAssignment
 import com.intellij.xtextLanguage.xtext.emf.ObjectAssignment
@@ -14,8 +14,8 @@ class MultiplicationRule : CalcEmfBridgeRule() {
     }
 
     override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {
-        val context = pointer.context as calcMultiplication
-        if (pointer is calcPrimaryExpression) {
+        val context = pointer.context as CalcMultiplication
+        if (pointer is CalcPrimaryExpression) {
             if (context.primaryExpressionList.first() != pointer) {
                 return object : ObjectAssignment {
                     override fun assign(obj: EObject, toAssign: EObject) {

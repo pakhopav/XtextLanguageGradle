@@ -6,8 +6,8 @@ import com.intellij.psi.PsiReference;
 import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
 import org.jetbrains.annotations.NotNull;
 
-public class calcPsiCompositeElementImpl extends ASTWrapperPsiElement {
-    public calcPsiCompositeElementImpl(@NotNull ASTNode node) {
+public class CalcPsiCompositeElementImpl extends ASTWrapperPsiElement {
+    public CalcPsiCompositeElementImpl(@NotNull ASTNode node) {
         super(node);
     }
 

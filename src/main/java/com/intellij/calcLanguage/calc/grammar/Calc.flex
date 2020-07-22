@@ -4,18 +4,18 @@ import com.intellij.lexer.FlexLexer;
 import com.intellij.psi.tree.IElementType;
 import static com.intellij.psi.TokenType.BAD_CHARACTER; // Pre-defined bad character token.
 import static com.intellij.psi.TokenType.WHITE_SPACE; // Pre-defined whitespace character token.
-import static com.intellij.calcLanguage.calc.psi.calcTypes.*; // Note that is the class which is specified as `elementTypeHolderClass`
+import static com.intellij.calcLanguage.calc.psi.CalcTypes.*; // Note that is the class which is specified as `elementTypeHolderClass`
             
 %%
             
 %public
-%class _calcLexer // Name of the lexer class which will be generated.
+%class _CalcLexer // Name of the lexer class which will be generated.
 %implements FlexLexer
 %function advance
 %type IElementType
 %unicode
 %{
-    public _calcLexer(){
+    public _CalcLexer(){
         this((java.io.Reader)null);
     }
 %}

@@ -35,29 +35,29 @@ abstract class CalcEmfBridgeRule : EmfBridgeRule {
         private val IMPORT = ImportRule()
 
         fun getUtilRuleClass(psiElement: PsiElement): EmfBridgeRule {
-            if (psiElement is calcModule) {
+            if (psiElement is CalcModule) {
                 return MODULE
-            } else if (psiElement is calcMultiplication) {
+            } else if (psiElement is CalcMultiplication) {
                 return MULTIPLICATION
-            } else if (psiElement is calcPrimaryExpression) {
+            } else if (psiElement is CalcPrimaryExpression) {
                 return PRIMARY_EXPRESSION
-            } else if (psiElement is calcImport) {
+            } else if (psiElement is CalcImport) {
                 return IMPORT
-            } else if (psiElement is calcStatement) {
+            } else if (psiElement is CalcStatement) {
                 return STATEMENT
-            } else if (psiElement is calcDeclaredParameter) {
+            } else if (psiElement is CalcDeclaredParameter) {
                 return DECLARED_PARAMETER
-            } else if (psiElement is calcExpression) {
+            } else if (psiElement is CalcExpression) {
                 return EXPRESSION
-            } else if (psiElement is calcPrimaryExpression1) {
+            } else if (psiElement is CalcPrimaryExpression1) {
                 return PRIMARY_EXPRESSION1
-            } else if (psiElement is calcPrimaryExpression2) {
+            } else if (psiElement is CalcPrimaryExpression2) {
                 return PRIMARY_EXPRESSION2
-            } else if (psiElement is calcPrimaryExpression3) {
+            } else if (psiElement is CalcPrimaryExpression3) {
                 return PRIMARY_EXPRESSION3
-            } else if (psiElement is calcEvaluation) {
+            } else if (psiElement is CalcEvaluation) {
                 return EVALUATION
-            } else if (psiElement is calcDefinition) {
+            } else if (psiElement is CalcDefinition) {
                 return DEFINITION
             } else {
                 return ADDITION
