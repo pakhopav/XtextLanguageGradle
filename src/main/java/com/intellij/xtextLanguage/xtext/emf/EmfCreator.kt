@@ -9,8 +9,9 @@ abstract class EmfCreator {
     private var emfRoot: EObject? = null
     protected val modelDescriptions = mutableListOf<ObjectDescription>()
 
-    protected abstract var utilClass: BridgeUtil
+    protected abstract fun getBridgeRuleForPsiElement(psiElement: PsiElement): EmfBridgeRule
 
+    protected abstract fun registerObject(obj: EObject?, descriptions: MutableCollection<ObjectDescription>)
 
     protected abstract fun completeRawModel()
 
@@ -35,7 +36,7 @@ abstract class EmfCreator {
     }
 
     protected fun visitElement(element: PsiElement): EObject? {
-        val utilRule = utilClass.getBridgeRuleForPsiElement(element)
+        val utilRule = getBridgeRuleForPsiElement(element)
         var current: EObject? = null
         getAllChildren(element).forEach {
             val rewrite = utilRule.findRewrite(it)
@@ -59,7 +60,7 @@ abstract class EmfCreator {
                 }
             }
         }
-        utilClass.registerObject(current, modelDescriptions)
+        registerObject(current, modelDescriptions)
         return current
     }
 }
