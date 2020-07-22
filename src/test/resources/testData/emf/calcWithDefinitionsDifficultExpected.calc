@@ -1,0 +1,89 @@
+<?xml version="1.0" encoding="ASCII"?>
+<arithmetics:Module xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xmlns:arithmetics="http://www.eclipse.org/Xtext/example/Arithmetics" name="A">
+  <statements xsi:type="arithmetics:Definition" name="difficult">
+    <expr xsi:type="arithmetics:Plus">
+      <left xsi:type="arithmetics:NumberLiteral" value="2"/>
+      <right xsi:type="arithmetics:Multi">
+        <left xsi:type="arithmetics:Div">
+          <left xsi:type="arithmetics:NumberLiteral" value="3"/>
+          <right xsi:type="arithmetics:Multi">
+            <left xsi:type="arithmetics:Div">
+              <left xsi:type="arithmetics:NumberLiteral" value="12"/>
+              <right xsi:type="arithmetics:NumberLiteral" value="884"/>
+            </left>
+            <right xsi:type="arithmetics:Plus">
+              <left xsi:type="arithmetics:Plus">
+                <left xsi:type="arithmetics:NumberLiteral" value="32"/>
+                <right xsi:type="arithmetics:NumberLiteral" value="2"/>
+              </left>
+              <right xsi:type="arithmetics:NumberLiteral" value="9"/>
+            </right>
+          </right>
+        </left>
+        <right xsi:type="arithmetics:NumberLiteral" value="7"/>
+      </right>
+    </expr>
+  </statements>
+  <statements xsi:type="arithmetics:Definition" name="mult">
+    <args name="arg"/>
+    <expr xsi:type="arithmetics:Minus">
+      <left xsi:type="arithmetics:Div">
+        <left xsi:type="arithmetics:Multi">
+          <left xsi:type="arithmetics:Multi">
+            <left xsi:type="arithmetics:Multi">
+              <left xsi:type="arithmetics:FunctionCall" func="//@statements.0"/>
+              <right xsi:type="arithmetics:NumberLiteral" value="2"/>
+            </left>
+            <right xsi:type="arithmetics:NumberLiteral" value="4"/>
+          </left>
+          <right xsi:type="arithmetics:FunctionCall" func="//@statements.0"/>
+        </left>
+        <right xsi:type="arithmetics:NumberLiteral" value="5"/>
+      </left>
+      <right xsi:type="arithmetics:Multi">
+        <left xsi:type="arithmetics:NumberLiteral" value="2"/>
+        <right xsi:type="arithmetics:FunctionCall" func="//@statements.1/@args.0"/>
+      </right>
+    </expr>
+  </statements>
+  <statements xsi:type="arithmetics:Evaluation">
+    <expression xsi:type="arithmetics:Minus">
+      <left xsi:type="arithmetics:Multi">
+        <left xsi:type="arithmetics:NumberLiteral" value="6"/>
+        <right xsi:type="arithmetics:Minus">
+          <left xsi:type="arithmetics:NumberLiteral" value="5"/>
+          <right xsi:type="arithmetics:Multi">
+            <left xsi:type="arithmetics:Multi">
+              <left xsi:type="arithmetics:Minus">
+                <left xsi:type="arithmetics:Plus">
+                  <left xsi:type="arithmetics:Div">
+                    <left xsi:type="arithmetics:Minus">
+                      <left xsi:type="arithmetics:NumberLiteral" value="3"/>
+                      <right xsi:type="arithmetics:NumberLiteral" value="10"/>
+                    </left>
+                    <right xsi:type="arithmetics:Plus">
+                      <left xsi:type="arithmetics:NumberLiteral" value="23"/>
+                      <right xsi:type="arithmetics:Multi">
+                        <left xsi:type="arithmetics:NumberLiteral" value="2"/>
+                        <right xsi:type="arithmetics:FunctionCall" func="//@statements.1">
+                          <args xsi:type="arithmetics:FunctionCall" func="//@statements.0"/>
+                        </right>
+                      </right>
+                    </right>
+                  </left>
+                  <right xsi:type="arithmetics:FunctionCall" func="//@statements.1">
+                    <args xsi:type="arithmetics:NumberLiteral" value="3"/>
+                  </right>
+                </left>
+                <right xsi:type="arithmetics:NumberLiteral" value="9"/>
+              </left>
+              <right xsi:type="arithmetics:NumberLiteral" value="6"/>
+            </left>
+            <right xsi:type="arithmetics:NumberLiteral" value="1"/>
+          </right>
+        </right>
+      </left>
+      <right xsi:type="arithmetics:NumberLiteral" value="100"/>
+    </expression>
+  </statements>
+</arithmetics:Module>

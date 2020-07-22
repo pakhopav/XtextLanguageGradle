@@ -61,4 +61,10 @@ class EntityEmfTests : EntityEmfTestsBase("/emf") {
         myRes?.let { persistCalcEmfModel(it) }
         assertEqualXmi("calcWithDefinitionsExpected.calc", "calc")
     }
+
+    fun testCalcWithDefinitionsDifficult() {
+        val myRes = getCalcEmfModel()
+        myRes?.let { persistCalcEmfModel(it) }
+        assertEqualXmi("calcWithDefinitionsDifficultExpected.calc", "calc")
+    }
 }
