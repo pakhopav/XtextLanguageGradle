@@ -1,12 +1,13 @@
 package com.intellij.xtextLanguage.xtext.emf
 
 import com.intellij.psi.PsiElement
-import com.intellij.util.containers.stream
+import org.eclipse.emf.ecore.EObject
 
 
-open class BridgeUtil {
-    fun hasChildWithText(element: PsiElement, text: String): Boolean {
-        return element.children.stream().filter { it.text == text }.count() > 0
-    }
+interface BridgeUtil {
+
+    fun getBridgeRuleForPsiElement(psiElement: PsiElement): EmfBridgeRule
+
+    fun registerObject(obj: EObject?, descriptions: MutableCollection<ObjectDescription>)
 
 }

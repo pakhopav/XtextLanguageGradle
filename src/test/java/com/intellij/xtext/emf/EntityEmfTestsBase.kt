@@ -3,7 +3,7 @@ package com.intellij.xtext.emf
 import arithmetics.ArithmeticsPackage
 import arithmetics.Module
 import com.intellij.calcLanguage.calc.emf.CalcEmfBridge
-import com.intellij.calcLanguage.calc.psi.calcFile
+import com.intellij.calcLanguage.calc.psi.CalcFile
 import com.intellij.entityLanguage.entity.emf.EntityEmfBridge
 import com.intellij.entityLanguage.entity.psi.EntityFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
@@ -59,7 +59,7 @@ open class EntityEmfTestsBase(val myDataFolder: String) : BasePlatformTestCase()
     fun getCalcEmfModel(): Module? {
         val fileName = getCurrentInputFileName("calc")
         fileName?.let {
-            val file = myFixture.configureByFile(it) as calcFile
+            val file = myFixture.configureByFile(it) as CalcFile
             val bridge = CalcEmfBridge()
             return bridge.createEmfModel(file) as Module
         }

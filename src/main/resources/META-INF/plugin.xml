@@ -65,13 +65,13 @@
     <!--    <completion.contributor language="calc" implementationClass="com.intellij.calcLanguage.calc.calcCompletionContributor"/>-->
     <!--    <psi.referenceContributor language="calc" implementation="com.intellij.calcLanguage.calc.calcReferenceContributor"/>-->
 
-    <fileTypeFactory implementation="com.intellij.calcLanguage.calc.calcFileTypeFactory"/>
-    <lang.parserDefinition language="calc" implementationClass="com.intellij.calcLanguage.calc.calcParserDefinition"/>
-    <lang.syntaxHighlighterFactory language="calc"
-                                   implementationClass="com.intellij.calcLanguage.calc.calcSyntaxHighlighterFactory"/>
-    <completion.contributor language="calc"
-                            implementationClass="com.intellij.calcLanguage.calc.calcCompletionContributor"/>
-    <psi.referenceContributor language="calc" implementation="com.intellij.calcLanguage.calc.calcReferenceContributor"/>
+    <fileTypeFactory implementation="com.intellij.calcLanguage.calc.CalcFileTypeFactory"/>
+    <lang.parserDefinition language="Calc" implementationClass="com.intellij.calcLanguage.calc.CalcParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="Calc"
+                                   implementationClass="com.intellij.calcLanguage.calc.CalcSyntaxHighlighterFactory"/>
+    <completion.contributor language="Calc"
+                            implementationClass="com.intellij.calcLanguage.calc.CalcCompletionContributor"/>
+    <psi.referenceContributor language="Calc" implementation="com.intellij.calcLanguage.calc.CalcReferenceContributor"/>
 
   </extensions>
 

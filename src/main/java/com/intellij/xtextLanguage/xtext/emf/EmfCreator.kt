@@ -1,7 +1,5 @@
 package com.intellij.xtextLanguage.xtext.emf
 
-import com.intellij.calcLanguage.calc.emf.util.CalcEmfBridgeRule
-import com.intellij.calcLanguage.calc.psi.CalcModule
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
 import org.eclipse.emf.ecore.EObject
@@ -11,6 +9,8 @@ abstract class EmfCreator {
     private var emfRoot: EObject? = null
     protected val modelDescriptions = mutableListOf<ObjectDescription>()
 
+    protected abstract var utilClass: BridgeUtil
+
 
     protected abstract fun completeRawModel()
 
@@ -18,8 +18,8 @@ abstract class EmfCreator {
 
     protected abstract fun createCrossReference(psiElement: PsiElement, context: EObject)
 
-    fun createModel(psiModule: CalcModule): EObject? {
-        emfRoot = visitElement(psiModule)
+    fun createModel(psiElement: PsiElement): EObject? {
+        emfRoot = visitElement(psiElement)
         completeRawModel()
         return emfRoot
     }
@@ -35,7 +35,7 @@ abstract class EmfCreator {
     }
 
     protected fun visitElement(element: PsiElement): EObject? {
-        val utilRule = CalcEmfBridgeRule.getUtilRuleClass(element)
+        val utilRule = utilClass.getBridgeRuleForPsiElement(element)
         var current: EObject? = null
         getAllChildren(element).forEach {
             val rewrite = utilRule.findRewrite(it)
@@ -59,7 +59,7 @@ abstract class EmfCreator {
                 }
             }
         }
-        CalcEmfBridgeRule.registerObject(current, modelDescriptions)
+        utilClass.registerObject(current, modelDescriptions)
         return current
     }
 }

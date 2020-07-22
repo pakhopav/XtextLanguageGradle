@@ -4,10 +4,12 @@ package com.intellij.calcLanguage.calc.emf
 import arithmetics.ArithmeticsPackage
 import arithmetics.FunctionCall
 import arithmetics.Import
+import com.intellij.calcLanguage.calc.emf.util.CalcBridgeUtil
 import com.intellij.calcLanguage.calc.psi.CalcREFERENCEAbstractDefinitionID
 import com.intellij.calcLanguage.calc.psi.CalcREFERENCEModuleID
 import com.intellij.entityLanguage.entity.emf.scope.EntityScope
 import com.intellij.psi.PsiElement
+import com.intellij.xtextLanguage.xtext.emf.BridgeUtil
 import com.intellij.xtextLanguage.xtext.emf.EmfCreator
 import org.eclipse.emf.ecore.EObject
 
@@ -16,7 +18,7 @@ class CalcEmfCreator : EmfCreator() {
 
     private var referencedAbstractDefinitions = mutableMapOf<FunctionCall, String>()
     private var referencedModules = mutableMapOf<Import, String>()
-
+    override var utilClass: BridgeUtil = CalcBridgeUtil()
 
     private fun visitREFERENCEAbstractDefinitionID(psiAbstractDefinitionID: CalcREFERENCEAbstractDefinitionID, functionCall: FunctionCall) {
         referencedAbstractDefinitions.put(functionCall, psiAbstractDefinitionID.text)
@@ -25,6 +27,7 @@ class CalcEmfCreator : EmfCreator() {
     private fun visitREFERENCEModuleID(psiModuleID: CalcREFERENCEModuleID, import: Import) {
         referencedModules.put(import, psiModuleID.text)
     }
+
 
     override fun completeRawModel() {
         val scope = EntityScope(modelDescriptions)
