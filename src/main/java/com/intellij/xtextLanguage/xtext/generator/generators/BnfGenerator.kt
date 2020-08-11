@@ -86,6 +86,7 @@ class BnfGenerator(extention: String, fileModel: XtextMainModel) : Generator(ext
             if (it == fileModel.parserRules.first()) {
                 out.print("${extention.capitalize()}File ::= ${it.name}\n")
             }
+            if (it.isPrivate) out.print("private ")
             out.print("${createGkitRuleName(it.name)} ::= ")
 
             it.alternativesElements.forEach {
@@ -101,6 +102,8 @@ class BnfGenerator(extention: String, fileModel: XtextMainModel) : Generator(ext
                 |}
 
             """.trimMargin("|"))
+            out.print(it.bnfExtentionsString)
+            out.print("\n")
         }
     }
 
