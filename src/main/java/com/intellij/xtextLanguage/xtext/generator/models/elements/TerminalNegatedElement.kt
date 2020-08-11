@@ -3,6 +3,7 @@ package com.intellij.xtextLanguage.xtext.generator.models.elements
 import com.intellij.xtextLanguage.xtext.psi.XtextNegatedToken
 
 class TerminalNegatedElement(override val psiElement: XtextNegatedToken) : TerminalRuleElement(psiElement) {
+    override var assignment = ""
     val characterRanges: List<TerminalRangeElement>
 
     init {
@@ -31,6 +32,7 @@ class TerminalNegatedElement(override val psiElement: XtextNegatedToken) : Termi
     }
 
     override fun getBnfName(): String {
+        refactoredName?.let { return it }
         val sb = StringBuilder()
         sb.append("[^")
         characterRanges.forEach {

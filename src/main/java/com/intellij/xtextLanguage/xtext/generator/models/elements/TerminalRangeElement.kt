@@ -3,6 +3,7 @@ package com.intellij.xtextLanguage.xtext.generator.models.elements
 import com.intellij.xtextLanguage.xtext.psi.XtextCharacterRange
 
 class TerminalRangeElement(override val psiElement: XtextCharacterRange) : TerminalRuleElement(psiElement) {
+    override var assignment = ""
     init {
         if (psiElement.keywordList.size == 2) {
 
@@ -25,6 +26,7 @@ class TerminalRangeElement(override val psiElement: XtextCharacterRange) : Termi
     }
 
     override fun getBnfName(): String {
+        refactoredName?.let { return it }
         if (psiElement.keywordList.size == 1) {
             return TerminalKeywordElement(psiElement.keywordList.first()).getBnfName()
         }

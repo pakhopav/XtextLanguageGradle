@@ -3,6 +3,7 @@ package com.intellij.xtextLanguage.xtext.generator.models.elements
 import com.intellij.xtextLanguage.xtext.psi.XtextCrossReference
 
 class ParserCrossReferenseElement(override val psiElement: XtextCrossReference) : RuleElement(psiElement) {
+
     val name: String
     val referenceType = psiElement.crossReferenceableTerminal?.text ?: "ID"
     val refetenceTarget = psiElement.typeRef
@@ -17,11 +18,14 @@ class ParserCrossReferenseElement(override val psiElement: XtextCrossReference) 
         return false
     }
 
+    override var assignment = ""
+
     override fun getBnfName(): String {
         return name
     }
 
     fun createReferenceName(): String {
+        refactoredName?.let { return it }
         var targetText = refetenceTarget.text
         if (targetText.contains("::")) targetText = targetText.slice(targetText.indexOf(":") + 2..targetText.length - 1)
         var name = "REFERENCE_${targetText}"

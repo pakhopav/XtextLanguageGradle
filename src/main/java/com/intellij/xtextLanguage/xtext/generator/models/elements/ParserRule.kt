@@ -1,17 +1,18 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements
 
 import com.intellij.psi.PsiElement
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 
-class ParserRule(val myRule: XtextParserRule) {
+open class ParserRule(val myRule: XtextParserRule) {
     var name = myRule.ruleNameAndParams.validID.text.replace("^", "Caret").capitalize()
-    var isFragment: Boolean = myRule.fragmentKeyword != null
     var returnType: String = myRule.typeRef?.text ?: name
-    val attributes: Map<String, XtextAssignableTerminal> = AttributesFinder.getAttributeMapOfParserRule(myRule)
-    val alternativesElements: List<RuleElement> = AlternativeElementsFinder.getAlternativeElementsListOfParserRule(myRule)
+    var bnfExtentionsString = ""
+    var alternativesElements: MutableList<RuleElement> = AlternativeElementsFinder.getAlternativeElementsListOfParserRule(myRule).toMutableList()
     var isReferenced = false
-
+    var isDataTypeRule = false
+    var isPrivate = false
 
     class AlternativeElementsFinder : XtextVisitor() {
         val listOfAlternativesElements = mutableListOf<RuleElement>()
@@ -43,6 +44,15 @@ class ParserRule(val myRule: XtextParserRule) {
             }
         }
 
+        override fun visitAssignment(o: XtextAssignment) {
+            var assignmentString = o.validID.text
+            o.equalsKeyword?.let { assignmentString = "$assignmentString=" }
+            o.plusEqualsKeyword?.let { assignmentString = "$assignmentString+=" }
+            o.quesEqualsKeyword?.let { assignmentString = "$assignmentString?=" }
+
+            visitAssignableTerminal(o.assignableTerminal, assignmentString)
+        }
+
         override fun visitCrossReference(o: XtextCrossReference) {
             listOfAlternativesElements.add(ParserCrossReferenseElement(o))
         }
@@ -59,14 +69,35 @@ class ParserRule(val myRule: XtextParserRule) {
         }
 
 
-        override fun visitAssignableAlternatives(o: XtextAssignableAlternatives) {
+        fun visitAssignableAlternatives(o: XtextAssignableAlternatives, assignmentString: String) {
             o.assignableTerminalList.forEach {
-                visitAssignableTerminal(it)
+                visitAssignableTerminal(it, assignmentString)
                 if (it != o.assignableTerminalList.last()) {
                 }
                 getPipePsiElementIfExists(it)?.let {
                     listOfAlternativesElements.add(ParserSimpleElement(it))
                 }
+            }
+        }
+
+        fun visitAssignableTerminal(o: XtextAssignableTerminal, assignmentString: String) {
+            o.keyword?.let {
+                val element = ParserSimpleElement(it.string)
+                element.assignment = assignmentString
+                listOfAlternativesElements.add(element)
+            }
+            o.ruleCall?.let {
+                val element = ParserRuleCallElement(it.referenceAbstractRuleRuleID)
+                element.assignment = assignmentString
+                listOfAlternativesElements.add(element)
+            }
+            o.parenthesizedAssignableElement?.let {
+                visitParenthesizedAssignableElement(it, assignmentString)
+            }
+            o.crossReference?.let {
+                val element = ParserCrossReferenseElement(it)
+                element.assignment = assignmentString
+                listOfAlternativesElements.add(element)
             }
         }
 
@@ -100,9 +131,9 @@ class ParserRule(val myRule: XtextParserRule) {
         }
 
 
-        override fun visitParenthesizedAssignableElement(o: XtextParenthesizedAssignableElement) {
+        fun visitParenthesizedAssignableElement(o: XtextParenthesizedAssignableElement, assignmentString: String) {
             listOfAlternativesElements.add(ParserSimpleElement(o.lBracketKeyword))
-            visitAssignableAlternatives(o.assignableAlternatives)
+            visitAssignableAlternatives(o.assignableAlternatives, assignmentString)
             listOfAlternativesElements.add(ParserSimpleElement(o.rBracketKeyword))
 
         }
@@ -171,6 +202,55 @@ class ParserRule(val myRule: XtextParserRule) {
         }
 
 
+    }
+
+
+    class AssignedActionsFinder : XtextVisitor() {
+        val actions: MutableMap<XtextAction, PsiElement> = HashMap()
+
+        companion object {
+            fun findAssignedActions(rule: XtextParserRule): Map<XtextAction, PsiElement> {
+
+                val visitor = AssignedActionsFinder()
+                visitor.visitParserRule(rule)
+                return visitor.actions
+            }
+        }
+
+        override fun visitAction(o: XtextAction) {
+            o.validID?.let {
+                val nextPsiElement = PsiTreeUtil.getNextSiblingOfType(o, XtextAbstractTokenWithCardinality::class.java)
+                actions.put(o, nextPsiElement as PsiElement)
+            }
+        }
+
+
+    }
+
+
+    private fun filterLiteralAttributes(list: List<XtextAssignableTerminal>): List<XtextAssignableTerminal> {
+        val res = mutableListOf<XtextAssignableTerminal>()
+
+        return res
+    }
+//    private fun isLiteralAttribute(attribute: XtextAssignableTerminal): Boolean{
+//        attribute.keyword?.let { return false }
+//        attribute.crossReference?.let { return false }
+//        attribute.ruleCall?.let {
+//            if()
+//            isDataTypeRule(it) }
+//        return false
+//    }
+
+
+    fun copy(): ParserRule {
+        val copy = ParserRule(myRule)
+        for (i in alternativesElements.indices) {
+            if (alternativesElements[i].refactoredName != null) copy.alternativesElements[i].refactoredName = alternativesElements[i].refactoredName
+        }
+        copy.isDataTypeRule = isDataTypeRule
+        copy.isReferenced = isReferenced
+        return copy
     }
 
 

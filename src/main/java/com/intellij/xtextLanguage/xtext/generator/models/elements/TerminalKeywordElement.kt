@@ -3,6 +3,7 @@ package com.intellij.xtextLanguage.xtext.generator.models.elements
 import com.intellij.xtextLanguage.xtext.psi.XtextKeyword
 
 class TerminalKeywordElement(psiElement: XtextKeyword) : TerminalRuleElement(psiElement) {
+    override var assignment = ""
     override fun getFlexName(): String {
         val sb = StringBuilder()
         getBnfName().toCharArray().forEach {
@@ -14,6 +15,7 @@ class TerminalKeywordElement(psiElement: XtextKeyword) : TerminalRuleElement(psi
     }
 
     override fun getBnfName(): String {
+        refactoredName?.let { return it }
         var psiElementText = psiElement.text
         psiElementText = psiElementText.substring(1, psiElementText.length - 1)
         val sb = StringBuilder()

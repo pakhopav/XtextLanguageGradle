@@ -3,6 +3,7 @@ package com.intellij.xtextLanguage.xtext.generator.models.elements
 import com.intellij.xtextLanguage.xtext.psi.XtextUntilToken
 
 class TerminalUntilElement(override val psiElement: XtextUntilToken) : TerminalRuleElement(psiElement) {
+    override var assignment = ""
     override fun getFlexName(): String {
         psiElement.terminalTokenElement.characterRange?.let {
             if (it.keywordList.size == 1) {
@@ -13,6 +14,7 @@ class TerminalUntilElement(override val psiElement: XtextUntilToken) : TerminalR
     }
 
     override fun getBnfName(): String {
+        refactoredName?.let { return it }
         psiElement.terminalTokenElement.characterRange?.let {
             if (it.keywordList.size == 1) {
                 return "(?s).*${TerminalKeywordElement(it.keywordList.first()).getBnfName()}"
