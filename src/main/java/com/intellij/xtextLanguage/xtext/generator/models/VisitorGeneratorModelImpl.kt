@@ -5,28 +5,39 @@ import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitorRepeating
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitorUniqueName
 import com.intellij.xtextLanguage.xtext.psi.XtextParserRule
 
-class VisitorGeneratorModelImpl(xtextRules: List<XtextParserRule>, val terminalRulesNames: List<String>) : VisitorGeneratorModel {
+class VisitorGeneratorModelImpl(xtextRules: List<XtextParserRule>, val terminalRulesNames: List<String>, val rulesWithSuperClass: Map<String, String>) : VisitorGeneratorModel {
     override var rules = culcRulesForNameVisitor(xtextRules)
-
 
     fun culcRulesForNameVisitor(xtextRules: List<XtextParserRule>): MutableList<VisitorGeneratorModel.ModelRule> {
         val listOfModelRules = mutableListOf<VisitorGeneratorModel.ModelRule>()
-        xtextRules.forEach {
-            val rule = it
-            val allRuleCalls = XtextVisitorAllRuleCalls.getAllRuleCallsInParserRule(it)
+        xtextRules.forEach { rule ->
+            val allRuleCalls = XtextVisitorAllRuleCalls.getAllRuleCallsInParserRule(rule)
             val ruleCalls = computeRuleCallList(allRuleCalls).toMutableList()
-
             val listRepeating = mutableListOf<String>()
+            val repeatedRulesWithSuperclass = mutableListOf<String>()
             ruleCalls.forEach {
-                if (XtextVisitorRepeatingRuleCalls.isRuleCallRepeatsInBranchOfParserRule(rule, it)) listRepeating.add(it)
+                if (rulesWithSuperClass.keys.contains(it) && !repeatedRulesWithSuperclass.contains(it)) {
+                    val superClass = rulesWithSuperClass[it]
+                    val allSubclasses = rulesWithSuperClass.keys.filter { rulesWithSuperClass[it] == superClass }.toList().distinct()
+                    if (XtextVisitorRepeatingRuleCalls.doesRuleCallRepeatsInBranchOfParserRule(rule, allSubclasses)) {
+                        listRepeating.add(superClass!!)
+                        repeatedRulesWithSuperclass.addAll(allSubclasses)
+
+                    }
+                } else if (XtextVisitorRepeatingRuleCalls.doesRuleCallRepeatsInBranchOfParserRule(rule, listOf(it))) {
+                    listRepeating.add(it)
+                }
+            }
+            repeatedRulesWithSuperclass.forEach {
+                ruleCalls.remove(it)
             }
             listRepeating.forEach {
                 ruleCalls.remove(it)
             }
 
             val modelRule = VisitorGeneratorModel.ModelRule()
-            modelRule.name = it.ruleNameAndParams.validID.text.replace("^", "Caret").capitalize()
-            modelRule.uniqueName = XtextVisitorUniqueName.getUniqueNameOfParserRule(it)
+            modelRule.name = rule.ruleNameAndParams.validID.text.replace("^", "Caret").capitalize()
+            modelRule.uniqueName = XtextVisitorUniqueName.getUniqueNameOfParserRule(rule)
             modelRule.ruleCalls = ruleCalls
             modelRule.ruleCallsList = listRepeating
             listOfModelRules.add(modelRule)
@@ -43,7 +54,6 @@ class VisitorGeneratorModelImpl(xtextRules: List<XtextParserRule>, val terminalR
     }
 
     fun removeTerminalRuleCallsFromList(list: MutableList<String>): List<String> {
-
         return list.filter { !terminalRulesNames.contains(it) || it == "ID" }
     }
 

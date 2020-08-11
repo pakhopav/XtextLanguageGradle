@@ -4,14 +4,14 @@ import com.intellij.xtextLanguage.xtext.psi.XtextParserRule
 import com.intellij.xtextLanguage.xtext.psi.XtextRuleCall
 import com.intellij.xtextLanguage.xtext.psi.XtextUnorderedGroup
 
-class XtextVisitorRepeatingRuleCalls(val ruleCall: String) : XtextVisitorRuleCalls() {
+class XtextVisitorRepeatingRuleCalls(val ruleCalls: List<String>) : XtextVisitorRuleCalls() {
     var isRepeating = false
     var timesSeen = 0
 
 
     companion object {
-        fun isRuleCallRepeatsInBranchOfParserRule(rule: XtextParserRule, ruleCall: String): Boolean {
-            val visitor = XtextVisitorRepeatingRuleCalls(ruleCall)
+        fun doesRuleCallRepeatsInBranchOfParserRule(rule: XtextParserRule, ruleCalls: List<String>): Boolean {
+            val visitor = XtextVisitorRepeatingRuleCalls(ruleCalls)
             visitor.visitParserRule(rule)
             return visitor.isRepeating
         }
@@ -19,7 +19,7 @@ class XtextVisitorRepeatingRuleCalls(val ruleCall: String) : XtextVisitorRuleCal
 
 
     override fun visitRuleCall(o: XtextRuleCall) {
-        if (o.referenceAbstractRuleRuleID.text == ruleCall) {
+        if (ruleCalls.contains(o.referenceAbstractRuleRuleID.text)) {
             timesSeen++
         }
     }
