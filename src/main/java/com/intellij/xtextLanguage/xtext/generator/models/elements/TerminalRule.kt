@@ -5,10 +5,10 @@ import com.intellij.xtextLanguage.xtext.generator.RuleResolver
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 
-class TerminalRule(val myRule: XtextTerminalRule, val resolver: RuleResolver) {
-    val name = myRule.validID.text.toUpperCase()
+class TerminalRule(val myRule: XtextTerminalRule, resolver: RuleResolver) : ModelRule() {
+    override val name = myRule.validID.text.toUpperCase()
     var isFragment: Boolean = myRule.fragmentKeyword != null
-    val returnType: String = myRule.typeRef?.text ?: name
+    override val returnType: String = myRule.typeRef?.text ?: "String"
     val alterntiveElements = AlternativeElementsFinder.getRuleElementListOfTerminalRule(myRule, resolver)
 
 

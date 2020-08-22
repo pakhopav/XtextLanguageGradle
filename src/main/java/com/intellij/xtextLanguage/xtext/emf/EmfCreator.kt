@@ -2,6 +2,7 @@ package com.intellij.xtextLanguage.xtext.emf
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EObject
 
 abstract class EmfCreator {
@@ -18,6 +19,8 @@ abstract class EmfCreator {
     protected abstract fun isCrossReference(psiElement: PsiElement): Boolean
 
     protected abstract fun createCrossReference(psiElement: PsiElement, context: EObject)
+
+    protected abstract fun createEObjectOfClass(clazz: EClass): EObject
 
     fun createModel(psiElement: PsiElement): EObject? {
         emfRoot = visitElement(psiElement)
@@ -39,6 +42,12 @@ abstract class EmfCreator {
         val utilRule = getBridgeRuleForPsiElement(element)
         var current: EObject? = null
         getAllChildren(element).forEach {
+            if (current == null) {
+                val returnType = utilRule.findAction(it)
+                returnType?.let {
+                    current = createEObjectOfClass(returnType)
+                }
+            }
             val rewrite = utilRule.findRewrite(it)
             rewrite?.let { current = it.rewrite(current) }
             val literalAssignment = utilRule.findLiteralAssignment(it)

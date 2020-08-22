@@ -5,9 +5,9 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 
-open class ParserRule(val myRule: XtextParserRule) {
-    var name = myRule.ruleNameAndParams.validID.text.replace("^", "Caret").capitalize()
-    var returnType: String = myRule.typeRef?.text ?: name
+open class ParserRule(val myRule: XtextParserRule) : ModelRule() {
+    override var name = myRule.ruleNameAndParams.validID.text.replace("^", "Caret").capitalize()
+    override var returnType: String = findMyReturnType()
     var bnfExtentionsString = ""
     var alternativesElements: MutableList<RuleElement> = AlternativeElementsFinder.getAlternativeElementsListOfParserRule(myRule).toMutableList()
     var isReferenced = false
@@ -15,7 +15,11 @@ open class ParserRule(val myRule: XtextParserRule) {
     var isPrivate = false
 
     class AlternativeElementsFinder : XtextVisitor() {
-        val listOfAlternativesElements = mutableListOf<RuleElement>()
+        var listOfAlternativesElements = mutableListOf<RuleElement>()
+        private var lastAction: String? = null
+        private var simpleAction = ""
+        private var inOptionalToken = false
+
 
         companion object {
             fun getAlternativeElementsListOfParserRule(rule: XtextParserRule): List<RuleElement> {
@@ -26,7 +30,27 @@ open class ParserRule(val myRule: XtextParserRule) {
             }
         }
 
+        private fun addElementToList(element: RuleElement, assignment: String) {
+            lastAction?.let {
+                if (element !is BnfServiceElement && !inOptionalToken) {
+                    element.action = lastAction as String
+                    lastAction = null
+                }
+            }
+            element.assignment = assignment
+            listOfAlternativesElements.add(element)
+        }
+
+
+        private fun isOptionalToken(token: XtextAbstractTokenWithCardinality): Boolean {
+            return token.quesMarkKeyword != null || token.asteriskKeyword != null
+        }
+
+
+
+
         override fun visitAbstractTokenWithCardinality(o: XtextAbstractTokenWithCardinality) {
+            if (isOptionalToken(o) && lastAction != null) inOptionalToken = true
             o.abstractTerminal?.let {
                 visitAbstractTerminal(it)
             }
@@ -34,14 +58,16 @@ open class ParserRule(val myRule: XtextParserRule) {
                 visitAssignment(it)
             }
             o.quesMarkKeyword?.let {
-                listOfAlternativesElements.add(ParserSimpleElement(it))
+                addElementToList(BnfServiceElement(it), "")
             }
             o.plusKeyword?.let {
-                listOfAlternativesElements.add(ParserSimpleElement(it))
+                addElementToList(BnfServiceElement(it), "")
             }
             o.asteriskKeyword?.let {
-                listOfAlternativesElements.add(ParserSimpleElement(it))
+                addElementToList(BnfServiceElement(it), "")
             }
+            inOptionalToken = false
+
         }
 
         override fun visitAssignment(o: XtextAssignment) {
@@ -54,16 +80,19 @@ open class ParserRule(val myRule: XtextParserRule) {
         }
 
         override fun visitCrossReference(o: XtextCrossReference) {
-            listOfAlternativesElements.add(ParserCrossReferenseElement(o))
+            addElementToList(ParserCrossReferenseElement(o), "")
         }
 
-        override fun visitAlternatives(o: XtextAlternatives) {
-            o.conditionalBranchList.forEach {
+        override fun visitAlternatives(alternatives: XtextAlternatives) {
+            var markFirstElementsOfEveryBranchWithAction = false
+            if (lastAction != null && !inOptionalToken && alternatives.conditionalBranchList.size > 1) markFirstElementsOfEveryBranchWithAction = true
+            alternatives.conditionalBranchList.forEach {
+                if (markFirstElementsOfEveryBranchWithAction) lastAction = simpleAction
                 visitConditionalBranch(it)
-                if (it != o.conditionalBranchList.last()) {
+                if (it != alternatives.conditionalBranchList.last()) {
                 }
                 getPipePsiElementIfExists(it)?.let {
-                    listOfAlternativesElements.add(ParserSimpleElement(it))
+                    addElementToList(BnfServiceElement(it), "")
                 }
             }
         }
@@ -75,29 +104,23 @@ open class ParserRule(val myRule: XtextParserRule) {
                 if (it != o.assignableTerminalList.last()) {
                 }
                 getPipePsiElementIfExists(it)?.let {
-                    listOfAlternativesElements.add(ParserSimpleElement(it))
+                    addElementToList(BnfServiceElement(it), "")
                 }
             }
         }
 
         fun visitAssignableTerminal(o: XtextAssignableTerminal, assignmentString: String) {
             o.keyword?.let {
-                val element = ParserSimpleElement(it.string)
-                element.assignment = assignmentString
-                listOfAlternativesElements.add(element)
+                addElementToList(ParserSimpleElement(it.string), assignmentString)
             }
             o.ruleCall?.let {
-                val element = ParserRuleCallElement(it.referenceAbstractRuleRuleID)
-                element.assignment = assignmentString
-                listOfAlternativesElements.add(element)
+                addElementToList(ParserRuleCallElement(it.referenceAbstractRuleRuleID), assignmentString)
             }
             o.parenthesizedAssignableElement?.let {
                 visitParenthesizedAssignableElement(it, assignmentString)
             }
             o.crossReference?.let {
-                val element = ParserCrossReferenseElement(it)
-                element.assignment = assignmentString
-                listOfAlternativesElements.add(element)
+                addElementToList(ParserCrossReferenseElement(it), assignmentString)
             }
         }
 
@@ -127,61 +150,62 @@ open class ParserRule(val myRule: XtextParserRule) {
         }
 
         override fun visitKeyword(o: XtextKeyword) {
-            listOfAlternativesElements.add(ParserSimpleElement(o.string))
+            addElementToList(ParserSimpleElement(o.string), "")
         }
 
 
         fun visitParenthesizedAssignableElement(o: XtextParenthesizedAssignableElement, assignmentString: String) {
-            listOfAlternativesElements.add(ParserSimpleElement(o.lBracketKeyword))
+            addElementToList(BnfServiceElement(o.lBracketKeyword), "")
             visitAssignableAlternatives(o.assignableAlternatives, assignmentString)
-            listOfAlternativesElements.add(ParserSimpleElement(o.rBracketKeyword))
+            addElementToList(BnfServiceElement(o.rBracketKeyword), "")
 
         }
 
         override fun visitParenthesizedElement(o: XtextParenthesizedElement) {
-            listOfAlternativesElements.add(ParserSimpleElement(o.lBracketKeyword))
-
+            addElementToList(BnfServiceElement(o.lBracketKeyword), "")
             visitAlternatives(o.alternatives)
-            listOfAlternativesElements.add(ParserSimpleElement(o.rBracketKeyword))
+            addElementToList(BnfServiceElement(o.rBracketKeyword), "")
 
         }
 
 
         override fun visitPredicatedGroup(o: XtextPredicatedGroup) {
-            listOfAlternativesElements.add(ParserSimpleElement(o.lBracketKeyword))
+            addElementToList(BnfServiceElement(o.lBracketKeyword), "")
 
             visitAlternatives(o.alternatives)
-            listOfAlternativesElements.add(ParserSimpleElement(o.rBracketKeyword))
+            addElementToList(BnfServiceElement(o.rBracketKeyword), "")
 
         }
 
         override fun visitPredicatedKeyword(o: XtextPredicatedKeyword) {
-            listOfAlternativesElements.add(ParserSimpleElement(o.string))
+            addElementToList(ParserSimpleElement(o.string), "")
 
         }
 
 
         override fun visitRuleID(o: XtextRuleID) {
-            listOfAlternativesElements.add(ParserSimpleElement(o))
+            addElementToList(ParserSimpleElement(o), "")
         }
 
 
         override fun visitValidID(o: XtextValidID) {
             o.id?.let {
-                listOfAlternativesElements.add(ParserSimpleElement(it))
-
+                addElementToList(ParserSimpleElement(it), "")
             }
         }
 
         override fun visitRuleCall(o: XtextRuleCall) {
-            listOfAlternativesElements.add(ParserRuleCallElement(o.referenceAbstractRuleRuleID))
+            addElementToList(ParserRuleCallElement(o.referenceAbstractRuleRuleID), "")
         }
 
         override fun visitPredicatedRuleCall(o: XtextPredicatedRuleCall) {
-            listOfAlternativesElements.add(ParserRuleCallElement(o.referenceAbstractRuleRuleID))
+            addElementToList(ParserRuleCallElement(o.referenceAbstractRuleRuleID), "")
         }
 
-
+        override fun visitAction(o: XtextAction) {
+            lastAction = o.text
+            simpleAction = lastAction!!
+        }
     }
 
 
@@ -241,7 +265,9 @@ open class ParserRule(val myRule: XtextParserRule) {
 //            isDataTypeRule(it) }
 //        return false
 //    }
-
+private fun findMyReturnType(): String {
+    return myRule.typeRef?.referenceEcoreEClassifier?.text ?: name
+}
 
     fun copy(): ParserRule {
         val copy = ParserRule(myRule)
