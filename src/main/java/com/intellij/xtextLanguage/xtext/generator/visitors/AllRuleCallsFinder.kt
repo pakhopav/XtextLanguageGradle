@@ -4,20 +4,19 @@ import com.intellij.xtextLanguage.xtext.psi.XtextAbstractTokenWithCardinality
 import com.intellij.xtextLanguage.xtext.psi.XtextParserRule
 import com.intellij.xtextLanguage.xtext.psi.XtextRuleCall
 
-class XtextVisitorAllRuleCalls : XtextVisitorRuleCalls() {
-    val RuleCalls = mutableListOf<String>()
+class AllRuleCallsFinder(val crossReferencesNames: List<String>) : XtextVisitorRuleCalls() {
+    val ruleCalls = mutableListOf<String>()
 
-
-    companion object {
-        fun getAllRuleCallsInParserRule(rule: XtextParserRule): MutableList<String> {
-            val visitor = XtextVisitorAllRuleCalls()
-            visitor.visitParserRule(rule)
-            return visitor.RuleCalls
-        }
+    fun getAllRuleCallsInParserRule(rule: XtextParserRule): MutableList<String> {
+        ruleCalls.clear()
+        visitParserRule(rule)
+        return ruleCalls
     }
 
+
     override fun visitRuleCall(o: XtextRuleCall) {
-        RuleCalls.add(o.referenceAbstractRuleRuleID.text)
+        if (crossReferencesNames.contains(o.referenceAbstractRuleRuleID.text)) return
+        ruleCalls.add(o.referenceAbstractRuleRuleID.text)
     }
 
     override fun visitAbstractTokenWithCardinality(o: XtextAbstractTokenWithCardinality) {

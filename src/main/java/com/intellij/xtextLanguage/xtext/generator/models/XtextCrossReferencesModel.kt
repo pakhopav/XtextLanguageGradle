@@ -10,7 +10,7 @@ class XtextCrossReferencesModel(val parserRules: List<ParserRule>) {
         references = findAllCrossReferences()
         references.forEach {
             val reference = it
-            it.targets = parserRules.filter { it.returnType == reference.refetenceTarget.text }
+            it.targets = parserRules.filter { it.returnType == reference.referenceTarget.text }
 
 
         }

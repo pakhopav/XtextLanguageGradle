@@ -7,35 +7,39 @@ import com.intellij.xtextLanguage.xtext.psi.XtextKeyword
 
 class XtextKeywordModel(abstractRules: List<XtextAbstractRule>) {
 
-    private val KEYWORDS = mapOf(
-            "," to "COMMA",
-            "(" to "L_BRACKET",
-            ")" to "R_BRACKET",
-            "@" to "AT_SIGN",
-            ";" to "SEMICOLON",
-            "<" to "L_ANGLE_BRACKET",
-            ">" to "R_ANGLE_BRACKET",
-            "{" to "L_BRACE",
-            "}" to "R_BRACE",
-            "[" to "L_SQUARE_BRACKET",
-            "]" to "R_SQUARE_BRACKET",
-            "&" to "AMPERSAND",
-            "!" to "ACX_MARK",
-            ":" to "COLON",
-            "*" to "ASTERISK",
-            "=" to "EQUALS",
-            "=>" to "PRED",
-            "->" to "WEAK_PRED",
-            "|" to "PIPE",
-            "+" to "PLUS",
-            "?" to "QUES_MARK",
-            ".." to "RANGE",
-            "." to "DOT",
-            "+=" to "PLUS_EQUALS",
-            "?=" to "QUES_EQUALS",
-            "EOF" to "EOF_KEY",
-            "::" to "COLONS"
-    )
+    companion object {
+        val KEYWORDS = mapOf(
+                "," to "COMMA",
+                "(" to "L_BRACKET",
+                ")" to "R_BRACKET",
+                "@" to "AT_SIGN",
+                ";" to "SEMICOLON",
+                "<" to "L_ANGLE_BRACKET",
+                ">" to "R_ANGLE_BRACKET",
+                "{" to "L_BRACE",
+                "}" to "R_BRACE",
+                "[" to "L_SQUARE_BRACKET",
+                "]" to "R_SQUARE_BRACKET",
+                "&" to "AMPERSAND",
+                "!" to "ACX_MARK",
+                ":" to "COLON",
+                "*" to "ASTERISK",
+                "=" to "EQUALS",
+                "=>" to "PRED",
+                "->" to "WEAK_PRED",
+                "|" to "PIPE",
+                "+" to "PLUS",
+                "?" to "QUES_MARK",
+                ".." to "RANGE",
+                "." to "DOT",
+                "+=" to "PLUS_EQUALS",
+                "?=" to "QUES_EQUALS",
+                "EOF" to "EOF_KEY",
+                "::" to "COLONS"
+        )
+    }
+
+
     val keywords: List<Keyword>
     val keywordsForParserDefinitionFile: List<Keyword>
 

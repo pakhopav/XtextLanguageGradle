@@ -42,6 +42,9 @@ open class XtextVisitor {
     }
 
     open fun visitAbstractToken(o: XtextAbstractToken) {
+        o.action?.let {
+            visitAction(it)
+        }
         o.abstractTokenWithCardinality?.let {
             visitAbstractTokenWithCardinality(it)
         }

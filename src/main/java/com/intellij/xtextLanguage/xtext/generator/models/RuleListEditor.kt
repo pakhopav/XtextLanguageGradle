@@ -25,7 +25,7 @@ class RuleListEditor(private val ruleList: MutableList<XtextParserRule>) {
     }
 
     fun addRule(ruleName: String, ruleBody: String) {
-        val ruleText = "$ruleName : $ruleBody"
+        val ruleText = "$ruleName : ${ruleBody};"
         ruleList.add(XtextElementFactory.createParserRule(ruleText))
     }
 

@@ -1,17 +1,18 @@
 package com.intellij.xtextLanguage.xtext.generator.models
 
-import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitorAllRuleCalls
+import com.intellij.xtextLanguage.xtext.generator.visitors.AllRuleCallsFinder
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitorRepeatingRuleCalls
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitorUniqueName
 import com.intellij.xtextLanguage.xtext.psi.XtextParserRule
 
-class VisitorGeneratorModelImpl(xtextRules: List<XtextParserRule>, val terminalRulesNames: List<String>, val rulesWithSuperClass: Map<String, String>) : VisitorGeneratorModel {
+class VisitorGeneratorModelImpl(xtextRules: List<XtextParserRule>, val terminalRulesNames: List<String>, val rulesWithSuperClass: Map<String, String>, crossReferenceNames: List<String>) : VisitorGeneratorModel {
+    val ruleCallsFinder = AllRuleCallsFinder(crossReferenceNames)
     override var rules = culcRulesForNameVisitor(xtextRules)
 
     fun culcRulesForNameVisitor(xtextRules: List<XtextParserRule>): MutableList<VisitorGeneratorModel.ModelRule> {
         val listOfModelRules = mutableListOf<VisitorGeneratorModel.ModelRule>()
         xtextRules.forEach { rule ->
-            val allRuleCalls = XtextVisitorAllRuleCalls.getAllRuleCallsInParserRule(rule)
+            val allRuleCalls = ruleCallsFinder.getAllRuleCallsInParserRule(rule)
             val ruleCalls = computeRuleCallList(allRuleCalls).toMutableList()
             val listRepeating = mutableListOf<String>()
             val repeatedRulesWithSuperclass = mutableListOf<String>()
