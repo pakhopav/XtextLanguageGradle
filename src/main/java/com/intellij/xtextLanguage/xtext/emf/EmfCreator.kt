@@ -2,7 +2,7 @@ package com.intellij.xtextLanguage.xtext.emf
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import org.eclipse.emf.ecore.EClass
+import org.eclipse.emf.ecore.EFactory
 import org.eclipse.emf.ecore.EObject
 
 abstract class EmfCreator {
@@ -10,7 +10,9 @@ abstract class EmfCreator {
     private var emfRoot: EObject? = null
     protected val modelDescriptions = mutableListOf<ObjectDescription>()
 
-    protected abstract fun getBridgeRuleForPsiElement(psiElement: PsiElement): EmfBridgeRule
+    protected abstract val eFACTORY: EFactory
+
+    protected abstract fun getBridgeRuleForPsiElement(psiElement: PsiElement): EmfBridgeRule?
 
     protected abstract fun registerObject(obj: EObject?, descriptions: MutableCollection<ObjectDescription>)
 
@@ -19,8 +21,6 @@ abstract class EmfCreator {
     protected abstract fun isCrossReference(psiElement: PsiElement): Boolean
 
     protected abstract fun createCrossReference(psiElement: PsiElement, context: EObject)
-
-    protected abstract fun createEObjectOfClass(clazz: EClass): EObject
 
     fun createModel(psiElement: PsiElement): EObject? {
         emfRoot = visitElement(psiElement)
@@ -40,16 +40,20 @@ abstract class EmfCreator {
 
     protected fun visitElement(element: PsiElement): EObject? {
         val utilRule = getBridgeRuleForPsiElement(element)
+        if (utilRule == null) return null
         var current: EObject? = null
         getAllChildren(element).forEach {
             if (current == null) {
                 val returnType = utilRule.findAction(it)
                 returnType?.let {
-                    current = createEObjectOfClass(returnType)
+                    current = eFACTORY.create(it)
                 }
             }
             val rewrite = utilRule.findRewrite(it)
-            rewrite?.let { current = it.rewrite(current) }
+            rewrite?.let {
+                if (current == null) current = utilRule.createObject()
+                current = it.rewrite(current!!)
+            }
             val literalAssignment = utilRule.findLiteralAssignment(it)
             if (literalAssignment != null) {
                 if (current == null) current = utilRule.createObject()

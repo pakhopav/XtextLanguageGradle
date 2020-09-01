@@ -1,12 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class ReferenceFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
+class ReferenceFileGenerator(extension: String) : AbstractGenerator(extension) {
     fun generateReferenceFile() {
-        val file = createFile(extention.capitalize() + "Reference.java", myGenDir)
+        val file = createFile(extension.capitalize() + "Reference.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
@@ -20,11 +19,11 @@ class ReferenceFileGenerator(extention: String, fileModel: XtextMainModel) : Gen
             |import java.util.ArrayList;
             |import java.util.List;
             
-            |public class ${extention.capitalize()}Reference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
+            |public class ${extension.capitalize()}Reference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
             |    private String key;
             |    private List<Class<? extends PsiNameIdentifierOwner>> tClasses;
             
-            |    public ${extention.capitalize()}Reference(@NotNull PsiElement element, TextRange textRange, List<Class<? extends PsiNameIdentifierOwner>> tclasses) {
+            |    public ${extension.capitalize()}Reference(@NotNull PsiElement element, TextRange textRange, List<Class<? extends PsiNameIdentifierOwner>> tclasses) {
             |        super(element, textRange);
             |        key = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
             |        this.tClasses = tclasses;
@@ -46,14 +45,14 @@ class ReferenceFileGenerator(extention: String, fileModel: XtextMainModel) : Gen
             |    @NotNull
             |    @Override
             |    public Object[] getVariants() {
-            |    return ${extention.capitalize()}GetVariants(tClasses);
+            |    return ${extension.capitalize()}GetVariants(tClasses);
             |    }
             
             |    public  ResolveResult[] MultiResolve(boolean incompleteCode, final List<Class<? extends PsiNameIdentifierOwner>> classes) {
             |        PsiFile file = myElement.getContainingFile();
             |        List<? extends PsiNameIdentifierOwner> elements = new ArrayList<>();
             |        classes.forEach(it -> {
-            |            elements.addAll((ArrayList)${extention.capitalize()}Util.findElementsInCurrentFile(file, it, key));
+            |            elements.addAll((ArrayList)${extension.capitalize()}Util.findElementsInCurrentFile(file, it, key));
             |        });
             |        List<ResolveResult> results = new ArrayList<>();
             |        elements.forEach(it ->{
@@ -63,17 +62,17 @@ class ReferenceFileGenerator(extention: String, fileModel: XtextMainModel) : Gen
             |        return results.toArray(new ResolveResult[results.size()]);
             |    }
             
-            |    public Object[] ${extention.capitalize()}GetVariants( List<Class<? extends PsiNameIdentifierOwner>> classes) {
+            |    public Object[] ${extension.capitalize()}GetVariants( List<Class<? extends PsiNameIdentifierOwner>> classes) {
             |    PsiFile file = myElement.getContainingFile();
             |    List<? extends PsiNameIdentifierOwner> elements = new ArrayList<>();
             |    classes.forEach(it ->{
-            |        elements.addAll((ArrayList)${extention.capitalize()}Util.findElementsInCurrentFile(file, it));
+            |        elements.addAll((ArrayList)${extension.capitalize()}Util.findElementsInCurrentFile(file, it));
             |    });
             |    List<LookupElement> variants = new ArrayList<LookupElement>();
             |    elements.forEach(it ->{
             |        if (it.getName() != null && it.getName().length() > 0) {
             |            variants.add(LookupElementBuilder.create(it).
-            |                 withIcon(${extention.capitalize()}Icons.FILE).
+            |                 withIcon(${extension.capitalize()}Icons.FILE).
             |                 withTypeText(it.getContainingFile().getName())
             |                 );
             |        }

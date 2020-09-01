@@ -1,12 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class FileTypeFactoryFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
+class FileTypeFactoryFileGenerator(extension: String) : AbstractGenerator(extension) {
     fun generateFileTypeFactoryFile() {
-        val file = createFile(extention.capitalize() + "FileTypeFactory.java", myGenDir)
+        val file = createFile(extension.capitalize() + "FileTypeFactory.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
@@ -14,13 +13,13 @@ class FileTypeFactoryFileGenerator(extention: String, fileModel: XtextMainModel)
             |import com.intellij.openapi.fileTypes.*;
             |import org.jetbrains.annotations.NotNull;
             
-            |public class ${extention.capitalize()}FileTypeFactory extends FileTypeFactory {
-            |    public ${extention.capitalize()}FileTypeFactory(){
+            |public class ${extension.capitalize()}FileTypeFactory extends FileTypeFactory {
+            |    public ${extension.capitalize()}FileTypeFactory(){
             
             |    }
             |    @Override
             |    public void createFileTypes(@NotNull FileTypeConsumer fileTypeConsumer) {
-            |        fileTypeConsumer.consume(${extention.capitalize()}FileType.INSTANCE, "${extention.toLowerCase()}");
+            |        fileTypeConsumer.consume(${extension.capitalize()}FileType.INSTANCE, "${extension.toLowerCase()}");
             |    }
             
             |}

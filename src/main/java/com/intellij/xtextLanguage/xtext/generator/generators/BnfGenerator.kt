@@ -4,11 +4,11 @@ import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class BnfGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
+class BnfGenerator(extension: String, val fileModel: XtextMainModel) : AbstractGenerator(extension) {
 
 
     fun generateBnf() {
-        val file = Generator.createFile(extention.capitalize() + ".bnf", myGenDir + "/grammar")
+        val file = MainGenerator.createFile(extension.capitalize() + ".bnf", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
         out.print("{\n")
         generateTerminalRules(out)
@@ -16,15 +16,15 @@ class BnfGenerator(extention: String, fileModel: XtextMainModel) : Generator(ext
         out.print("}\n")
         generateRules(out)
         generateEnumRules(out)
-        generateReferences(out)
+//        generateReferences(out)
         out.close()
     }
 
     fun generateTerminalRules(out: PrintWriter) {
         out.print("    tokens = [\n")
         fileModel.terminalRules.forEach {
-            out.print(it.name + "=\"regexp:")
-            it.alterntiveElements.forEach {
+            out.print(it.name.toUpperCase() + "=\"regexp:")
+            it.alternativeElements.forEach {
                 out.print(it.getBnfName())
             }
             out.print("\"\n")
@@ -40,19 +40,18 @@ class BnfGenerator(extention: String, fileModel: XtextMainModel) : Generator(ext
 
     private fun generateAttributes(out: PrintWriter) {
         out.print("""
-          |    parserClass="$packageDir.parser.${extention.capitalize()}Parser"
+          |    parserClass="$packageDir.parser.${extension.capitalize()}Parser"
         
-          |    extends="$packageDir.psi.impl.${extention.capitalize()}PsiCompositeElementImpl"
-          |    psiClassPrefix="${extention.capitalize()}"
+          |    extends="$packageDir.psi.impl.${extension.capitalize()}PsiCompositeElementImpl"
+          |    psiClassPrefix="${extension.capitalize()}"
           |    psiImplClassSuffix="Impl"
           |    psiPackage="$packageDir.psi"
           |    psiImplPackage="$packageDir.impl"
-
-          |    elementTypeHolderClass="$packageDir.psi.${extention.capitalize()}Types"
-          |    elementTypeClass="$packageDir.psi.${extention.capitalize()}ElementType"
-          |    tokenTypeClass="$packageDir.psi.${extention.capitalize()}TokenType"
+          |    elementTypeHolderClass="$packageDir.psi.${extension.capitalize()}Types"
+          |    elementTypeClass="$packageDir.psi.${extension.capitalize()}ElementType"
+          |    tokenTypeClass="$packageDir.psi.${extension.capitalize()}TokenType"
           |    parserUtilClass= "com.intellij.languageUtil.parserUtilBase.GeneratedParserUtilBaseCopy"
-          |    psiImplUtilClass="$packageDir.psi.impl.${extention.capitalize()}PsiImplUtil"
+          |    psiImplUtilClass="$packageDir.psi.impl.${extension.capitalize()}PsiImplUtil"
           |    generateTokenAccessors=true
           |    generateTokens=true
           |    extraRoot(".*")= true
@@ -84,25 +83,25 @@ class BnfGenerator(extention: String, fileModel: XtextMainModel) : Generator(ext
         fileModel.parserRules.forEach {
 
             if (it == fileModel.parserRules.first()) {
-                out.print("${extention.capitalize()}File ::= ${it.name}\n")
+                out.print("${extension.capitalize()}File ::= ${it.name}\n")
             }
             if (it.isPrivate) out.print("private ")
             out.print("${createGkitRuleName(it.name)} ::= ")
 
-            it.alternativesElements.forEach {
+            it.alternativeElements.forEach {
                 out.print(it.getBnfName() + " ")
 
             }
             out.print("\n")
             if (it.isReferenced) out.print("""
                 |{
-                |mixin="$packageDir.psi.impl.${extention.capitalize()}NamedElementImpl"
+                |mixin="$packageDir.psi.impl.${extension.capitalize()}NamedElementImpl"
                 |implements="com.intellij.psi.PsiNameIdentifierOwner"
                 |methods=[ getName setName getNameIdentifier ]
                 |}
 
             """.trimMargin("|"))
-            out.print(it.bnfExtentionsString)
+            out.print(it.bnfExtensionsString)
             out.print("\n")
         }
     }

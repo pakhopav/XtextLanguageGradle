@@ -6,10 +6,11 @@ import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 
 class TerminalRule(val myRule: XtextTerminalRule, resolver: RuleResolver) : ModelRule() {
-    override val name = myRule.validID.text.toUpperCase()
+    override val name = myRule.validID.text
     var isFragment: Boolean = myRule.fragmentKeyword != null
     override val returnType: String = myRule.typeRef?.text ?: "String"
-    val alterntiveElements = AlternativeElementsFinder.getRuleElementListOfTerminalRule(myRule, resolver)
+    override var alternativeElements: MutableList<out RuleElement> = AlternativeElementsFinder.getRuleElementListOfTerminalRule(myRule, resolver)
+    override var isDataTypeRule = true
 
 
     class AlternativeElementsFinder(val resolver: RuleResolver) : XtextVisitor() {
@@ -17,7 +18,7 @@ class TerminalRule(val myRule: XtextTerminalRule, resolver: RuleResolver) : Mode
 
 
         companion object {
-            fun getRuleElementListOfTerminalRule(rule: XtextTerminalRule, resolver: RuleResolver): List<TerminalRuleElement> {
+            fun getRuleElementListOfTerminalRule(rule: XtextTerminalRule, resolver: RuleResolver): MutableList<TerminalRuleElement> {
 
                 val visitor = AlternativeElementsFinder(resolver)
                 visitor.visitTerminalRule(rule)

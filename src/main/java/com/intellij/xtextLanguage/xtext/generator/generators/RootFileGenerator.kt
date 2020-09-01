@@ -1,12 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class RootFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
+class RootFileGenerator(extension: String) : AbstractGenerator(extension) {
     fun generateRootFileFile() {
-        val file = createFile(extention.capitalize() + "File.java", myGenDir + "/psi")
+        val file = createFile(extension.capitalize() + "File.java", myGenDir + "/psi")
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir.psi;
@@ -17,20 +16,20 @@ class RootFileGenerator(extention: String, fileModel: XtextMainModel) : Generato
             |import org.jetbrains.annotations.NotNull;
             |import javax.swing.*;
             
-            |public class ${extention.capitalize()}File extends PsiFileBase {
-            |    public ${extention.capitalize()}File(@NotNull FileViewProvider viewProvider) {
-            |        super(viewProvider, ${extention.capitalize()}Language.INSTANCE);
+            |public class ${extension.capitalize()}File extends PsiFileBase {
+            |    public ${extension.capitalize()}File(@NotNull FileViewProvider viewProvider) {
+            |        super(viewProvider, ${extension.capitalize()}Language.INSTANCE);
             |    }
                 
             |    @NotNull
             |    @Override
             |    public FileType getFileType() {
-            |        return ${extention.capitalize()}FileType.INSTANCE;
+            |        return ${extension.capitalize()}FileType.INSTANCE;
             |    }
             
             |    @Override
             |    public String toString() {
-            |        return "${extention.capitalize()} File";
+            |        return "${extension.capitalize()} File";
             |    }
             
             |    @Override

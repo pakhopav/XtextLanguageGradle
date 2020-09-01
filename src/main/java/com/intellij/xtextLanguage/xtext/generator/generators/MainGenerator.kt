@@ -5,11 +5,7 @@ import java.io.File
 import java.io.IOException
 
 
-open class Generator(val extention: String, val fileModel: XtextMainModel) {
-    internal val myGenDir = "src/main/java/com/intellij/${extention.toLowerCase()}Language/${extention.toLowerCase()}"
-    internal val packageDir = "com.intellij.${extention.toLowerCase()}Language.${extention.toLowerCase()}"
-
-
+open class MainGenerator(extension: String, val fileModel: XtextMainModel) : AbstractGenerator(extension) {
 
     @Throws(IOException::class)
     fun generate() {
@@ -38,7 +34,7 @@ open class Generator(val extention: String, val fileModel: XtextMainModel) {
         generateReferenceFile()
         generateUtilFile()
         generateXmlExtentions()
-
+        generateBridgeFiles()
 
     }
 
@@ -59,99 +55,99 @@ open class Generator(val extention: String, val fileModel: XtextMainModel) {
 
 
     private fun generateBnfFile() {
-        val bnfGenerator = BnfGenerator(extention, fileModel)
+        val bnfGenerator = BnfGenerator(extension, fileModel)
         bnfGenerator.generateBnf()
     }
 
 
     private fun generateLanguageFile() {
-        val generator = LanguageFileGenerator(extention, fileModel)
+        val generator = LanguageFileGenerator(extension)
         generator.generateLanguageFile()
     }
 
     private fun generateFileTypeFile() {
-        val generator = FileTypeGenerator(extention, fileModel)
+        val generator = FileTypeGenerator(extension)
         generator.generateFileTypeFile()
     }
 
     private fun generateIconsFile() {
-        val generator = IconsFileGenerator(extention, fileModel)
+        val generator = IconsFileGenerator(extension)
         generator.generateIconsFile()
     }
 
     private fun generateFileTypeFactoryFile() {
-        val generator = FileTypeFactoryFileGenerator(extention, fileModel)
+        val generator = FileTypeFactoryFileGenerator(extension)
         generator.generateFileTypeFactoryFile()
     }
 
     private fun generateTokenTypeFile() {
-        val generator = TokenTupeFileGenerator(extention, fileModel)
+        val generator = TokenTupeFileGenerator(extension)
         generator.generateTokenTypeFile()
     }
 
     private fun generateElementTypeFile() {
-        val generator = ElementTypeFileGenerator(extention, fileModel)
+        val generator = ElementTypeFileGenerator(extension)
         generator.generateElementTypeFile()
     }
 
     private fun generateLexerFile() {
-        val generator = LanguageFileGenerator(extention, fileModel)
+        val generator = LanguageFileGenerator(extension)
         generator.generateLanguageFile()
     }
 
     private fun generateFlexFile() {
-        val generator = FlexFileGenerator(extention, fileModel)
+        val generator = FlexFileGenerator(extension, fileModel)
         generator.generateFlexFile()
     }
 
     private fun generateXmlExtentions() {
-        val generator = XmlExtentionsGenerator(extention, fileModel)
+        val generator = XmlExtentionsGenerator(extension)
         generator.generateXmlExtentions()
     }
 
     private fun generateLexerAdapterFile() {
-        val generator = LexerAdapterFileGenerator(extention, fileModel)
+        val generator = LexerAdapterFileGenerator(extension)
         generator.generateLexerAdapterFile()
     }
 
     private fun generateRootFileFile() {
-        val generator = RootFileGenerator(extention, fileModel)
+        val generator = RootFileGenerator(extension)
         generator.generateRootFileFile()
     }
 
     private fun generateParserDefinitionFile() {
-        val generator = ParserDefinitionFileGenerator(extention, fileModel)
+        val generator = ParserDefinitionFileGenerator(extension, fileModel)
         generator.generateParserDefinitionFile()
 
     }
 
     private fun generateCompositeElementFile() {
-        val generator = CompositeElementFileGenerator(extention, fileModel)
+        val generator = CompositeElementFileGenerator(extension)
         generator.generateCompositeElementFile()
     }
 
     private fun generateSyntaxHighlighterFile() {
-        val generator = SyntaxHighlighterFileGenerator(extention, fileModel)
+        val generator = SyntaxHighlighterFileGenerator(extension, fileModel)
         generator.generateSyntaxHighlighterFile()
     }
 
     private fun generateSyntaxHighlighterFactoryFile() {
-        val generator = SyntaxHighlighterFactoryFileGenerator(extention, fileModel)
+        val generator = SyntaxHighlighterFactoryFileGenerator(extension)
         generator.generateSyntaxHighlighterFactoryFile()
     }
 
     private fun generateCompletionContributorFile() {
-        val generator = CompletionContributorFileGenerator(extention, fileModel)
+        val generator = CompletionContributorFileGenerator(extension)
         generator.generateCompletionContributorFile()
     }
 
     private fun genenerateNamedElementFile() {
-        val generator = NamedElementFileGenerator(extention, fileModel)
+        val generator = NamedElementFileGenerator(extension)
         generator.genenerateNamedElementFile()
     }
 
     private fun geneneratePsiImplUtilFile() {
-        val generator = PsiImplUtilFileGenerator(extention, fileModel)
+        val generator = PsiImplUtilFileGenerator(extension, fileModel)
         generator.geneneratePsiImplUtilFile()
     }
 
@@ -170,24 +166,29 @@ open class Generator(val extention: String, val fileModel: XtextMainModel) {
 //    }
 
     private fun generateNameVisitorFile() {
-        val visitorGenerator = VisitorGenerator(extention, fileModel)
+        val visitorGenerator = VisitorGenerator(extension, fileModel.visitorGeneratorModel)
         visitorGenerator.generateNameVisitor()
 
     }
 
     private fun generateReferenceContributorFile() {
-        val generator = ReferenceContributorFileGenerator(extention, fileModel)
+        val generator = ReferenceContributorFileGenerator(extension, fileModel)
         generator.generateReferenceContributorFile()
     }
 
     private fun generateReferenceFile() {
-        val generator = ReferenceFileGenerator(extention, fileModel)
+        val generator = ReferenceFileGenerator(extension)
         generator.generateReferenceFile()
     }
 
     private fun generateUtilFile() {
-        val generator = UtilFileGenerator(extention, fileModel)
+        val generator = UtilFileGenerator(extension)
         generator.generateUtilFile()
+    }
+
+    private fun generateBridgeFiles() {
+        val generator = EmfBridgeGenerator(extension, fileModel.bridgeModel)
+        generator.generateAllBridgeRuleFiles()
     }
 
 }

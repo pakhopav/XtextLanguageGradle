@@ -5,7 +5,6 @@ import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EObject
 
 interface EmfBridgeRule {
-    val util: EmfBridgeRuleUtil
 
     fun findAction(pointer: PsiElement): EClass?
 

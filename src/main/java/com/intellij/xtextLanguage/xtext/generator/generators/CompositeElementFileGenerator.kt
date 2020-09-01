@@ -1,12 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class CompositeElementFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
+class CompositeElementFileGenerator(extension: String) : AbstractGenerator(extension) {
     fun generateCompositeElementFile() {
-        val file = createFile(extention.capitalize() + "PsiCompositeElementImpl.java", myGenDir + "/psi/impl")
+        val file = createFile(extension.capitalize() + "PsiCompositeElementImpl.java", myGenDir + "/psi/impl")
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir.psi.impl;
@@ -16,8 +15,8 @@ class CompositeElementFileGenerator(extention: String, fileModel: XtextMainModel
             |import com.intellij.psi.impl.source.resolve.reference.ReferenceProvidersRegistry;
             |import org.jetbrains.annotations.NotNull;
             
-            |public class ${extention.capitalize()}PsiCompositeElementImpl extends ASTWrapperPsiElement {
-            |    public ${extention.capitalize()}PsiCompositeElementImpl(@NotNull ASTNode node) {
+            |public class ${extension.capitalize()}PsiCompositeElementImpl extends ASTWrapperPsiElement {
+            |    public ${extension.capitalize()}PsiCompositeElementImpl(@NotNull ASTNode node) {
             |        super(node);
             |    }
             

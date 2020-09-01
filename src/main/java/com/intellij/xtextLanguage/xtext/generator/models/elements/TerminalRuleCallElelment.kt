@@ -8,7 +8,7 @@ class TerminalRuleCallElelment(psiElement: XtextTerminalRuleCall, val resolver: 
     override fun getFlexName(): String {
         val sb = StringBuilder()
         resolver.getTerminalRuleByName(psiElement.text)?.let {
-            it.alterntiveElements.forEach {
+            it.alternativeElements.map { it as TerminalRuleElement }.forEach {
                 sb.append(it.getFlexName())
             }
         }
@@ -19,7 +19,7 @@ class TerminalRuleCallElelment(psiElement: XtextTerminalRuleCall, val resolver: 
         refactoredName?.let { return it }
         val sb = StringBuilder()
         resolver.getTerminalRuleByName(psiElement.text)?.let {
-            it.alterntiveElements.forEach {
+            it.alternativeElements.forEach {
                 sb.append(it.getBnfName())
             }
         }

@@ -5,7 +5,7 @@ import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitorRepeating
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitorUniqueName
 import com.intellij.xtextLanguage.xtext.psi.XtextParserRule
 
-class VisitorGeneratorModelImpl(xtextRules: List<XtextParserRule>, val terminalRulesNames: List<String>, val rulesWithSuperClass: Map<String, String>, crossReferenceNames: List<String>) : VisitorGeneratorModel {
+class VisitorGeneratorModelImpl(xtextRules: List<XtextParserRule>, private val terminalRulesNames: List<String>, val rulesWithSuperClass: Map<String, String>, crossReferenceNames: List<String>) : VisitorGeneratorModel {
     val ruleCallsFinder = AllRuleCallsFinder(crossReferenceNames)
     override var rules = culcRulesForNameVisitor(xtextRules)
 

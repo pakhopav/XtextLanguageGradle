@@ -1,12 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class IconsFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
+class IconsFileGenerator(extension: String) : AbstractGenerator(extension) {
     fun generateIconsFile() {
-        val file = createFile(extention.capitalize() + "Icons.java", myGenDir)
+        val file = createFile(extension.capitalize() + "Icons.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
@@ -15,7 +14,7 @@ class IconsFileGenerator(extention: String, fileModel: XtextMainModel) : Generat
             
             |import javax.swing.*;
             
-            |public class ${extention.capitalize()}Icons {
+            |public class ${extension.capitalize()}Icons {
             |    public static final Icon FILE = IconLoader.getIcon("/icons/simpleIcon.png");
             |}
         """.trimMargin("|"))

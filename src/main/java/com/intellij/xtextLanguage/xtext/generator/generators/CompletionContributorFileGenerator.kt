@@ -1,30 +1,29 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class CompletionContributorFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
+class CompletionContributorFileGenerator(extension: String) : AbstractGenerator(extension) {
     fun generateCompletionContributorFile() {
-        val file = createFile(extention.capitalize() + "CompletionContributor.java", myGenDir)
+        val file = createFile(extension.capitalize() + "CompletionContributor.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
             |import com.intellij.codeInsight.completion.CompletionContributor;
             |import com.intellij.codeInsight.completion.CompletionType;
             |import com.intellij.languageUtil.completion.KeywordCompletionProvider;
-            |import $packageDir.psi.${extention.capitalize()}TokenType;
-            |import $packageDir.psi.${extention.capitalize()}File;
+            |import $packageDir.psi.${extension.capitalize()}TokenType;
+            |import $packageDir.psi.${extension.capitalize()}File;
             
             |import static com.intellij.patterns.PlatformPatterns.psiElement;
             
             
-            |public class ${extention.capitalize()}CompletionContributor extends CompletionContributor {
-            |public ${extention.capitalize()}CompletionContributor() {
+            |public class ${extension.capitalize()}CompletionContributor extends CompletionContributor {
+            |public ${extension.capitalize()}CompletionContributor() {
             
-            |extend(CompletionType.BASIC, psiElement().withLanguage(${extention.capitalize()}Language.INSTANCE)
+            |extend(CompletionType.BASIC, psiElement().withLanguage(${extension.capitalize()}Language.INSTANCE)
             |,
-            |new KeywordCompletionProvider<${extention.capitalize()}File, ${extention.capitalize()}TokenType>(${extention.capitalize()}Language.INSTANCE, ${extention.capitalize()}FileType.INSTANCE, ${extention.capitalize()}TokenType.class));
+            |new KeywordCompletionProvider<${extension.capitalize()}File, ${extension.capitalize()}TokenType>(${extension.capitalize()}Language.INSTANCE, ${extension.capitalize()}FileType.INSTANCE, ${extension.capitalize()}TokenType.class));
             
             |}
             |}

@@ -20,7 +20,7 @@ class XtextCrossReferencesModel(val parserRules: List<ParserRule>) {
         val list = mutableListOf<ParserCrossReferenseElement>()
         parserRules
                 .flatMap {
-                    it.alternativesElements
+                    it.alternativeElements
                             .filter { it is ParserCrossReferenseElement }
                             .map { it as ParserCrossReferenseElement }
                 }.forEach {

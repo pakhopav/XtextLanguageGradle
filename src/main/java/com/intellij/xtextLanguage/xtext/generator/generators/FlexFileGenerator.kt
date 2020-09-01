@@ -1,12 +1,13 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
 import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
+import com.intellij.xtextLanguage.xtext.generator.models.elements.TerminalRuleElement
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class FlexFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
+class FlexFileGenerator(extension: String, val fileModel: XtextMainModel) : AbstractGenerator(extension) {
     fun generateFlexFile() {
-        val file = createFile(extention.capitalize() + ".flex", myGenDir + "/grammar")
+        val file = createFile(extension.capitalize() + ".flex", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
@@ -15,18 +16,18 @@ class FlexFileGenerator(extention: String, fileModel: XtextMainModel) : Generato
             |import com.intellij.psi.tree.IElementType;
             |import static com.intellij.psi.TokenType.BAD_CHARACTER; // Pre-defined bad character token.
             |import static com.intellij.psi.TokenType.WHITE_SPACE; // Pre-defined whitespace character token.
-            |import static $packageDir.psi.${extention.capitalize()}Types.*; // Note that is the class which is specified as `elementTypeHolderClass`
+            |import static $packageDir.psi.${extension.capitalize()}Types.*; // Note that is the class which is specified as `elementTypeHolderClass`
             
             |%%
             
             |%public
-            |%class _${extention.capitalize()}Lexer // Name of the lexer class which will be generated.
+            |%class _${extension.capitalize()}Lexer // Name of the lexer class which will be generated.
             |%implements FlexLexer
             |%function advance
             |%type IElementType
             |%unicode
             |%{
-            |    public _${extention.capitalize()}Lexer(){
+            |    public _${extension.capitalize()}Lexer(){
             |        this((java.io.Reader)null);
             |    }
             |%}
@@ -36,8 +37,8 @@ class FlexFileGenerator(extention: String, fileModel: XtextMainModel) : Generato
             if (it.name.equals("WS")) {
                 out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
             } else {
-                out.print("${it.name} =")
-                it.alterntiveElements.forEach {
+                out.print("${it.name.toUpperCase()} =")
+                it.alternativeElements.map { it as TerminalRuleElement }.forEach {
                     out.print(it.getFlexName())
                 }
                 out.print("\n")
@@ -45,12 +46,12 @@ class FlexFileGenerator(extention: String, fileModel: XtextMainModel) : Generato
             if (fileModel.ruleResolver.getTerminalRuleByName("WS") == null) out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
         }
         out.print("%%\n<YYINITIAL> {\n")
-        fileModel.keywordModel.keywords.forEach { out.print("\"${it.keyword.substring(1, it.keyword.length - 1)}\" {return ${it.name};}\n") }
+        fileModel.keywordModel.keywords.forEach { out.print("\"${it.keyword.substring(1, it.keyword.length - 1)}\" {return ${it.name.toUpperCase()};}\n") }
         fileModel.terminalRules.forEach {
             if (it.name.equals("WS")) {
                 out.print("{WS} {return WHITE_SPACE;}\n")
             } else {
-                out.print("{${it.name}} {return ${it.name};}\n")
+                out.print("{${it.name.toUpperCase()}} {return ${it.name.toUpperCase()};}\n")
             }
             if (fileModel.ruleResolver.getTerminalRuleByName("WS") == null) out.print("{WS} {return WHITE_SPACE;}\n")
 

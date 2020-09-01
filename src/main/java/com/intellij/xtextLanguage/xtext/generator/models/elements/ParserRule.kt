@@ -8,11 +8,12 @@ import com.intellij.xtextLanguage.xtext.psi.*
 open class ParserRule(val myRule: XtextParserRule) : ModelRule() {
     override var name = myRule.ruleNameAndParams.validID.text.replace("^", "Caret").capitalize()
     override var returnType: String = findMyReturnType()
-    var bnfExtentionsString = ""
-    var alternativesElements: MutableList<RuleElement> = AlternativeElementsFinder.getAlternativeElementsListOfParserRule(myRule).toMutableList()
+    var bnfExtensionsString = ""
+    override var alternativeElements: MutableList<out RuleElement> = AlternativeElementsFinder.getAlternativeElementsListOfParserRule(myRule).toMutableList()
     var isReferenced = false
-    var isDataTypeRule = false
+    override var isDataTypeRule = false
     var isPrivate = false
+    var isApiRule = false
 
     class AlternativeElementsFinder : XtextVisitor() {
         var listOfAlternativesElements = mutableListOf<RuleElement>()
@@ -271,8 +272,8 @@ private fun findMyReturnType(): String {
 
     fun copy(): ParserRule {
         val copy = ParserRule(myRule)
-        for (i in alternativesElements.indices) {
-            if (alternativesElements[i].refactoredName != null) copy.alternativesElements[i].refactoredName = alternativesElements[i].refactoredName
+        for (i in alternativeElements.indices) {
+            if (alternativeElements[i].refactoredName != null) copy.alternativeElements[i].refactoredName = alternativeElements[i].refactoredName
         }
         copy.isDataTypeRule = isDataTypeRule
         copy.isReferenced = isReferenced

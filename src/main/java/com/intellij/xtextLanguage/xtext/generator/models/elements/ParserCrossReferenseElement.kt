@@ -6,7 +6,7 @@ class ParserCrossReferenseElement(override val psiElement: XtextCrossReference) 
 
     val name: String
     val referenceType = psiElement.crossReferenceableTerminal?.text ?: "ID"
-    val referenceTarget = psiElement.typeRef
+    val referenceTarget = psiElement.typeRef.referenceEcoreEClassifier.id
     var targets = listOf<ParserRule>()
 
     init {

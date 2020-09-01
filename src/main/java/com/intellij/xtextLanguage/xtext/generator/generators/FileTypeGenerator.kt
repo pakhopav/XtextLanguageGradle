@@ -1,12 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class FileTypeGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
+class FileTypeGenerator(extension: String) : AbstractGenerator(extension) {
     fun generateFileTypeFile() {
-        val file = createFile(extention.capitalize() + "FileType.java", myGenDir)
+        val file = createFile(extension.capitalize() + "FileType.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
@@ -15,35 +14,35 @@ class FileTypeGenerator(extention: String, fileModel: XtextMainModel) : Generato
             |import org.jetbrains.annotations.*;
             |import javax.swing.*;
 
-            |public class ${extention.capitalize()}FileType extends LanguageFileType {
-            |    public static final ${extention.capitalize()}FileType INSTANCE = new ${extention.capitalize()}FileType();
+            |public class ${extension.capitalize()}FileType extends LanguageFileType {
+            |    public static final ${extension.capitalize()}FileType INSTANCE = new ${extension.capitalize()}FileType();
 
-            |    private ${extention.capitalize()}FileType() {
-            |        super(${extention.capitalize()}Language.INSTANCE);
+            |    private ${extension.capitalize()}FileType() {
+            |        super(${extension.capitalize()}Language.INSTANCE);
             |    }
 
             |    @NotNull
             |    @Override
             |    public String getName() {
-            |        return "${extention.capitalize()} file";
+            |        return "${extension.capitalize()} file";
             |    }
             
             |    @NotNull
             |    @Override
             |    public String getDescription() {
-            |        return "${extention.capitalize()} language file";
+            |        return "${extension.capitalize()} language file";
             |    }
             
             |    @NotNull
             |    @Override
             |    public String getDefaultExtension() {
-            |        return "${extention.toLowerCase()}";
+            |        return "${extension.toLowerCase()}";
             |    }
             
             |    @Nullable
             |    @Override
             |    public Icon getIcon() {
-            |        return ${extention.capitalize()}Icons.FILE; 
+            |        return ${extension.capitalize()}Icons.FILE; 
             |    }
             |}
         """.trimMargin("|"))

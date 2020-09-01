@@ -1,25 +1,24 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class LanguageFileGenerator(extention: String, fileModel: XtextMainModel) : Generator(extention, fileModel) {
+class LanguageFileGenerator(extension: String) : AbstractGenerator(extension) {
 
 
     fun generateLanguageFile() {
-        val file = createFile(extention.capitalize() + "Language.java", myGenDir)
+        val file = createFile(extension.capitalize() + "Language.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir;
 
             |import com.intellij.lang.Language;
 
-            |public class ${extention.capitalize()}Language extends Language {
-            |    public static final ${extention.capitalize()}Language INSTANCE = new ${extention.capitalize()}Language();
+            |public class ${extension.capitalize()}Language extends Language {
+            |    public static final ${extension.capitalize()}Language INSTANCE = new ${extension.capitalize()}Language();
 
-            |    private ${extention.capitalize()}Language() {
-            |        super("${extention.capitalize()}");
+            |    private ${extension.capitalize()}Language() {
+            |        super("${extension.capitalize()}");
 
             |    }
             |}

@@ -35,7 +35,10 @@ class XtextKeywordModel(abstractRules: List<XtextAbstractRule>) {
                 "+=" to "PLUS_EQUALS",
                 "?=" to "QUES_EQUALS",
                 "EOF" to "EOF_KEY",
-                "::" to "COLONS"
+                "::" to "COLONS",
+                "-" to "MINUS",
+                "/" to "SLASH",
+                "#" to "HASH"
         )
     }
 
@@ -71,7 +74,7 @@ class XtextKeywordModel(abstractRules: List<XtextAbstractRule>) {
         val postfix = "_KEYWORD"
         KEYWORDS.get(keywordWithoutCommas)?.let { return it + postfix }
         if (keywordWithoutCommas.matches(Regex("[a-zA-Z0-9_]+"))) return keywordWithoutCommas.toUpperCase() + postfix
-        else return "KEYWORD_$i".also { i++ }
+        else return "KEYWORD_${i++}"
     }
 
     class KeywordsFinder : XtextVisitor() {
