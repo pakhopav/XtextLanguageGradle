@@ -5,13 +5,16 @@ import com.intellij.xtextLanguage.xtext.generator.RuleResolver
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 
-class TerminalRule(val myRule: XtextTerminalRule, resolver: RuleResolver) : ModelRule() {
+class TerminalRule(myRule: XtextTerminalRule, resolver: RuleResolver) : ModelRule() {
     override val name = myRule.validID.text
     var isFragment: Boolean = myRule.fragmentKeyword != null
-    override val returnType: String = myRule.typeRef?.text ?: "String"
-    override var alternativeElements: MutableList<out RuleElement> = AlternativeElementsFinder.getRuleElementListOfTerminalRule(myRule, resolver)
+    override var returnTypeText: String = myRule.typeRef?.text ?: "String"
+    override val alternativeElements = mutableListOf<RuleElement>()
     override var isDataTypeRule = true
 
+    init {
+        alternativeElements.addAll(AlternativeElementsFinder.getRuleElementListOfTerminalRule(myRule, resolver))
+    }
 
     class AlternativeElementsFinder(val resolver: RuleResolver) : XtextVisitor() {
         val ruleElementsList = mutableListOf<TerminalRuleElement>()

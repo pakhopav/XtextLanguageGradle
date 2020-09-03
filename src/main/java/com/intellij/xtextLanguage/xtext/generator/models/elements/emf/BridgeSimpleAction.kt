@@ -1,15 +1,16 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements.emf
 
-class BridgeSimpleAction(val className: String, val psiElementType: String) {
+class BridgeSimpleAction(val returnType: BridgeRuleType, val psiElementType: String) {
+
     override fun equals(other: Any?): Boolean {
         if (other is BridgeSimpleAction) {
-            return (className == other.className && psiElementType == other.psiElementType)
+            return (returnType == other.returnType && psiElementType == other.psiElementType)
         }
         return false
     }
 
     override fun hashCode(): Int {
-        var hash = className.hashCode()
+        var hash = returnType.hashCode()
         hash = hash * 7 + psiElementType.hashCode()
         return hash
     }

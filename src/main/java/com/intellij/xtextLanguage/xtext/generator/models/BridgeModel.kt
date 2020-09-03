@@ -7,7 +7,5 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.RefactorOn
 class BridgeModel(val bridgeRules: List<BridgeModelRule>,
                   val rootRuleName: String,
                   val crossReferences: List<BridgeCrossReference>,
-                  val emfModelPath: String,
-                  val emfModelPrefix: String,
                   val assignmentRefactoringsInfos: List<RefactorOnAssignmentInfo>) {
 }

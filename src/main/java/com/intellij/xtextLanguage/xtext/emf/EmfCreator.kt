@@ -2,15 +2,12 @@ package com.intellij.xtextLanguage.xtext.emf
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
-import org.eclipse.emf.ecore.EFactory
 import org.eclipse.emf.ecore.EObject
 
 abstract class EmfCreator {
 
     private var emfRoot: EObject? = null
     protected val modelDescriptions = mutableListOf<ObjectDescription>()
-
-    protected abstract val eFACTORY: EFactory
 
     protected abstract fun getBridgeRuleForPsiElement(psiElement: PsiElement): EmfBridgeRule?
 
@@ -44,9 +41,10 @@ abstract class EmfCreator {
         var current: EObject? = null
         getAllChildren(element).forEach {
             if (current == null) {
-                val returnType = utilRule.findAction(it)
-                returnType?.let {
-                    current = eFACTORY.create(it)
+                val newObject = utilRule.findAction(it)
+                newObject?.let {
+//                    current = eFACTORY.create(it)
+                    current = it
                 }
             }
             val rewrite = utilRule.findRewrite(it)

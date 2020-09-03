@@ -7,4 +7,6 @@ abstract class RuleElement(open val psiElement: PsiElement) {
     var action = ""
     abstract var assignment: String
     abstract fun getBnfName(): String
+
+
 }

@@ -5,15 +5,34 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 
-open class ParserRule(val myRule: XtextParserRule) : ModelRule() {
-    override var name = myRule.ruleNameAndParams.validID.text.replace("^", "Caret").capitalize()
-    override var returnType: String = findMyReturnType()
+open class ParserRule : ModelRule {
+    override lateinit var name: String
+    override lateinit var returnTypeText: String
     var bnfExtensionsString = ""
-    override var alternativeElements: MutableList<out RuleElement> = AlternativeElementsFinder.getAlternativeElementsListOfParserRule(myRule).toMutableList()
+        private set
+    override val alternativeElements = mutableListOf<RuleElement>()
     var isReferenced = false
     override var isDataTypeRule = false
     var isPrivate = false
     var isApiRule = false
+
+    constructor(myRule: XtextParserRule) {
+        name = myRule.ruleNameAndParams.validID.text.replace("^", "Caret").capitalize()
+        returnTypeText = myRule.typeRef?.text ?: name
+        alternativeElements.addAll(AlternativeElementsFinder.getAlternativeElementsListOfParserRule(myRule))
+
+    }
+
+    constructor()
+//    constructor(name: String, returnType : String, alternativeElements: MutableList<out RuleElement>){
+//        this.name = name
+//        this.returnType = returnType
+//        this.alternativeElements = alternativeElements
+//    }
+
+    fun addStringToBnfExtension(string: String) {
+        bnfExtensionsString += string + "\n"
+    }
 
     class AlternativeElementsFinder : XtextVisitor() {
         var listOfAlternativesElements = mutableListOf<RuleElement>()
@@ -266,17 +285,19 @@ open class ParserRule(val myRule: XtextParserRule) : ModelRule() {
 //            isDataTypeRule(it) }
 //        return false
 //    }
-private fun findMyReturnType(): String {
-    return myRule.typeRef?.referenceEcoreEClassifier?.text ?: name
-}
+
 
     fun copy(): ParserRule {
-        val copy = ParserRule(myRule)
-        for (i in alternativeElements.indices) {
-            if (alternativeElements[i].refactoredName != null) copy.alternativeElements[i].refactoredName = alternativeElements[i].refactoredName
-        }
-        copy.isDataTypeRule = isDataTypeRule
+        val copy = ParserRule()
+        copy.name = name
+        copy.returnTypeText = returnTypeText
+        copy.alternativeElements.addAll(alternativeElements)
+        copy.bnfExtensionsString = bnfExtensionsString
+        copy.isPrivate = isPrivate
+        copy.isApiRule = isApiRule
         copy.isReferenced = isReferenced
+        copy.isDataTypeRule = isDataTypeRule
+
         return copy
     }
 

@@ -1,12 +1,11 @@
 package com.intellij.xtextLanguage.xtext.emf
 
 import com.intellij.psi.PsiElement
-import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EObject
 
 interface EmfBridgeRule {
 
-    fun findAction(pointer: PsiElement): EClass?
+    fun findAction(pointer: PsiElement): EObject?
 
     fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment?
 

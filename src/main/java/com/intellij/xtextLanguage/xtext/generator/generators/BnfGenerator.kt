@@ -93,15 +93,28 @@ class BnfGenerator(extension: String, val fileModel: XtextMainModel) : AbstractG
 
             }
             out.print("\n")
-            if (it.isReferenced) out.print("""
-                |{
-                |mixin="$packageDir.psi.impl.${extension.capitalize()}NamedElementImpl"
-                |implements="com.intellij.psi.PsiNameIdentifierOwner"
-                |methods=[ getName setName getNameIdentifier ]
-                |}
-
-            """.trimMargin("|"))
-            out.print(it.bnfExtensionsString)
+//            if (it.isReferenced) {
+//                out.print("""
+//                |{
+//                |mixin="$packageDir.psi.impl.${extension.capitalize()}NamedElementImpl"
+//                |implements="com.intellij.psi.PsiNameIdentifierOwner"
+//                |methods=[ getName setName getNameIdentifier ]
+//                |}
+//
+//            """.trimMargin("|"))
+//            }
+            if (it.bnfExtensionsString.isNotEmpty() || it.isReferenced) {
+                out.println("{")
+                out.print(it.bnfExtensionsString)
+                if (it.isReferenced) {
+                    out.println("""
+                mixin="$packageDir.psi.impl.${extension.capitalize()}NamedElementImpl"
+                implements="com.intellij.psi.PsiNameIdentifierOwner"
+                methods=[ getName setName getNameIdentifier ]
+                """.trimIndent())
+                }
+                out.println("}")
+            }
             out.print("\n")
         }
     }

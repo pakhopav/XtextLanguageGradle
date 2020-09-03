@@ -1,6 +1,6 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements.emf
 
-open class AssignableObject(val assignment: Assignment, val psiElementType: String, val returnType: String) {
+open class AssignableObject(val assignment: Assignment, val psiElementType: String, val returnType: BridgeRuleType) {
     override fun equals(other: Any?): Boolean {
         if (other is AssignableObject) {
             return (psiElementType == other.psiElementType && assignment == other.assignment && returnType == other.returnType)
