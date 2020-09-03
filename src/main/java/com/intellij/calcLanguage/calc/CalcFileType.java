@@ -34,6 +34,6 @@ public class CalcFileType extends LanguageFileType {
     @Nullable
     @Override
     public Icon getIcon() {
-        return CalcIcons.FILE;
+        return CalcIcons.FILE; 
     }
 }

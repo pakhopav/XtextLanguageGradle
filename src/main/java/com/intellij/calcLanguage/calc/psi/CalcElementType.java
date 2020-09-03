@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class CalcElementType extends IElementType {
     private String debugName;
-
     public CalcElementType(@NotNull @NonNls String debugName) {
         super(debugName, CalcLanguage.INSTANCE);
         this.debugName = debugName;

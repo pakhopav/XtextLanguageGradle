@@ -39,9 +39,9 @@ ANY_OTHER =.
 ":" {return COLON_KEYWORD;}
 ";" {return SEMICOLON_KEYWORD;}
 "+" {return PLUS_KEYWORD;}
-"-" {return KEYWORD_0;}
+"-" {return MINUS_KEYWORD;}
 "*" {return ASTERISK_KEYWORD;}
-"/" {return KEYWORD_1;}
+"/" {return SLASH_KEYWORD;}
 {NUMBER} {return NUMBER;}
 {INT} {return INT;}
 {ID} {return ID;}

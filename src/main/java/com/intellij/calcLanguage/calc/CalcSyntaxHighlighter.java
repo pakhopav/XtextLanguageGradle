@@ -21,7 +21,7 @@ public class CalcSyntaxHighlighter extends SyntaxHighlighterBase {
             createTextAttributesKey("CALC_COMMENT", DefaultLanguageHighlighterColors.LINE_COMMENT);
     public static final TextAttributesKey BAD_CHARACTER =
             createTextAttributesKey("CALC_BAD_CHARACTER", HighlighterColors.BAD_CHARACTER);
-
+            
     private static final TextAttributesKey[] BAD_CHAR_KEYS = new TextAttributesKey[]{BAD_CHARACTER};
     private static final TextAttributesKey[] KEY_KEYS = new TextAttributesKey[]{KEYWORD};
     private static final TextAttributesKey[] VALUE_KEYS = new TextAttributesKey[]{VALUE};

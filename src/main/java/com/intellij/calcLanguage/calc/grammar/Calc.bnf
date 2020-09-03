@@ -18,9 +18,9 @@ ANY_OTHER="regexp:."
       COLON_KEYWORD = ':'
       SEMICOLON_KEYWORD = ';'
       PLUS_KEYWORD = '+'
-      KEYWORD_0 = '-'
+      MINUS_KEYWORD = '-'
       ASTERISK_KEYWORD = '*'
-      KEYWORD_1 = '/'
+      SLASH_KEYWORD = '/'
     ]
     parserClass="com.intellij.calcLanguage.calc.parser.CalcParser"
         
@@ -29,7 +29,6 @@ ANY_OTHER="regexp:."
     psiImplClassSuffix="Impl"
     psiPackage="com.intellij.calcLanguage.calc.psi"
     psiImplPackage="com.intellij.calcLanguage.calc.impl"
-
     elementTypeHolderClass="com.intellij.calcLanguage.calc.psi.CalcTypes"
     elementTypeClass="com.intellij.calcLanguage.calc.psi.CalcElementType"
     tokenTypeClass="com.intellij.calcLanguage.calc.psi.CalcTokenType"
@@ -69,7 +68,10 @@ Expression ::= Addition
 Addition ::= Multiplication ( ( '+' | '-' ) MultiplicationAdditionRight ) * 
 
 Multiplication ::= MultiplicationPrivate 
-{extends=MultiplicationAPI}
+{
+extends=MultiplicationAPI
+}
+
 PrimaryExpression1 ::= '(' Expression ')' 
 
 PrimaryExpression2 ::= NUMBER 
@@ -77,18 +79,29 @@ PrimaryExpression2 ::= NUMBER
 PrimaryExpression3 ::= REFERENCE_AbstractDefinition_ID ( '(' Expression ( ',' Expression ) * ')' ) ? 
 
 PrimaryExpression ::= PrimaryExpressionPrivate 
-{extends=PrimaryExpressionAPI}
+{
+extends=PrimaryExpressionAPI
+}
+
+REFERENCE_Module_ID ::= ID 
+
+REFERENCE_AbstractDefinition_ID ::= ID 
+
 private MultiplicationPrivate ::= PrimaryExpression ( ( '*' | '/' ) PrimaryExpressionMultiplicationRight ) * 
 
 MultiplicationAPI ::= MultiplicationPrivate 
 
 MultiplicationAdditionRight ::= MultiplicationPrivate 
-{extends=MultiplicationAPI}
+{
+extends=MultiplicationAPI
+}
+
 private PrimaryExpressionPrivate ::= PrimaryExpression1 | PrimaryExpression2 | PrimaryExpression3 
 
 PrimaryExpressionAPI ::= PrimaryExpressionPrivate 
 
 PrimaryExpressionMultiplicationRight ::= PrimaryExpressionPrivate 
-{extends=PrimaryExpressionAPI}
-REFERENCE_Module_ID ::= ID
-REFERENCE_AbstractDefinition_ID ::= ID
+{
+extends=PrimaryExpressionAPI
+}
+

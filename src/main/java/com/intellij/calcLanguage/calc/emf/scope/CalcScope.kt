@@ -6,8 +6,6 @@ import com.intellij.xtextLanguage.xtext.emf.Scope
 class CalcScope(val descriptions: List<ObjectDescription>) : Scope {
 
     override fun getSingleElement(name: String): ObjectDescription? {
-        return descriptions.stream()
-                .filter { it.objectName == name }
-                .findFirst().get()
+        return descriptions.firstOrNull { it.objectName == name }
     }
 }

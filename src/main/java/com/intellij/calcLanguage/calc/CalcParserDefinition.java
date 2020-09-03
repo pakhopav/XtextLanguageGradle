@@ -21,7 +21,7 @@ public class CalcParserDefinition implements ParserDefinition {
     public static final TokenSet KEYWORDS = TokenSet.create();
     public static final TokenSet COMMENTS = TokenSet.create(CalcTypes.SL_COMMENT, CalcTypes.ML_COMMENT);
     public static final IFileElementType FILE = new IFileElementType(CalcLanguage.INSTANCE);
-
+            
     @NotNull
     @Override
     public Lexer createLexer(Project project) {
@@ -32,7 +32,6 @@ public class CalcParserDefinition implements ParserDefinition {
     public TokenSet getWhitespaceTokens() {
         return WHITE_SPACES;
     }
-
     @NotNull
     public TokenSet getCommentTokens() {
         return COMMENTS;

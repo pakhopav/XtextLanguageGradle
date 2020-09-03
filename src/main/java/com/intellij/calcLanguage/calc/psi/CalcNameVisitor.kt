@@ -71,20 +71,13 @@ class CalcNameVisitor {
         return null
     }
 
-    fun visitMultiplicationAdditionRight(node: CalcMultiplicationAdditionRight): PsiElement? {
-        node.primaryExpressionAPIList.forEach { visitPrimaryExpressionAPI(it)?.let { return@visitMultiplicationAdditionRight it } }
-        return null
-    }
-
     fun visitMultiplicationAPI(node: CalcMultiplicationAPI): PsiElement? {
         node.primaryExpressionAPIList.forEach { visitPrimaryExpressionAPI(it)?.let { return@visitMultiplicationAPI it } }
         return null
     }
 
-    fun visitPrimaryExpressionMultiplicationRight(node: CalcPrimaryExpressionMultiplicationRight): PsiElement? {
-        node.primaryExpression1?.let { visitPrimaryExpression1(it)?.let { return@visitPrimaryExpressionMultiplicationRight it } }
-        node.primaryExpression2?.let { visitPrimaryExpression2(it)?.let { return@visitPrimaryExpressionMultiplicationRight it } }
-        node.primaryExpression3?.let { visitPrimaryExpression3(it)?.let { return@visitPrimaryExpressionMultiplicationRight it } }
+    fun visitMultiplicationAdditionRight(node: CalcMultiplicationAdditionRight): PsiElement? {
+        node.primaryExpressionAPIList.forEach { visitPrimaryExpressionAPI(it)?.let { return@visitMultiplicationAdditionRight it } }
         return null
     }
 
@@ -92,6 +85,13 @@ class CalcNameVisitor {
         node.primaryExpression1?.let { visitPrimaryExpression1(it)?.let { return@visitPrimaryExpressionAPI it } }
         node.primaryExpression2?.let { visitPrimaryExpression2(it)?.let { return@visitPrimaryExpressionAPI it } }
         node.primaryExpression3?.let { visitPrimaryExpression3(it)?.let { return@visitPrimaryExpressionAPI it } }
+        return null
+    }
+
+    fun visitPrimaryExpressionMultiplicationRight(node: CalcPrimaryExpressionMultiplicationRight): PsiElement? {
+        node.primaryExpression1?.let { visitPrimaryExpression1(it)?.let { return@visitPrimaryExpressionMultiplicationRight it } }
+        node.primaryExpression2?.let { visitPrimaryExpression2(it)?.let { return@visitPrimaryExpressionMultiplicationRight it } }
+        node.primaryExpression3?.let { visitPrimaryExpression3(it)?.let { return@visitPrimaryExpressionMultiplicationRight it } }
         return null
     }
 }
