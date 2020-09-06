@@ -1,4 +1,4 @@
-package com.intellij.calcLanguage.calc;
+package com.intellij.statLanguage.stat;
 
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
@@ -10,11 +10,11 @@ import org.jetbrains.annotations.Nullable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class CalcReference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
+public class StatReference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
     private String key;
     private List<Class<? extends PsiNameIdentifierOwner>> tClasses;
 
-    public CalcReference(@NotNull PsiElement element, TextRange textRange, List<Class<? extends PsiNameIdentifierOwner>> tclasses) {
+    public StatReference(@NotNull PsiElement element, TextRange textRange, List<Class<? extends PsiNameIdentifierOwner>> tclasses) {
         super(element, textRange);
         key = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
         this.tClasses = tclasses;
@@ -36,14 +36,14 @@ public class CalcReference extends PsiReferenceBase<PsiElement> implements PsiPo
     @NotNull
     @Override
     public Object[] getVariants() {
-        return CalcGetVariants(tClasses);
+        return StatGetVariants(tClasses);
     }
 
     public ResolveResult[] MultiResolve(boolean incompleteCode, final List<Class<? extends PsiNameIdentifierOwner>> classes) {
         PsiFile file = myElement.getContainingFile();
         List<? extends PsiNameIdentifierOwner> elements = new ArrayList<>();
         classes.forEach(it -> {
-            elements.addAll((ArrayList) CalcUtil.findElementsInCurrentFile(file, it, key));
+            elements.addAll((ArrayList) StatUtil.findElementsInCurrentFile(file, it, key));
         });
         List<ResolveResult> results = new ArrayList<>();
         elements.forEach(it -> {
@@ -53,17 +53,17 @@ public class CalcReference extends PsiReferenceBase<PsiElement> implements PsiPo
         return results.toArray(new ResolveResult[results.size()]);
     }
 
-    public Object[] CalcGetVariants(List<Class<? extends PsiNameIdentifierOwner>> classes) {
+    public Object[] StatGetVariants(List<Class<? extends PsiNameIdentifierOwner>> classes) {
         PsiFile file = myElement.getContainingFile();
         List<? extends PsiNameIdentifierOwner> elements = new ArrayList<>();
         classes.forEach(it -> {
-            elements.addAll((ArrayList) CalcUtil.findElementsInCurrentFile(file, it));
+            elements.addAll((ArrayList) StatUtil.findElementsInCurrentFile(file, it));
         });
         List<LookupElement> variants = new ArrayList<LookupElement>();
         elements.forEach(it -> {
             if (it.getName() != null && it.getName().length() > 0) {
                 variants.add(LookupElementBuilder.create(it).
-                        withIcon(CalcIcons.FILE).
+                        withIcon(StatIcons.FILE).
                         withTypeText(it.getContainingFile().getName())
                 );
             }

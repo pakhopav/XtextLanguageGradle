@@ -1,28 +1,28 @@
-package com.intellij.calcLanguage.calc.psi;
+package com.intellij.statLanguage.stat.psi;
 
-import com.intellij.calcLanguage.calc.CalcFileType;
-import com.intellij.calcLanguage.calc.CalcLanguage;
 import com.intellij.extapi.psi.PsiFileBase;
 import com.intellij.openapi.fileTypes.FileType;
 import com.intellij.psi.FileViewProvider;
+import com.intellij.statLanguage.stat.StatFileType;
+import com.intellij.statLanguage.stat.StatLanguage;
 import org.jetbrains.annotations.NotNull;
 
 import javax.swing.*;
 
-public class CalcFile extends PsiFileBase {
-    public CalcFile(@NotNull FileViewProvider viewProvider) {
-        super(viewProvider, CalcLanguage.INSTANCE);
+public class StatFile extends PsiFileBase {
+    public StatFile(@NotNull FileViewProvider viewProvider) {
+        super(viewProvider, StatLanguage.INSTANCE);
     }
 
     @NotNull
     @Override
     public FileType getFileType() {
-        return CalcFileType.INSTANCE;
+        return StatFileType.INSTANCE;
     }
 
     @Override
     public String toString() {
-        return "Calc File";
+        return "Stat File";
     }
 
     @Override

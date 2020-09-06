@@ -1,27 +1,82 @@
 package com.intellij.xtext.emf
 
-import org.eclipse.emf.common.util.URI
-import org.eclipse.emf.ecore.resource.Resource
-import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
-import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl
-import org.junit.Test
-import org.xtext.example.entity.entity.EntityPackage
+import org.eclipse.emf.ecore.EObject
 
-class EmfTests {
+class EmfTests : EmfTestsBase("/emf") {
 
 
-    @Test
-    fun testLoadEcoreModelXmi() {
-        EntityPackage.eINSTANCE.eClass()
+//    fun testSimpleEntityEmfInstance() {
+//        val fileName = getCurrentInputFileName()
+//        fileName?.let {
+//            val file = myFixture.configureByFile(it)
+//            val dm = PsiTreeUtil.findChildOfAnyType(file, EntityDomainmodel::class.java)
+//            dm?.let {
+//                val myRes = EntityEmfVisitor.getEmfModel(it)
+//                val eclRes = getModelFromXmi("test.entity")
+//                print("sds")
+//            }
+//
+//        }
+//
+//    }
 
-        val reg = Resource.Factory.Registry.INSTANCE;
-        val m = reg.getExtensionToFactoryMap();
-        m.put("entity", XMIResourceFactoryImpl());
+    fun testSimpleEntityEmfInstance() {
+        val myRes = getEntityEmfModel()
+        myRes?.let { persistEntityEmfModel(it) }
+        assertEqualXmi("test.entity", "entity")
+    }
 
-        val resSet = ResourceSetImpl();
-        val resource = resSet.getResource(URI.createURI("/Users/pavel/work/xtextGradle/XtextLanguageGradle/src/test/resources/testData/emf/test.entity"), true);
+    fun testSimpleEntityWithExtends() {
+        val myRes = getEntityEmfModel()
+        myRes?.let { persistEntityEmfModel(it) }
+        assertEqualXmi("simpleWithExtends.entity", "entity")
 
-        val result = resource.getContents().get(0);
-        print("sad")
+    }
+
+    fun testSimpleEntityWithDatatypes() {
+        val myRes = getEntityEmfModel()
+        myRes?.let { persistEntityEmfModel(it) }
+        assertEqualXmi("simpleWithDatatypes.entity", "entity")
+
+    }
+
+    fun testEntityAll() {
+        val myRes = getEntityEmfModel()
+        myRes?.let { persistEntityEmfModel(it) }
+        assertEqualXmi("entityAllExpected.entity", "entity")
+
+    }
+
+    //========================== Arithmetics
+
+    fun testCalcAll() {
+        val myRes = getCalcEmfModel()
+        myRes?.let { persistEntityEmfModel(it) }
+    }
+
+    fun testCalcMultiPluses() {
+        val myRes = getCalcEmfModel()
+        myRes?.let { persistCalcEmfModel(it as EObject) }
+        assertEqualXmi("calcMultiPlusesExpected.calc", "calc")
+    }
+
+    fun testCalcWithDefinitions() {
+        val myRes = getCalcEmfModel()
+        myRes?.let { persistCalcEmfModel(it) }
+        assertEqualXmi("calcWithDefinitionsExpected.calc", "calc")
+    }
+
+    fun testCalcWithDefinitionsDifficult() {
+        val myRes = getCalcEmfModel()
+        myRes?.let { persistCalcEmfModel(it) }
+        assertEqualXmi("calcWithDefinitionsDifficultExpected.calc", "calc")
+    }
+
+    //========================== Statemachine
+
+    fun testStatSimple() {
+        val myRes = getStatEmfModel()
+        myRes?.let { persistStatEmfModel(it as EObject) }
+        assertEqualXmi("statSimpleExpected.stat", "stat")
     }
 }

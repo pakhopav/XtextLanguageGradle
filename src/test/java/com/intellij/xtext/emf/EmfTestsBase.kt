@@ -6,6 +6,8 @@ import com.intellij.calcLanguage.calc.emf.CalcEmfBridge
 import com.intellij.calcLanguage.calc.psi.CalcFile
 import com.intellij.entityLanguage.entity.emf.EntityEmfBridge
 import com.intellij.entityLanguage.entity.psi.EntityFile
+import com.intellij.statLanguage.stat.emf.StatEmfBridge
+import com.intellij.statLanguage.stat.psi.StatFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.xtext.AllTests
 import junit.framework.TestCase
@@ -16,10 +18,12 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl
 import org.xtext.example.entity.entity.Domainmodel
 import org.xtext.example.entity.entity.EntityPackage
+import statemachine.Statemachine
+import statemachine.StatemachinePackage
 import java.nio.file.Files
 import java.nio.file.Paths
 
-open class EntityEmfTestsBase(val myDataFolder: String) : BasePlatformTestCase() {
+open class EmfTestsBase(val myDataFolder: String) : BasePlatformTestCase() {
 
     open fun getCurrentInputFileName(extention: String): String? {
         return getTestName(true) + ".$extention"
@@ -66,6 +70,16 @@ open class EntityEmfTestsBase(val myDataFolder: String) : BasePlatformTestCase()
         return null
     }
 
+    fun getStatEmfModel(): Statemachine? {
+        val fileName = getCurrentInputFileName("stat")
+        fileName?.let {
+            val file = myFixture.configureByFile(it) as StatFile
+            val bridge = StatEmfBridge()
+            return bridge.createEmfModel(file) as Statemachine
+        }
+        return null
+    }
+
     fun persistEntityEmfModel(model: EObject) {
         val testFileName = getCurrentInputFileName("entity")
         EntityPackage.eINSTANCE.eClass()
@@ -98,6 +112,21 @@ open class EntityEmfTestsBase(val myDataFolder: String) : BasePlatformTestCase()
         resource.save(null);
     }
 
+    fun persistStatEmfModel(model: EObject) {
+        val testFileName = getCurrentInputFileName("stat")
+        StatemachinePackage.eINSTANCE.eClass()
+        val reg = Resource.Factory.Registry.INSTANCE
+        val m = reg.getExtensionToFactoryMap()
+        m.put("stat", XMIResourceFactoryImpl())
+        val resSet = ResourceSetImpl()
+
+        val resource = resSet.createResource(
+                URI.createFileURI(
+                        "$basePath/$testFileName"))
+
+        resource.getContents().add(model)
+        resource.save(null)
+    }
 
     fun assertEqualXmi(compareWith: String, extention: String) {
         val testFileName = getCurrentInputFileName(extention)

@@ -1,9 +1,9 @@
-package com.intellij.calcLanguage.calc;
+package com.intellij.statLanguage.stat;
 
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
 
-public class CalcIcons {
+public class StatIcons {
     public static final Icon FILE = IconLoader.getIcon("/icons/simpleIcon.png");
 }

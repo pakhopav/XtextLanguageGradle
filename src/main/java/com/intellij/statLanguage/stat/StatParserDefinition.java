@@ -1,8 +1,5 @@
-package com.intellij.calcLanguage.calc;
+package com.intellij.statLanguage.stat;
 
-import com.intellij.calcLanguage.calc.parser.CalcParser;
-import com.intellij.calcLanguage.calc.psi.CalcFile;
-import com.intellij.calcLanguage.calc.psi.CalcTypes;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiParser;
@@ -14,18 +11,21 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
+import com.intellij.statLanguage.stat.parser.StatParser;
+import com.intellij.statLanguage.stat.psi.StatFile;
+import com.intellij.statLanguage.stat.psi.StatTypes;
 import org.jetbrains.annotations.NotNull;
 
-public class CalcParserDefinition implements ParserDefinition {
+public class StatParserDefinition implements ParserDefinition {
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
     public static final TokenSet KEYWORDS = TokenSet.create();
-    public static final TokenSet COMMENTS = TokenSet.create(CalcTypes.SL_COMMENT, CalcTypes.ML_COMMENT);
-    public static final IFileElementType FILE = new IFileElementType(CalcLanguage.INSTANCE);
+    public static final TokenSet COMMENTS = TokenSet.create(StatTypes.SL_COMMENT, StatTypes.ML_COMMENT);
+    public static final IFileElementType FILE = new IFileElementType(StatLanguage.INSTANCE);
             
     @NotNull
     @Override
     public Lexer createLexer(Project project) {
-        return new CalcLexerAdapter();
+        return new StatLexerAdapter();
     }
 
     @NotNull
@@ -45,7 +45,7 @@ public class CalcParserDefinition implements ParserDefinition {
 
     @NotNull
     public PsiParser createParser(final Project project) {
-        return new CalcParser();
+        return new StatParser();
     }
 
     @Override
@@ -54,7 +54,7 @@ public class CalcParserDefinition implements ParserDefinition {
     }
 
     public PsiFile createFile(FileViewProvider viewProvider) {
-        return new CalcFile(viewProvider);
+        return new StatFile(viewProvider);
     }
 
     public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {
@@ -63,6 +63,6 @@ public class CalcParserDefinition implements ParserDefinition {
 
     @NotNull
     public PsiElement createElement(ASTNode node) {
-        return CalcTypes.Factory.createElement(node);
+        return StatTypes.Factory.createElement(node);
     }
 }

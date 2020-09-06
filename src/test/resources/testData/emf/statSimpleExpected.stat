@@ -1,0 +1,28 @@
+<?xml version="1.0" encoding="ASCII"?>
+<statemachine:Statemachine xmi:version="2.0" xmlns:xmi="http://www.omg.org/XMI" xmlns:statemachine="http://www.eclipse.org/xtext/example/fowlerdsl/Statemachine" resetEvents="//@events.3">
+  <events name="doorClosed" code="D1CL"/>
+  <events name="drawerOpened" code="D2OP"/>
+  <events name="lightOn" code="L1ON"/>
+  <events name="doorOpened" code="D1OP"/>
+  <events name="panelClosed" code="PNCL"/>
+  <commands name="unlockPanel" code="PNUL"/>
+  <commands name="lockPanel" code="PNLK"/>
+  <commands name="lockDoor" code="D1LK"/>
+  <commands name="unlockDoor" code="D1UL"/>
+  <states name="idle" actions="//@commands.3 //@commands.1">
+    <transitions event="//@events.0" state="//@states.1"/>
+  </states>
+  <states name="active">
+    <transitions event="//@events.1" state="//@states.2"/>
+    <transitions event="//@events.2" state="//@states.3"/>
+  </states>
+  <states name="waitingForLight">
+    <transitions event="//@events.2" state="//@states.4"/>
+  </states>
+  <states name="waitingForDrawer">
+    <transitions event="//@events.1" state="//@states.4"/>
+  </states>
+  <states name="unlockedPanel" actions="//@commands.0 //@commands.2">
+    <transitions event="//@events.4" state="//@states.0"/>
+  </states>
+</statemachine:Statemachine>
