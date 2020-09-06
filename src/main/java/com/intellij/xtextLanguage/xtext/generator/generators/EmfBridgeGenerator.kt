@@ -248,7 +248,6 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
 
         out.println("""
             package com.intellij.${extension}Language.${extension}.emf
-            import com.intellij.${extension}Language.${extension}.emf.${capitalizedExtension}ModuleBridgeRule
             import com.intellij.${extension}Language.${extension}.psi.*
             import com.intellij.${extension}Language.${extension}.emf.scope.${capitalizedExtension}Scope
             import com.intellij.psi.PsiElement
@@ -282,8 +281,12 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
             out.println("    private val ${it.name.toUpperCase()} = ${capitalizedExtension}${it.name}BridgeRule()")
         }
         model.crossReferences.forEach {
-            out.println("    private val referenced${it.target.name}Map = mutableMapOf<${it.container.name}, String>()")
+            out.println("    private val ${createCrossReferenceMapName(it)} = mutableListOf<Pair<${it.container.name}, String>>()")
         }
+    }
+
+    private fun createCrossReferenceMapName(reference: BridgeCrossReference): String {
+        return "${reference.container.name.decapitalize()}To${reference.target.name}NameList"
     }
 
 
@@ -343,9 +346,9 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
                     """.trimMargin("|"))
         model.crossReferences.forEach {
             out.println("""
-                        |        referenced${it.target.name}Map.forEach {
-                        |            val container = it.key
-                        |            val resolvedDefinition = scope.getSingleElement(it.value)?.obj
+                        |        ${createCrossReferenceMapName(it)}.forEach {
+                        |            val container = it.first
+                        |            val resolvedDefinition = scope.getSingleElement(it.second)?.obj
                         |            val feature = container.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${it.assignment.text}" }
                         |            resolvedDefinition?.let { 
                     """.trimMargin("|"))
@@ -402,8 +405,8 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
 //        }
         model.crossReferences.forEach {
             out.println("""
-                        |        ${elseWord}if (psiElement is $capitalizedExtension${it.psiElementName})
-                        |            referenced${it.target.name}Map.put(container as ${it.container.name}, psiElement.text)
+                        |        ${elseWord}if (container is ${it.container.name} && psiElement is $capitalizedExtension${it.psiElementName})
+                        |            ${createCrossReferenceMapName(it)}.add(Pair(container, psiElement.text))
                     """.trimMargin("|"))
             elseWord = "else "
         }

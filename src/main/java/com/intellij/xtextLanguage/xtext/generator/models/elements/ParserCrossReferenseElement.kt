@@ -18,6 +18,11 @@ class ParserCrossReferenseElement(override val psiElement: XtextCrossReference) 
         return false
     }
 
+    override fun hashCode(): Int {
+        return name.hashCode()
+    }
+
+
     override var assignment = ""
 
     override fun getBnfName(): String {

@@ -7,4 +7,5 @@ abstract class ModelRule {
     abstract var isDataTypeRule: Boolean
     abstract val alternativeElements: MutableList<RuleElement>
 
+
 }

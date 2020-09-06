@@ -5,15 +5,30 @@ import com.intellij.xtextLanguage.xtext.generator.RuleResolver
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 
-class TerminalRule(myRule: XtextTerminalRule, resolver: RuleResolver) : ModelRule() {
-    override val name = myRule.validID.text
-    var isFragment: Boolean = myRule.fragmentKeyword != null
-    override var returnTypeText: String = myRule.typeRef?.text ?: "String"
+class TerminalRule : ModelRule {
+    override lateinit var name: String
+    var isFragment = false
+    override lateinit var returnTypeText: String
     override val alternativeElements = mutableListOf<RuleElement>()
     override var isDataTypeRule = true
 
-    init {
+    constructor(myRule: XtextTerminalRule, resolver: RuleResolver) {
+        name = myRule.validID.text.replace("^", "Caret")
+        returnTypeText = myRule.typeRef?.text ?: "String"
         alternativeElements.addAll(AlternativeElementsFinder.getRuleElementListOfTerminalRule(myRule, resolver))
+        isFragment = myRule.fragmentKeyword != null
+    }
+
+    constructor()
+
+
+    fun copy(): TerminalRule {
+        val copy = TerminalRule()
+        copy.name = name
+        copy.returnTypeText = returnTypeText
+        copy.alternativeElements.addAll(alternativeElements)
+        copy.isFragment = isFragment
+        return copy
     }
 
     class AlternativeElementsFinder(val resolver: RuleResolver) : XtextVisitor() {

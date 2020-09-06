@@ -8,11 +8,11 @@ class XtextCrossReferencesModel(val parserRules: List<ParserRule>) {
 
     init {
         references = findAllCrossReferences()
-        references.forEach {
-            val reference = it
-            it.targets = parserRules.filter { it.returnTypeText == reference.referenceTarget }
-
-
+        references.forEach { reference ->
+            reference.targets = parserRules.filter {
+                val returnType = if (it.returnTypeText.isNotEmpty()) it.returnTypeText else it.name
+                returnType == reference.referenceTarget
+            }
         }
     }
 

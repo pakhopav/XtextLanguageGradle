@@ -63,8 +63,9 @@ abstract class EmfCreator {
                     if (assigment != null) {
                         if (current == null) current = utilRule.createObject()
                         assigment.assign(current!!, newObject)
-                    } else
+                    } else {
                         current = newObject
+                    }
                 } else if (isCrossReference(it)) {
                     if (current == null) current = utilRule.createObject()
                     createCrossReference(it, current!!)

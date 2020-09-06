@@ -4,6 +4,7 @@ import arithmetics.ArithmeticsPackage
 import com.intellij.openapi.components.ServiceManager
 import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.EcorePackage
+import statemachine.StatemachinePackage
 
 interface EcorePackageRegistry {
 
@@ -33,6 +34,7 @@ interface EcorePackageRegistry {
         init {
             packages.add(EcorePackage.eINSTANCE)
             packages.add(ArithmeticsPackage.eINSTANCE)
+            packages.add(StatemachinePackage.eINSTANCE)
         }
 
         override fun getPackage(nsUri: String): EPackage? {
