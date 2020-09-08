@@ -1,5 +1,4 @@
 package com.intellij.calcLanguage.calc.emf
-
 import com.intellij.calcLanguage.calc.psi.CalcTypes
 import com.intellij.psi.PsiElement
 import com.intellij.xtextLanguage.xtext.emf.EmfBridgeRule
@@ -12,7 +11,6 @@ class CalcMultiplicationBridgeRule : EmfBridgeRule {
     override fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment? {
         return null
     }
-
     override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {
         if (pointer.node.elementType == CalcTypes.PRIMARY_EXPRESSION_MULTIPLICATION_RIGHT) {
             return object : ObjectAssignment {
@@ -47,7 +45,6 @@ class CalcMultiplicationBridgeRule : EmfBridgeRule {
         }
         return null
     }
-
     override fun createObject(): EObject {
         return arithmetics.ArithmeticsFactory.eINSTANCE.create(arithmetics.ArithmeticsPackage.eINSTANCE.expression)
     }

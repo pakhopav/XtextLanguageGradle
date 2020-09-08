@@ -1,5 +1,4 @@
 package com.intellij.calcLanguage.calc.emf
-
 import arithmetics.*
 import com.intellij.calcLanguage.calc.emf.scope.CalcScope
 import com.intellij.calcLanguage.calc.psi.*
@@ -25,8 +24,8 @@ class CalcEmfCreator : EmfCreator() {
     private val PRIMARYEXPRESSION2 = CalcPrimaryExpression2BridgeRule()
     private val PRIMARYEXPRESSION3 = CalcPrimaryExpression3BridgeRule()
     private val PRIMARYEXPRESSION = CalcPrimaryExpressionBridgeRule()
-    private val referencedModuleMap = mutableMapOf<Import, String>()
-    private val referencedAbstractDefinitionMap = mutableMapOf<Expression, String>()
+    private val importToModuleNameList = mutableListOf<Pair<Import, String>>()
+    private val functionCallToAbstractDefinitionNameList = mutableListOf<Pair<FunctionCall, String>>()
     override fun getBridgeRuleForPsiElement(psiElement: PsiElement): EmfBridgeRule? {
         if (psiElement is CalcModule) {
             return MODULE
@@ -75,53 +74,49 @@ class CalcEmfCreator : EmfCreator() {
         }
         if (psiElement is CalcPrimaryExpressionMultiplicationRight) {
             return PRIMARYEXPRESSION
-        }
+        } 
         return null
     }
-
     override fun registerObject(obj: EObject?, descriptions: MutableCollection<ObjectDescription>) {
         obj?.let {
             if (obj is Module) {
-                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" }
+                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" } 
                 descriptions.add(ObjectDescriptionImpl(it, it.eGet(feature) as String))
             } else if (obj is Definition) {
-                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" }
+                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" } 
                 descriptions.add(ObjectDescriptionImpl(it, it.eGet(feature) as String))
             } else if (obj is DeclaredParameter) {
-                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" }
+                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" } 
                 descriptions.add(ObjectDescriptionImpl(it, it.eGet(feature) as String))
             } else return
         }
     }
-
     override fun completeRawModel() {
         val scope = CalcScope(modelDescriptions)
-        referencedModuleMap.forEach {
-            val container = it.key
-            val resolvedDefinition = scope.getSingleElement(it.value)?.obj
+        importToModuleNameList.forEach {
+            val container = it.first
+            val resolvedDefinition = scope.getSingleElement(it.second)?.obj
             val feature = container.eClass().eAllStructuralFeatures.firstOrNull { it.name == "module" }
             resolvedDefinition?.let {
                 container.eSet(feature, it)
             }
         }
-        referencedAbstractDefinitionMap.forEach {
-            val container = it.key
-            val resolvedDefinition = scope.getSingleElement(it.value)?.obj
+        functionCallToAbstractDefinitionNameList.forEach {
+            val container = it.first
+            val resolvedDefinition = scope.getSingleElement(it.second)?.obj
             val feature = container.eClass().eAllStructuralFeatures.firstOrNull { it.name == "func" }
             resolvedDefinition?.let {
                 container.eSet(feature, it)
             }
         }
     }
-
     override fun isCrossReference(psiElement: PsiElement): Boolean {
         return psiElement is CalcREFERENCEModuleID || psiElement is CalcREFERENCEAbstractDefinitionID
     }
-
     override fun createCrossReference(psiElement: PsiElement, container: EObject) {
-        if (psiElement is CalcREFERENCEModuleID)
-            referencedModuleMap.put(container as Import, psiElement.text)
-        else if (psiElement is CalcREFERENCEAbstractDefinitionID)
-            referencedAbstractDefinitionMap.put(container as Expression, psiElement.text)
+        if (container is Import && psiElement is CalcREFERENCEModuleID)
+            importToModuleNameList.add(Pair(container, psiElement.text))
+        else if (container is FunctionCall && psiElement is CalcREFERENCEAbstractDefinitionID)
+            functionCallToAbstractDefinitionNameList.add(Pair(container, psiElement.text))
     }
 }

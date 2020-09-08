@@ -6,9 +6,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class StatFileTypeFactory extends FileTypeFactory {
     public StatFileTypeFactory() {
-
+            
     }
-
     @Override
     public void createFileTypes(@NotNull FileTypeConsumer fileTypeConsumer) {
         fileTypeConsumer.consume(StatFileType.INSTANCE, "stat");

@@ -7,7 +7,6 @@ import org.jetbrains.annotations.NotNull;
 
 public class StatElementType extends IElementType {
     private String debugName;
-
     public StatElementType(@NotNull @NonNls String debugName) {
         super(debugName, StatLanguage.INSTANCE);
         this.debugName = debugName;

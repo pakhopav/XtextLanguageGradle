@@ -1,5 +1,4 @@
 package com.intellij.calcLanguage.calc.emf
-
 import arithmetics.Import
 import arithmetics.Statement
 import com.intellij.calcLanguage.calc.psi.CalcTypes
@@ -23,7 +22,6 @@ class CalcModuleBridgeRule : EmfBridgeRule {
         }
         return null
     }
-
     override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {
         if (pointer.node.elementType == CalcTypes.IMPORT) {
             return object : ObjectAssignment {
@@ -48,7 +46,6 @@ class CalcModuleBridgeRule : EmfBridgeRule {
     override fun findRewrite(pointer: PsiElement): Rewrite? {
         return null
     }
-
     override fun createObject(): EObject {
         return arithmetics.ArithmeticsFactory.eINSTANCE.create(arithmetics.ArithmeticsPackage.eINSTANCE.module)
     }

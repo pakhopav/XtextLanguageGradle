@@ -1,5 +1,8 @@
-package com.intellij.statLanguage.stat;
+package com.intellij.calcLanguage.calc;
 
+import com.intellij.calcLanguage.calc.parser.CalcParser;
+import com.intellij.calcLanguage.calc.psi.CalcFile;
+import com.intellij.calcLanguage.calc.psi.CalcTypes;
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
 import com.intellij.lang.PsiParser;
@@ -11,33 +14,28 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.intellij.statLanguage.stat.parser.StatParser;
-import com.intellij.statLanguage.stat.psi.StatFile;
-import com.intellij.statLanguage.stat.psi.StatTypes;
 import org.jetbrains.annotations.NotNull;
 
-public class StatParserDefinition implements ParserDefinition {
+public class CalcParserDefinition implements ParserDefinition {
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
     public static final TokenSet KEYWORDS = TokenSet.create(
-            StatTypes.EVENTS_KEYWORD,
-            StatTypes.END_KEYWORD,
-            StatTypes.RESETEVENTS_KEYWORD,
-            StatTypes.COMMANDS_KEYWORD,
-            StatTypes.STATE_KEYWORD,
-            StatTypes.ACTIONS_KEYWORD);
-    public static final TokenSet COMMENTS = TokenSet.create(StatTypes.SL_COMMENT, StatTypes.ML_COMMENT);
-    public static final IFileElementType FILE = new IFileElementType(StatLanguage.INSTANCE);
-            
+            CalcTypes.MODULE_KEYWORD,
+            CalcTypes.IMPORT_KEYWORD,
+            CalcTypes.DEF_KEYWORD);
+    public static final TokenSet COMMENTS = TokenSet.create(CalcTypes.SL_COMMENT, CalcTypes.ML_COMMENT);
+    public static final IFileElementType FILE = new IFileElementType(CalcLanguage.INSTANCE);
+
     @NotNull
     @Override
     public Lexer createLexer(Project project) {
-        return new StatLexerAdapter();
+        return new CalcLexerAdapter();
     }
 
     @NotNull
     public TokenSet getWhitespaceTokens() {
         return WHITE_SPACES;
     }
+
     @NotNull
     public TokenSet getCommentTokens() {
         return COMMENTS;
@@ -51,7 +49,7 @@ public class StatParserDefinition implements ParserDefinition {
 
     @NotNull
     public PsiParser createParser(final Project project) {
-        return new StatParser();
+        return new CalcParser();
     }
 
     @Override
@@ -60,7 +58,7 @@ public class StatParserDefinition implements ParserDefinition {
     }
 
     public PsiFile createFile(FileViewProvider viewProvider) {
-        return new StatFile(viewProvider);
+        return new CalcFile(viewProvider);
     }
 
     public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {
@@ -69,6 +67,6 @@ public class StatParserDefinition implements ParserDefinition {
 
     @NotNull
     public PsiElement createElement(ASTNode node) {
-        return StatTypes.Factory.createElement(node);
+        return CalcTypes.Factory.createElement(node);
     }
 }

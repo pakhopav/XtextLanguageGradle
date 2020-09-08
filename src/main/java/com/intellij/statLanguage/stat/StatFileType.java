@@ -34,6 +34,6 @@ public class StatFileType extends LanguageFileType {
     @Nullable
     @Override
     public Icon getIcon() {
-        return StatIcons.FILE;
+        return StatIcons.FILE; 
     }
 }

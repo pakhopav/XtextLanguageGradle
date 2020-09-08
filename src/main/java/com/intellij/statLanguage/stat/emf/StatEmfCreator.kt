@@ -1,5 +1,4 @@
 package com.intellij.statLanguage.stat.emf
-
 import com.intellij.psi.PsiElement
 import com.intellij.statLanguage.stat.emf.scope.StatScope
 import com.intellij.statLanguage.stat.psi.*
@@ -36,25 +35,23 @@ class StatEmfCreator : EmfCreator() {
         }
         if (psiElement is StatTransition) {
             return TRANSITION
-        }
+        } 
         return null
     }
-
     override fun registerObject(obj: EObject?, descriptions: MutableCollection<ObjectDescription>) {
         obj?.let {
             if (obj is Event) {
-                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" }
+                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" } 
                 descriptions.add(ObjectDescriptionImpl(it, it.eGet(feature) as String))
             } else if (obj is Command) {
-                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" }
+                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" } 
                 descriptions.add(ObjectDescriptionImpl(it, it.eGet(feature) as String))
             } else if (obj is State) {
-                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" }
+                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" } 
                 descriptions.add(ObjectDescriptionImpl(it, it.eGet(feature) as String))
             } else return
         }
     }
-
     override fun completeRawModel() {
         val scope = StatScope(modelDescriptions)
         statemachineToEventNameList.forEach {
@@ -92,11 +89,9 @@ class StatEmfCreator : EmfCreator() {
             }
         }
     }
-
     override fun isCrossReference(psiElement: PsiElement): Boolean {
         return psiElement is StatREFERENCEEventID || psiElement is StatREFERENCECommandID || psiElement is StatREFERENCEEventID || psiElement is StatREFERENCEStateID
     }
-
     override fun createCrossReference(psiElement: PsiElement, container: EObject) {
         if (container is Statemachine && psiElement is StatREFERENCEEventID)
             statemachineToEventNameList.add(Pair(container, psiElement.text))

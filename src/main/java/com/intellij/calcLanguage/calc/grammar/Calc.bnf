@@ -51,8 +51,14 @@ Import ::= 'import' REFERENCE_Module_ID
 Statement ::= Definition | Evaluation 
 
 Definition ::= 'def' ID ( '(' DeclaredParameter ( ',' DeclaredParameter ) * ')' ) ? ':' Expression ';' 
+{
+extends=AbstractDefinition
+}
 
 DeclaredParameter ::= ID 
+{
+extends=AbstractDefinition
+}
 
 AbstractDefinition ::= Definition | DeclaredParameter 
 {
@@ -68,9 +74,6 @@ Expression ::= Addition
 Addition ::= Multiplication ( ( '+' | '-' ) MultiplicationAdditionRight ) * 
 
 Multiplication ::= MultiplicationPrivate 
-{
-extends=MultiplicationAPI
-}
 
 PrimaryExpression1 ::= '(' Expression ')' 
 
@@ -79,9 +82,6 @@ PrimaryExpression2 ::= NUMBER
 PrimaryExpression3 ::= REFERENCE_AbstractDefinition_ID ( '(' Expression ( ',' Expression ) * ')' ) ? 
 
 PrimaryExpression ::= PrimaryExpressionPrivate 
-{
-extends=PrimaryExpressionAPI
-}
 
 REFERENCE_Module_ID ::= ID 
 
@@ -89,19 +89,15 @@ REFERENCE_AbstractDefinition_ID ::= ID
 
 private MultiplicationPrivate ::= PrimaryExpression ( ( '*' | '/' ) PrimaryExpressionMultiplicationRight ) * 
 
-MultiplicationAPI ::= MultiplicationPrivate 
-
 MultiplicationAdditionRight ::= MultiplicationPrivate 
 {
-extends=MultiplicationAPI
+extends=Multiplication
 }
 
 private PrimaryExpressionPrivate ::= PrimaryExpression1 | PrimaryExpression2 | PrimaryExpression3 
 
-PrimaryExpressionAPI ::= PrimaryExpressionPrivate 
-
 PrimaryExpressionMultiplicationRight ::= PrimaryExpressionPrivate 
 {
-extends=PrimaryExpressionAPI
+extends=PrimaryExpression
 }
 

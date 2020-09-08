@@ -1,5 +1,4 @@
 package com.intellij.calcLanguage.calc.emf
-
 import com.intellij.psi.PsiElement
 import com.intellij.xtextLanguage.xtext.emf.EmfBridgeRule
 import com.intellij.xtextLanguage.xtext.emf.LiteralAssignment
@@ -11,7 +10,6 @@ class CalcAbstractDefinitionBridgeRule : EmfBridgeRule {
     override fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment? {
         return null
     }
-
     override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {
         return null
     }
@@ -19,7 +17,6 @@ class CalcAbstractDefinitionBridgeRule : EmfBridgeRule {
     override fun findRewrite(pointer: PsiElement): Rewrite? {
         return null
     }
-
     override fun createObject(): EObject {
         return arithmetics.ArithmeticsFactory.eINSTANCE.create(arithmetics.ArithmeticsPackage.eINSTANCE.abstractDefinition)
     }

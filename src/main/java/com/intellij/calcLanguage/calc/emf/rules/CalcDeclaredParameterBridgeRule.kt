@@ -1,5 +1,4 @@
 package com.intellij.calcLanguage.calc.emf
-
 import com.intellij.calcLanguage.calc.psi.CalcTypes
 import com.intellij.psi.PsiElement
 import com.intellij.xtextLanguage.xtext.emf.EmfBridgeRule
@@ -20,7 +19,6 @@ class CalcDeclaredParameterBridgeRule : EmfBridgeRule {
         }
         return null
     }
-
     override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {
         return null
     }
@@ -28,7 +26,6 @@ class CalcDeclaredParameterBridgeRule : EmfBridgeRule {
     override fun findRewrite(pointer: PsiElement): Rewrite? {
         return null
     }
-
     override fun createObject(): EObject {
         return arithmetics.ArithmeticsFactory.eINSTANCE.create(arithmetics.ArithmeticsPackage.eINSTANCE.declaredParameter)
     }

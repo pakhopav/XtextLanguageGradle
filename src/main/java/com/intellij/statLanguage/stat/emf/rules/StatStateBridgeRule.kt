@@ -1,5 +1,4 @@
 package com.intellij.statLanguage.stat.emf
-
 import com.intellij.psi.PsiElement
 import com.intellij.statLanguage.stat.psi.StatTypes
 import com.intellij.xtextLanguage.xtext.emf.EmfBridgeRule
@@ -22,7 +21,6 @@ class StatStateBridgeRule : EmfBridgeRule {
         }
         return null
     }
-
     override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {
         if (pointer.node.elementType == StatTypes.TRANSITION) {
             return object : ObjectAssignment {
@@ -39,7 +37,6 @@ class StatStateBridgeRule : EmfBridgeRule {
     override fun findRewrite(pointer: PsiElement): Rewrite? {
         return null
     }
-
     override fun createObject(): EObject {
         return statemachine.StatemachineFactory.eINSTANCE.create(statemachine.StatemachinePackage.eINSTANCE.state)
     }

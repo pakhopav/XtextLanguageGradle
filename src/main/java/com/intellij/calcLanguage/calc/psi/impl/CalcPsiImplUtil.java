@@ -1,15 +1,14 @@
 package com.intellij.calcLanguage.calc.psi.impl;
 
 import com.intellij.calcLanguage.calc.psi.CalcAbstractDefinition;
+import com.intellij.calcLanguage.calc.psi.CalcDeclaredParameter;
+import com.intellij.calcLanguage.calc.psi.CalcDefinition;
 import com.intellij.calcLanguage.calc.psi.CalcModule;
-import com.intellij.calcLanguage.calc.psi.CalcNameVisitor;
 import com.intellij.psi.PsiElement;
 
 import java.util.Optional;
 
 public class CalcPsiImplUtil {
-    static CalcNameVisitor nameVisitor = new CalcNameVisitor();
-
     public static PsiElement setName(CalcModule element, String newName) {
         //TODO
         return element;
@@ -22,9 +21,9 @@ public class CalcPsiImplUtil {
     }
 
     public static PsiElement getNameIdentifier(CalcModule element) {
-        return nameVisitor.visitModule(element);
-    }
+        return element.getId();
 
+    }                        
     public static PsiElement setName(CalcAbstractDefinition element, String newName) {
         //TODO
         return element;
@@ -37,6 +36,12 @@ public class CalcPsiImplUtil {
     }
 
     public static PsiElement getNameIdentifier(CalcAbstractDefinition element) {
-        return nameVisitor.visitAbstractDefinition(element);
+        if (element instanceof CalcDefinition) {
+            return ((CalcDefinition) element).getId();
+        }
+        if (element instanceof CalcDeclaredParameter) {
+            return ((CalcDeclaredParameter) element).getId();
+        }
+        return null;
     }
-}
+}    

@@ -8,7 +8,6 @@ import org.jetbrains.annotations.NotNull;
 public class StatTokenType extends IElementType {
     @NotNull
     private final String myDebugName;
-
     public StatTokenType(@NotNull @NonNls String debugName) {
         super(debugName, StatLanguage.INSTANCE);
         myDebugName = debugName;
