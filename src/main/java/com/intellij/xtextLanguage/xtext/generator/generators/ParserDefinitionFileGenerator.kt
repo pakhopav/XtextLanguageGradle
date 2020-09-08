@@ -8,7 +8,7 @@ class ParserDefinitionFileGenerator(extension: String, val fileModel: XtextMainM
     fun generateParserDefinitionFile() {
         val file = createFile(extension.capitalize() + "ParserDefinition.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.println("""
             |package $packageDir;
             |import com.intellij.lang.ASTNode;
             |import com.intellij.lang.ParserDefinition;
@@ -32,7 +32,7 @@ class ParserDefinitionFileGenerator(extension: String, val fileModel: XtextMainM
             """.trimMargin("|"))
 
         fileModel.keywordModel.keywordsForParserDefinitionFile.forEach {
-            out.print("    ${extension.capitalize()}Types.${it}")
+            out.print("            ${extension.capitalize()}Types.${it.name}")
             if (it != fileModel.keywordModel.keywordsForParserDefinitionFile.last()) out.print(",\n")
 
         }

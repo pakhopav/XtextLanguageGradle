@@ -26,10 +26,10 @@ open class MainGenerator(extension: String, val fileModel: XtextMainModel) : Abs
         generateSyntaxHighlighterFile()
         generateSyntaxHighlighterFactoryFile()
         generateCompletionContributorFile()
-        genenerateNamedElementFile()
-        geneneratePsiImplUtilFile()
+        generateNamedElementFile()
+        generatePsiImplUtilFile()
 //        generateElementFactoryFile()
-        generateNameVisitorFile()
+//        generateNameVisitorFile()
         generateReferenceContributorFile()
         generateReferenceFile()
         generateUtilFile()
@@ -141,14 +141,16 @@ open class MainGenerator(extension: String, val fileModel: XtextMainModel) : Abs
         generator.generateCompletionContributorFile()
     }
 
-    private fun genenerateNamedElementFile() {
+    private fun generateNamedElementFile() {
         val generator = NamedElementFileGenerator(extension)
         generator.genenerateNamedElementFile()
     }
 
-    private fun geneneratePsiImplUtilFile() {
-        val generator = PsiImplUtilFileGenerator(extension, fileModel)
+    private fun generatePsiImplUtilFile() {
+        val generator = PsiImplUtilFileGenerator(extension, fileModel.parserRules, fileModel.crossReferences)
         generator.geneneratePsiImplUtilFile()
+//        val generator2 = PsiImplUtilFileGenerator2(extension,fileModel.parserRules,  fileModel.crossReferences)
+//        generator2.geneneratePsiImplUtilFile()
     }
 
 //    private fun generateElementFactoryFile() {
@@ -165,14 +167,14 @@ open class MainGenerator(extension: String, val fileModel: XtextMainModel) : Abs
 //
 //    }
 
-    private fun generateNameVisitorFile() {
-        val visitorGenerator = VisitorGenerator(extension, fileModel.visitorGeneratorModel)
-        visitorGenerator.generateNameVisitor()
-
-    }
+//    private fun generateNameVisitorFile() {
+//        val visitorGenerator = VisitorGenerator(extension, fileModel.visitorGeneratorModel)
+//        visitorGenerator.generateNameVisitor()
+//
+//    }
 
     private fun generateReferenceContributorFile() {
-        val generator = ReferenceContributorFileGenerator(extension, fileModel)
+        val generator = ReferenceContributorFileGenerator(extension, fileModel.crossReferences)
         generator.generateReferenceContributorFile()
     }
 

@@ -35,7 +35,7 @@ class BnfGenerator(extension: String, val fileModel: XtextMainModel) : AbstractG
     }
 
     private fun generateKeywordTokens(out: PrintWriter) {
-        fileModel.keywordModel.keywords.forEach { out.print("      ${it.name} = ${it.keyword}\n") }
+        fileModel.keywordModel.keywords.forEach { out.print("      ${it.name} = \'${it.keyword}\'\n") }
     }
 
     private fun generateAttributes(out: PrintWriter) {
@@ -59,9 +59,9 @@ class BnfGenerator(extension: String, val fileModel: XtextMainModel) : AbstractG
         out.print("\n")
     }
 
-    private fun generateReferences(out: PrintWriter) {
-        fileModel.referencesModel.references.forEach { out.print("${it.name} ::= ${it.referenceType}\n") }
-    }
+//    private fun generateReferences(out: PrintWriter) {
+//        fileModel.referencesModel.references.forEach { out.print("${it.name} ::= ${it.referenceType}\n") }
+//    }
 
     private fun generateEnumRules(out: PrintWriter) {
         fileModel.enumRules.forEach {

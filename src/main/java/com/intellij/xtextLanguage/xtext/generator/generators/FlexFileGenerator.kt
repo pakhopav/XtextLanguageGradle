@@ -46,7 +46,7 @@ class FlexFileGenerator(extension: String, val fileModel: XtextMainModel) : Abst
             if (fileModel.ruleResolver.getTerminalRuleByName("WS") == null) out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
         }
         out.print("%%\n<YYINITIAL> {\n")
-        fileModel.keywordModel.keywords.forEach { out.print("\"${it.keyword.substring(1, it.keyword.length - 1)}\" {return ${it.name.toUpperCase()};}\n") }
+        fileModel.keywordModel.keywords.forEach { out.print("\"${it.keyword}\" {return ${it.name.toUpperCase()};}\n") }
         fileModel.terminalRules.forEach {
             if (it.name.equals("WS")) {
                 out.print("{WS} {return WHITE_SPACE;}\n")
