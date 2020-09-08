@@ -56,9 +56,9 @@ class XtextKeywordModel(abstractRules: List<XtextAbstractRule>) {
         val listOfKeywords = mutableListOf<Keyword>()
         val listOfKeywordsForParserDefinition = mutableListOf<Keyword>()
 
-        list.distinct().forEach {
+        list.distinct().map { it.slice(1 until it.length - 1) }.forEach {
             listOfKeywords.add(Keyword(it, createKeywordName(it)))
-            if (it.matches(Regex("[a-zA-Z]"))) {
+            if (it.matches(Regex("[a-zA-Z]+"))) {
                 listOfKeywordsForParserDefinition.add(Keyword(it, it.toUpperCase() + "_KEYWORD"))
             }
         }
@@ -69,11 +69,10 @@ class XtextKeywordModel(abstractRules: List<XtextAbstractRule>) {
 
     }
 
-    fun createKeywordName(str: String): String {
-        val keywordWithoutCommas = str.substring(1, str.length - 1)
+    fun createKeywordName(text: String): String {
         val postfix = "_KEYWORD"
-        KEYWORDS.get(keywordWithoutCommas)?.let { return it + postfix }
-        if (keywordWithoutCommas.matches(Regex("[a-zA-Z0-9_]+"))) return keywordWithoutCommas.toUpperCase() + postfix
+        KEYWORDS.get(text)?.let { return it + postfix }
+        if (text.matches(Regex("[a-zA-Z0-9_]+"))) return text.toUpperCase() + postfix
         else return "KEYWORD_${i++}"
     }
 

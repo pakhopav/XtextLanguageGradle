@@ -118,7 +118,7 @@ open class ParserRule : ModelRule {
         }
 
         override fun visitCrossReference(o: XtextCrossReference) {
-            addElementToList(ParserCrossReferenseElement(o), "")
+            addElementToList(ParserCrossReferenceElement(o), "")
         }
 
         override fun visitAlternatives(alternatives: XtextAlternatives) {
@@ -158,7 +158,7 @@ open class ParserRule : ModelRule {
                 visitParenthesizedAssignableElement(it, assignmentString)
             }
             o.crossReference?.let {
-                addElementToList(ParserCrossReferenseElement(it), assignmentString)
+                addElementToList(ParserCrossReferenceElement(it), assignmentString)
             }
         }
 
@@ -320,7 +320,7 @@ open class ParserRule : ModelRule {
         }
 
         override fun visitCrossReference(o: XtextCrossReference) {
-            addElementToList(ParserCrossReferenseElement(o), "")
+            addElementToList(ParserCrossReferenceElement(o), "")
         }
 
         override fun visitAlternatives(alternatives: XtextAlternatives) {
@@ -366,7 +366,7 @@ open class ParserRule : ModelRule {
                 visitParenthesizedAssignableElement(it, assignmentString)
             }
             o.crossReference?.let {
-                addElementToList(ParserCrossReferenseElement(it), assignmentString)
+                addElementToList(ParserCrossReferenceElement(it), assignmentString)
             }
         }
 
