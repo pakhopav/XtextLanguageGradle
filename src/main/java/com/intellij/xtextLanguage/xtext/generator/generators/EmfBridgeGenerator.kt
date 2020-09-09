@@ -68,23 +68,31 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
     private fun generateLiteralAssignmentMethod(assignments: List<AssignableObject>, out: PrintWriter) {
         out.println("    override fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment? {")
         var elseWord = ""
-        assignments.forEach {
+        assignments.forEach { assignment ->
 //            val elementTypeString = if(it is AssignableKeyword) "${it.keywordText.toUpperCase()}_KEYWORD" else "${it.psiElementType.toUpperCase()}"
-            val toAssignString = if (it.returnType.name != "String") "${it.returnType.name}(literal.text)" else "literal.text"
+            val toAssignString = if (assignment.returnType.name != "String") "${assignment.returnType.name}(literal.text)" else "literal.text"
+            out.print("""
+                |        ${elseWord}if (
+            """.trimMargin("|"))
+            assignment.psiElementTypes.forEach {
+                out.print("pointer.node.elementType == ${capitalizedExtension}Types.${it}")
+                if (assignment.psiElementTypes.last() != it) out.print(" || ")
+            }
+            out.println(") {")
             out.println("""
-                |        ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${it.psiElementType}) {
                 |            return object : LiteralAssignment {
                 |                override fun assign(obj: EObject, literal: PsiElement) {
-                |                    val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${it.assignment.text}" }
+                |                    val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${assignment.assignment.text}" }
             """.trimMargin("|"))
-            when (it.assignment.type) {
+            "        ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${assignment.psiElementTypes}) {"
+            when (assignment.assignment.type) {
                 AssignmentType.EQUALS -> {
                     out.println("                    obj.eSet(feature, $toAssignString)")
                 }
                 AssignmentType.PLUS_EQUALS -> {
                     out.println("""
-                        |                    val list = obj.eGet(feature) as EList<${it.returnType.name}>
-                        |                    list.add($toAssignString as ${it.returnType.name})
+                        |                    val list = obj.eGet(feature) as EList<${assignment.returnType.name}>
+                        |                    list.add($toAssignString as ${assignment.returnType.name})
                     """.trimMargin("|"))
                 }
                 AssignmentType.QUESTION_EQUALS -> {
@@ -108,21 +116,31 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
     private fun generateObjectAssignmentMethod(assignments: List<AssignableObject>, out: PrintWriter) {
         out.println("    override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {")
         var elseWord = ""
-        assignments.forEach {
+        assignments.forEach { assignment ->
+
+
+            out.print("""
+                |        ${elseWord}if (
+            """.trimMargin("|"))
+            assignment.psiElementTypes.forEach {
+                out.print("pointer.node.elementType == ${capitalizedExtension}Types.${it}")
+                if (assignment.psiElementTypes.last() != it) out.print(" || ")
+            }
+            out.println(") {")
             out.println("""
-                |        ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${it.psiElementType}) {
                 |            return object : ObjectAssignment {
                 |                override fun assign(obj: EObject, toAssign: EObject) {
-                |                    val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${it.assignment.text}" }
+                |                    val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${assignment.assignment.text}" }
             """.trimMargin("|"))
-            when (it.assignment.type) {
+
+            when (assignment.assignment.type) {
                 AssignmentType.EQUALS -> {
                     out.println("                    obj.eSet(feature, toAssign)")
                 }
                 AssignmentType.PLUS_EQUALS -> {
                     out.println("""
-                        |                    val list = obj.eGet(feature) as EList<${it.returnType.name}>
-                        |                    list.add(toAssign as ${it.returnType.name})
+                        |                    val list = obj.eGet(feature) as EList<${assignment.returnType.name}>
+                        |                    list.add(toAssign as ${assignment.returnType.name})
                     """.trimMargin("|"))
                 }
                 AssignmentType.QUESTION_EQUALS -> {

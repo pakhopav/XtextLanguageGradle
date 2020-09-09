@@ -103,9 +103,11 @@ class BnfGenerator(extension: String, val fileModel: XtextMainModel) : AbstractG
 //
 //            """.trimMargin("|"))
 //            }
-            if (it.bnfExtensionsString.isNotEmpty() || it.isReferenced) {
+            if (it.bnfExtensionsStrings.isNotEmpty() || it.isReferenced) {
                 out.println("{")
-                out.print(it.bnfExtensionsString)
+                it.bnfExtensionsStrings.forEach {
+                    out.println(it)
+                }
                 if (it.isReferenced) {
                     out.println("""
                 mixin="$packageDir.psi.impl.${extension.capitalize()}NamedElementImpl"

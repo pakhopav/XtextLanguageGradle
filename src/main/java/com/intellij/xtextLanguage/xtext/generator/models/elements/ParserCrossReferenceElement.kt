@@ -6,7 +6,7 @@ class ParserCrossReferenceElement(override val psiElement: XtextCrossReference) 
 
     val name: String
     val referenceType = psiElement.crossReferenceableTerminal?.text ?: "ID"
-    val referenceTarget = psiElement.typeRef.text
+    val referenceTargetText = psiElement.typeRef.text
     val targets = mutableListOf<CrossReferenceTarget>()
 
     init {
@@ -31,7 +31,7 @@ class ParserCrossReferenceElement(override val psiElement: XtextCrossReference) 
 
     fun createReferenceName(): String {
         refactoredName?.let { return it }
-        var targetText = if (referenceTarget.contains("::")) referenceTarget.split("::")[1] else referenceTarget
+        var targetText = if (referenceTargetText.contains("::")) referenceTargetText.split("::")[1] else referenceTargetText
 //        if (targetText.contains("::")) targetText = targetText.slice(targetText.indexOf(":") + 2..targetText.length - 1)
         var name = "REFERENCE_${targetText}"
         referenceType?.let { name = name + "_$it" }

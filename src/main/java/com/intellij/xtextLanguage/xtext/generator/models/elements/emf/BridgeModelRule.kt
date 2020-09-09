@@ -12,7 +12,7 @@ class BridgeModelRule(
     val importStrings: Set<String>
 
     init {
-        var imports = mutableSetOf<String>()
+        val imports = mutableSetOf<String>()
         imports.add(this.returnType.path)
         literalAssignments.forEach { imports.add(it.returnType.path) }
         objectAssignments.forEach { imports.add(it.returnType.path) }

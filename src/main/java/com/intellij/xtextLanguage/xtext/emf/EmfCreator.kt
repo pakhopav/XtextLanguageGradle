@@ -36,8 +36,7 @@ abstract class EmfCreator {
     }
 
     protected fun visitElement(element: PsiElement): EObject? {
-        val utilRule = getBridgeRuleForPsiElement(element)
-        if (utilRule == null) return null
+        val utilRule = getBridgeRuleForPsiElement(element) ?: return null
         var current: EObject? = null
         getAllChildren(element).forEach {
             if (current == null) {

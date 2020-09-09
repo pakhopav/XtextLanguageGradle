@@ -8,13 +8,12 @@ import com.intellij.xtextLanguage.xtext.psi.*
 open class ParserRule : ModelRule {
     override lateinit var name: String
     override lateinit var returnTypeText: String
-    var bnfExtensionsString = ""
-        private set
+    var bnfExtensionsStrings = mutableListOf<String>()
     override val alternativeElements = mutableListOf<RuleElement>()
     var isReferenced = false
     override var isDataTypeRule = false
+    var isReferensedDelegateRule = false
     var isPrivate = false
-    var isApiRule = false
 
     private val visitor = XtextParserRuleVisitor()
 
@@ -37,9 +36,9 @@ open class ParserRule : ModelRule {
 //        this.alternativeElements = alternativeElements
 //    }
 
-    fun addStringToBnfExtension(string: String) {
-        bnfExtensionsString += string + "\n"
-    }
+//    fun addStringToBnfExtension(string: String) {
+//        bnfExtensionsStrings += string + "\n"
+//    }
 
     class AlternativeElementsFinder : XtextVisitor() {
         var listOfAlternativesElements = mutableListOf<RuleElement>()
@@ -511,10 +510,8 @@ open class ParserRule : ModelRule {
         copy.returnTypeText = returnTypeText
         copy.alternativeElements.addAll(alternativeElements)
         copy.isDataTypeRule = isDataTypeRule
-        copy.bnfExtensionsString = bnfExtensionsString
+        copy.bnfExtensionsStrings = bnfExtensionsStrings
         copy.isPrivate = isPrivate
-        copy.isApiRule = isApiRule
-        copy.isReferenced = isReferenced
         return copy
     }
 

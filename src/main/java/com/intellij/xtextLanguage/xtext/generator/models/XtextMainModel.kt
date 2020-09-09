@@ -8,7 +8,6 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.*
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.*
 import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
 import com.intellij.xtextLanguage.xtext.generator.visitors.ComplicatedConditionalBranchesFinder
-import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 import org.eclipse.emf.ecore.EPackage
 import java.util.*
@@ -22,7 +21,6 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
     val bridgeModel: BridgeModel
     val crossReferences: List<ParserCrossReferenceElement>
 
-    private val refactoredXtextParserRules: MutableList<XtextParserRule>
     private val importedModels: Map<String, EPackage>
     private val rulesWithSuperClass = mutableMapOf<String, String>()
     private val refactorInfoList = mutableListOf<RefactorOnAssignmentInfo>()
@@ -33,7 +31,7 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
 
 
     init {
-        var mutableListOfParserRules = mutableListOf<ParserRule>()
+        val mutableListOfParserRules = mutableListOf<ParserRule>()
         val mutableListOfEnumRules = mutableListOf<EnumRule>()
         val mutableListOfXtextAbstractRules = mutableListOf<XtextAbstractRule>()
         val mutableListOfXtextParserRules = mutableListOf<XtextParserRule>()
@@ -56,13 +54,11 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
             mutableListOfEnumRules.addAll(PsiTreeUtil.findChildrenOfType(it, XtextEnumRule::class.java)
                     .map { EnumRule(it) })
         }
+
+        keywordModel = XtextKeywordModel(mutableListOfXtextAbstractRules)
         crossReferences = findAllCrossReferences(mutableListOfParserRules)
-
         rootRuleName = mutableListOfParserRules.first().name
-
         enumRules = mutableListOfEnumRules
-
-        refactoredXtextParserRules = mutableListOfXtextParserRules
 
         addExtensionsToRules(mutableListOfParserRules)
 
@@ -76,14 +72,32 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         
         parserRules = mutableListOfParserRules
 
-        keywordModel = XtextKeywordModel(mutableListOfXtextAbstractRules)
-
-        setReferencedFieldForParserRules()
+        markReferencedDelegateOnlyRules()
 
         bridgeModel = BridgeModel(createBridgeModelRules(), rootRuleName, getBridgeCrossReferences(), refactorInfoList)
         print("")
     }
 
+    private fun markReferencedDelegateOnlyRules() {
+        val referensedRuleNames = crossReferences.flatMap { it.targets }.map { it.superRuleName }
+        parserRules.filter { referensedRuleNames.contains(it.name) }.forEach {
+            if (isDelegateOnlyRule(it)) it.isReferensedDelegateRule = true
+        }
+    }
+
+    private fun isDelegateOnlyRule(rule: ParserRule): Boolean {
+        rule.alternativeElements.filter { it !is BnfServiceElement }.forEach {
+            if (it is ParserRuleCallElement && it.assignment.isEmpty()) {
+                val calledRule = getRuleByName(it.getBnfName())
+                if (calledRule is ParserRule) {
+                    if (calledRule.isPrivate) return false
+                }
+            } else {
+                return false
+            }
+        }
+        return true
+    }
 
     private fun findAllCrossReferences(rules: List<ParserRule>): List<ParserCrossReferenceElement> {
         val resultList = rules
@@ -94,7 +108,7 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
             val targets = rules
                     .filter {
                         val returnType = if (it.returnTypeText.isNotEmpty()) it.returnTypeText else it.name
-                        returnType == reference.referenceTarget
+                        returnType == reference.referenceTargetText
                     }
                     .map { CrossReferenceTarget(it.name) }
             reference.targets.addAll(targets)
@@ -104,11 +118,27 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
 
 
     private fun addExtensionsToRules(rules: List<ParserRule>) {
-        crossReferences.flatMap { it.targets }.forEach { target ->
+        crossReferences.distinctBy { it.name }.flatMap { it.targets }.forEach { target ->
             val targetRule = getRuleByName(target.superRuleName, rules) as ParserRule
             setSupertypeToDelegatedRules(targetRule, target, rules)
         }
+
+        val rulesWithReferencedSupertype = crossReferences
+                .flatMap { it.targets }
+                .flatMap { it.subRuleNames }
+                .distinct()
+
+        crossReferences.distinctBy { it.name }
+                .flatMap { it.targets }
+                .map { it.superRuleName }
+                .forEach { targetRuleName ->
+                    if (!rulesWithReferencedSupertype.contains(targetRuleName)) {
+                        val targetRule = getRuleByName(targetRuleName, rules) as ParserRule
+                        targetRule.isReferenced = true
+                    }
+                }
     }
+
 
     private fun setSupertypeToDelegatedRules(rule: ParserRule, target: CrossReferenceTarget, allRules: List<ParserRule>) {
         val ruleCallElementsWithoutAssignment = rule.alternativeElements.filter { it is ParserRuleCallElement && it.assignment.isEmpty() }
@@ -117,7 +147,7 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
             if (calledRule is ParserRule) {
                 setSupertypeToDelegatedRules(calledRule, target, allRules)
                 if (hasName(calledRule)) {
-                    calledRule.addStringToBnfExtension("extends=${target.superRuleName}")
+                    calledRule.bnfExtensionsStrings.add("extends=${target.superRuleName}")
                     target.subRuleNames.add(calledRule.name)
                 }
             }
@@ -133,11 +163,11 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
     private fun createBridgeModelRules(): List<BridgeModelRule> {
         val result = mutableListOf<BridgeModelRule>()
         val duplicates = refactorInfoList.flatMap { it.duplicateRuleNames }
+        val referensedRules = crossReferences.flatMap { it.targets }.map { it.superRuleName }
         val rulesDelegatedToPrivate = findRulesDelegatedToPrivate()
         parserRules
-                .filter { !it.isDataTypeRule && !it.isPrivate && !it.isApiRule && !duplicates.contains(it.name) }
+                .filter { !it.isDataTypeRule && !it.isPrivate && !duplicates.contains(it.name) && !it.isReferensedDelegateRule }
                 .forEach { rule ->
-
                     val literalAssignments = mutableListOf<AssignableObject>()
                     val objectAssignments = mutableListOf<AssignableObject>()
                     val rewrites = mutableListOf<Rewrite>()
@@ -148,17 +178,23 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
                             .filter { it.assignment.isNotEmpty() && it !is ParserCrossReferenceElement }
                             .forEach { ruleElement ->
                                 val assignment = createAssignmentFromString(ruleElement.assignment)
+                                val returnTypes = mutableListOf<String>()
                                 if (assignment.text == "name") hasName = true
                                 val bnfName = ruleElement.getBnfName()
                                 val calledRule = getRuleByName(bnfName)
                                 if (calledRule != null) {
+                                    returnTypes.add(nameGenerator.toGKitTypesName(calledRule.name))
+                                    if (referensedRules.contains(calledRule.name)) {
+                                        val delegatedRuleNames = findDelegatedRuleNames(calledRule)
+                                        returnTypes.addAll(delegatedRuleNames.map { nameGenerator.toGKitTypesName(it) })
+                                    }
                                     if (calledRule is TerminalRule) {
-                                        literalAssignments.add(AssignableObject(assignment, nameGenerator.toGKitTypesName(calledRule.name), getRuleReturnType(calledRule)))
+                                        literalAssignments.add(AssignableObject(assignment, returnTypes, getRuleReturnType(calledRule)))
                                     } else if (calledRule is ParserRule) {
                                         if (calledRule.isDataTypeRule) {
-                                            literalAssignments.add(AssignableObject(assignment, nameGenerator.toGKitTypesName(calledRule.name), getRuleReturnType(calledRule)))
+                                            literalAssignments.add(AssignableObject(assignment, returnTypes, getRuleReturnType(calledRule)))
                                         } else {
-                                            objectAssignments.add(AssignableObject(assignment, nameGenerator.toGKitTypesName(calledRule.name), getRuleReturnType(calledRule)))
+                                            objectAssignments.add(AssignableObject(assignment, returnTypes, getRuleReturnType(calledRule)))
 
                                         }
                                     }
@@ -189,22 +225,23 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         return result.toList()
     }
 
-//    private fun findReturnType(returnTypeText: String): String {
-//
-//        if (returnTypeText.contains("::")) {
-//            val modelName = returnTypeText.split("::")[0]
-//            val modelType = returnTypeText.split("::")[1]
-//            val modelPackage = importedModels.get(modelName)
-//            return modelPackage!!.getEClassifier(modelType).instanceTypeName
-//        } else {
-//            importedModels.filter { it.key.isEmpty() }.values.forEach { ePackage ->
-//                val result = ePackage.getEClassifier(returnTypeText)
-//                if (result != null) return result.instanceTypeName
-//            }
-//
-//        }
-//        return returnTypeText
-//    }
+    private fun findDelegatedRuleNames(rule: ModelRule): List<String> {
+        val resultList = mutableListOf<String>()
+        rule.alternativeElements
+                .filter { it is ParserRuleCallElement && it.assignment.isEmpty() }
+                .forEach {
+                    val calledRule = getRuleByName(it.getBnfName())
+                    calledRule?.let {
+                        if (calledRule is ParserRule && calledRule.isPrivate) {
+                            return@forEach
+                        }
+                        resultList.add(calledRule.name)
+                        resultList.addAll(findDelegatedRuleNames(calledRule))
+                    }
+                }
+        return resultList
+    }
+
 
     private fun getRuleReturnType(rule: ModelRule): BridgeRuleType {
         if (rule.returnTypeText.isEmpty()) {
@@ -236,20 +273,6 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         }
         return BridgeRuleType(typeName, "")
     }
-
-    private fun getModelPackage(returnTypeText: String): EPackage? {
-        if (returnTypeText.contains("::")) {
-            val modelName = returnTypeText.split("::")[0]
-            return importedModels.get(modelName)
-        } else {
-            importedModels.filter { it.key.isEmpty() }.values.forEach { ePackage ->
-                val result = ePackage.getEClassifier(returnTypeText)
-                if (result != null) return ePackage
-            }
-        }
-        return null
-    }
-
 
     private fun isKeyword(text: String): Boolean {
         return text.startsWith("\"") || text.startsWith("\'")
@@ -317,20 +340,6 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
     }
 
     private fun createRefactoredName(): String {
-//        var newName = ""
-//        if(oldName.startsWith("\"")){
-//            val stringInsideCommas = oldName.slice(1..oldName.length-2)
-//            if(XtextKeywordModel.KEYWORDS.containsKey(stringInsideCommas)){
-//                newName = XtextKeywordModel.KEYWORDS.get(stringInsideCommas)!!
-//            }else{
-//                newName = "Keyword"
-//            }
-//        }else{
-//            if(parserRules.)
-//            newName = oldName
-//        }
-//        newName = newName + newNamesCounter
-
         return "GeneratedRule${newNamesCounter++}"
     }
 
@@ -406,7 +415,7 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
                     refactorInfoList.add(RefactorOnAssignmentInfo(originName, privateRule.name))
                 }
                 val newParserRule = createParserRuleWithExtension(newName, originRule.returnTypeText, "${originName}Private")
-                newParserRule.addStringToBnfExtension(bnfExtension)
+                newParserRule.bnfExtensionsStrings.add(bnfExtension)
                 newParserRule.isDataTypeRule = originRule.isDataTypeRule
                 rulesWithSuperClass.put(newName, originName)
                 rules.add(newParserRule)
@@ -431,12 +440,6 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         return ParserRule(xtextRule)
     }
 
-
-    private fun createApiRuleToOrigin(originRule: ParserRule): ParserRule {
-        val resultRule = createParserRuleWithExtension("${originRule.name}API", originRule.returnTypeText, "${originRule.name}Private")
-        resultRule.isApiRule = true
-        return resultRule
-    }
 
     private fun createPrivateDuplicateRuleToOrigin(originRule: ParserRule): ParserRule {
         val duplicate = createRuleDuplicate("${originRule.name}Private", originRule)
@@ -468,22 +471,6 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         else assignment.slice(0..assignment.length - 2)
     }
 
-//    private fun updateRefactoredRules(ruleName: String, changedElement: RuleElement) {
-//        val oldRule = refactoredXtextParserRules.stream()
-//                .filter { it.ruleNameAndParams.validID.text == ruleName }
-//                .findFirst().get()
-//        val sb = StringBuilder()
-//        PsiTreeUtil.getChildrenOfType(oldRule.alternatives, LeafPsiElement::class.java)?.forEach {
-//            sb.append(" ")
-//            if (it == PsiTreeUtil.getChildOfType(changedElement.psiElement, LeafPsiElement::class.java)) sb.append(changedElement.getBnfName())
-//            else sb.append(it.text)
-//        }
-//        val ruleText = "${ruleName} : $sb"
-//        val newRule = XtextElementFactory.createParserRule(ruleText)
-//        refactoredXtextParserRules.remove(oldRule)
-//
-//    }
-
     private fun findAllTerminalRules(): MutableList<TerminalRule> {
         val mutableListOfTerminalRules = mutableListOf<TerminalRule>()
         xtextFiles.forEach {
@@ -499,34 +486,6 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         newRule.name = newRuleName
         return newRule
     }
-
-
-    private fun setReferencedFieldForParserRules() {
-        crossReferences.forEach {
-            val target = it.referenceTarget
-            parserRules.forEach {
-                val returnType = if (it.returnTypeText.isNotEmpty()) it.returnTypeText else it.name
-                if (returnType == target) {
-                    it.isReferenced = true
-
-                }
-            }
-        }
-
-    }
-
-
-//    private fun createVisitorGeneratorModel() {
-//        val terminalRulesNames = terminalRules.map { it.name }
-//        val crossReferencesNames = mutableListOf<String>()
-//        parserRules.forEach {
-//            findCrossReferencesInParserRule(it).forEach {
-//                crossReferencesNames.add(it.name)
-//            }
-//        }
-//        visitorGeneratorModel = VisitorGeneratorModelImpl(refactoredXtextParserRules, terminalRulesNames, rulesWithSuperClass, crossReferencesNames)
-//
-//    }
 
     private fun createSimpleActionFromText(text: String, psiElementName: String): BridgeSimpleAction {
         var actionName = text.removePrefix("{").removeSuffix("}")
@@ -553,7 +512,7 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
     }
 
     private fun createBridgeCrossReferenceFromCrossReferenceElement(crossReferenceElement: ParserCrossReferenceElement, containerType: BridgeRuleType): BridgeCrossReference {
-        return BridgeCrossReference(createAssignmentFromString(crossReferenceElement.assignment), containerType, createBridgeRuleTypeFromTypeName(crossReferenceElement.referenceTarget), crossReferenceElement.name.replace("_", ""))
+        return BridgeCrossReference(createAssignmentFromString(crossReferenceElement.assignment), containerType, createBridgeRuleTypeFromTypeName(crossReferenceElement.referenceTargetText), crossReferenceElement.name.replace("_", ""))
     }
 
     private fun findCrossReferencesInParserRule(rule: ParserRule): List<ParserCrossReferenceElement> {
@@ -639,56 +598,6 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
             val newRule = XtextElementFactory.createParserRule("$newRuleName returns $newRuleReturnType : ${branch.text};")
             return newRule
         }
-
-    }
-//
-//    private fun isDataTypeRule(rule: ParserRule): Boolean{
-//        val terminalRuleNames = terminalRules.map { it.name }
-//        var res = true
-//        rule.alternativeElements.forEach {
-//            if(it is ParserRuleCallElement && !terminalRuleNames.contains(it.getBnfName())){
-//                res = false
-//            }else if ( it.assignment.isNotEmpty() || it.action.isNotEmpty()) {
-//                res = false
-//            }
-//        }
-//        return res
-//    }
-
-    // class not finished: RuleCall to DataType rule should be taken as Terminal
-    class DataTypeRuleVisitor(val terminalRuleNames: List<String>) : XtextVisitor() {
-        var res = true
-
-        fun isDataTypeRule(rule: XtextParserRule): Boolean {
-            res = true
-            visitParserRule(rule)
-            return res
-        }
-
-        override fun visitAssignment(o: XtextAssignment) {
-            res = false
-        }
-
-        override fun visitAction(o: XtextAction) {
-            res = false
-        }
-
-        override fun visitRuleCall(o: XtextRuleCall) {
-            if (!terminalRuleNames.contains(o.referenceAbstractRuleRuleID.text)) {
-                res = false
-            }
-        }
-
-        override fun visitPredicatedRuleCall(o: XtextPredicatedRuleCall) {
-            if (!terminalRuleNames.contains(o.referenceAbstractRuleRuleID.text)) {
-                res = false
-            }
-        }
-
-        override fun visitCrossReference(o: XtextCrossReference) {
-            res = false
-        }
-
 
     }
 }
