@@ -29,6 +29,7 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
     private val ruleNameToRefactoringsNumber = mutableMapOf<String, Int>()
     private val parserRulesWithFragmentsInlined: MutableList<ParserRule>
     private val fragmentRules: MutableList<ModelRule>
+    private val parserRuleCreator = ParserRuleCreator()
 
 
     init {
@@ -48,12 +49,18 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
 
             mutableListOfXtextAbstractRules.addAll(PsiTreeUtil.findChildrenOfType(it, XtextAbstractRule::class.java).toList())
 
-            parserRulesList.addAll(xtextParserRulesRefactored
-                    .map { ParserRule(it) })
+
+            xtextParserRulesRefactored.forEach {
+                val creationResult = parserRuleCreator.createRule(it)
+                creationResult?.let {
+                    parserRulesList.add(creationResult.getRule())
+                    parserRulesList.addAll(creationResult.getSuffixList())
+                }
+            }
+
             mutableListOfEnumRules.addAll(PsiTreeUtil.findChildrenOfType(it, XtextEnumRule::class.java)
                     .map { EnumRule(it) })
         }
-        refactorRulesWithSuffix(parserRulesList)
         fragmentRules = parserRulesList.filter { it.isPrivate }.toMutableList()
         addParserRulesForCrossReferences(parserRulesList)
         
@@ -81,45 +88,6 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         print("")
     }
 
-    private fun refactorRulesWithSuffix(rules: MutableList<ParserRule>) {
-        val newRulesWithIndex = mutableListOf<Pair<Int, ParserRule>>()
-        var indexOfRuleInList = 0
-        rules.forEach { rule ->
-            var suffixCounter = 0
-            while (rule.alternativeElements.any { it.suffixMarker != null }) {
-                val elementsToPickOut = getMarkedElementsWithHighestLevel(rule.alternativeElements)
-                val newRuleName = "${rule.name}Suffix${if (suffixCounter == 0) "" else suffixCounter++}"
-                val index = rule.alternativeElements.indexOf(elementsToPickOut[0])
-                val newRuleCallElement = ParserRuleCallElement(XtextElementFactory.createValidID(newRuleName))
-                newRuleCallElement.action = elementsToPickOut[0].suffixMarker!!.text
-                rule.alternativeElements.add(index, newRuleCallElement)
-                rule.alternativeElements.removeAll(elementsToPickOut)
-
-                val newParserRule = ParserRule()
-                newParserRule.name = newRuleName
-                newParserRule.returnTypeText = rule.returnTypeText
-                newParserRule.alternativeElements.addAll(elementsToPickOut)
-                newParserRule.bnfExtensionsStrings.add("implements = \"com.intellij.xtextLanguage.xtext.psi.SuffixElement\"")
-                newRulesWithIndex.add(Pair(indexOfRuleInList + 1, newParserRule))
-            }
-            indexOfRuleInList++
-        }
-        var k = 0
-        newRulesWithIndex.forEach { pair ->
-            rules.add(pair.first + k, pair.second)
-            k++
-        }
-    }
-
-
-    private fun getMarkedElementsWithHighestLevel(elements: List<RuleElement>): List<RuleElement> {
-        val resultList = mutableListOf<RuleElement>()
-        val highestLevelActionText = elements.filter { it.suffixMarker != null }.maxBy { it.suffixMarker!!.l }?.suffixMarker?.text
-        highestLevelActionText?.let { text ->
-            resultList.addAll(elements.filter { it.suffixMarker?.text == text })
-        }
-        return resultList
-    }
 
     private fun setTargetsForCrossReferences() {
         crossReferences.forEach { reference ->
@@ -621,7 +589,8 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
 
     private fun createParserRuleWithExtension(ruleName: String, extension: String, ruleBody: String): ParserRule {
         val xtextRule = XtextElementFactory.createParserRule("$ruleName ${if (extension.isNotEmpty()) "returns $extension" else ""} : ${ruleBody};")
-        return ParserRule(xtextRule)
+        val newRule = parserRuleCreator.createRule(xtextRule)!!.getRule()
+        return newRule
     }
 
 
