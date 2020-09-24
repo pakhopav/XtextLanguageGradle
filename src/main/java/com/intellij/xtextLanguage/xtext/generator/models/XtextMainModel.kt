@@ -1,13 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.models
 
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.xtextLanguage.xtext.EcorePackageRegistry
 import com.intellij.xtextLanguage.xtext.generator.RuleResolverImpl
 import com.intellij.xtextLanguage.xtext.generator.models.elements.*
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.*
 import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
-import com.intellij.xtextLanguage.xtext.generator.visitors.ComplicatedConditionalBranchesFinder
 import com.intellij.xtextLanguage.xtext.psi.*
 import org.eclipse.emf.ecore.EPackage
 import java.util.*
@@ -28,14 +26,15 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
     private var newNamesCounter = 0
     private val rootRuleName: String
     private val registry = EcorePackageRegistry.instance
+    private val ruleNameToRefactoringsNumber = mutableMapOf<String, Int>()
+    private val parserRulesWithFragmentsInlined: MutableList<ParserRule>
+    private val fragmentRules: MutableList<ModelRule>
 
 
     init {
-        val mutableListOfParserRules = mutableListOf<ParserRule>()
+        val parserRulesList = mutableListOf<ParserRule>()
         val mutableListOfEnumRules = mutableListOf<EnumRule>()
         val mutableListOfXtextAbstractRules = mutableListOf<XtextAbstractRule>()
-        val mutableListOfXtextParserRules = mutableListOf<XtextParserRule>()
-        val treeRefactorer = TreeRefactor()
 
         importedModels = findImportedModels()
 
@@ -44,44 +43,143 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         xtextFiles.forEach {
 
             val xtextParserRules = PsiTreeUtil.findChildrenOfType(it, XtextParserRule::class.java).toList()
-            val xtextParserRulesRefactored = treeRefactorer.refactorXtextParserRules(xtextParserRules)
-            mutableListOfXtextParserRules.addAll(xtextParserRulesRefactored)
+
+            val xtextParserRulesRefactored = refactorComplicatedDeligateRules(xtextParserRules)
 
             mutableListOfXtextAbstractRules.addAll(PsiTreeUtil.findChildrenOfType(it, XtextAbstractRule::class.java).toList())
 
-            mutableListOfParserRules.addAll(xtextParserRulesRefactored
+            parserRulesList.addAll(xtextParserRulesRefactored
                     .map { ParserRule(it) })
             mutableListOfEnumRules.addAll(PsiTreeUtil.findChildrenOfType(it, XtextEnumRule::class.java)
                     .map { EnumRule(it) })
         }
+        refactorRulesWithSuffix(parserRulesList)
+        fragmentRules = parserRulesList.filter { it.isPrivate }.toMutableList()
+        addParserRulesForCrossReferences(parserRulesList)
+        
 
         keywordModel = XtextKeywordModel(mutableListOfXtextAbstractRules)
-        crossReferences = findAllCrossReferences(mutableListOfParserRules)
-        rootRuleName = mutableListOfParserRules.first().name
+        rootRuleName = parserRulesList.first().name
         enumRules = mutableListOfEnumRules
 
-        addExtensionsToRules(mutableListOfParserRules)
+        parserRulesWithFragmentsInlined = createRuleCopyListWithInlinedFragments(parserRulesList)
 
-        addParserRulesForCrossReferences(mutableListOfParserRules)
+        crossReferences = getAllCrossReferences(parserRulesList)
+        setTargetsForCrossReferences()
+        fixInheritanceOfNamedRules(parserRulesList)
+        setIsRefencedField(parserRulesList)
 
-        markDatatypeRules(mutableListOfParserRules)
+        markDatatypeRules(parserRulesList)
 
-        refactorRulesIfAssignmentCollision(mutableListOfParserRules)
-
-        refactorRulesWithActions(mutableListOfParserRules)
-        
-        parserRules = mutableListOfParserRules
+        refactorParserRules(parserRulesList)
+        parserRules = parserRulesList
 
         markReferencedDelegateOnlyRules()
 
         bridgeModel = BridgeModel(createBridgeModelRules(), rootRuleName, getBridgeCrossReferences(), refactorInfoList)
+
         print("")
+    }
+
+    private fun refactorRulesWithSuffix(rules: MutableList<ParserRule>) {
+        val newRulesWithIndex = mutableListOf<Pair<Int, ParserRule>>()
+        var indexOfRuleInList = 0
+        rules.forEach { rule ->
+            var suffixCounter = 0
+            while (rule.alternativeElements.any { it.suffixMarker != null }) {
+                val elementsToPickOut = getMarkedElementsWithHighestLevel(rule.alternativeElements)
+                val newRuleName = "${rule.name}Suffix${if (suffixCounter == 0) "" else suffixCounter++}"
+                val index = rule.alternativeElements.indexOf(elementsToPickOut[0])
+                val newRuleCallElement = ParserRuleCallElement(XtextElementFactory.createValidID(newRuleName))
+                newRuleCallElement.action = elementsToPickOut[0].suffixMarker!!.text
+                rule.alternativeElements.add(index, newRuleCallElement)
+                rule.alternativeElements.removeAll(elementsToPickOut)
+
+                val newParserRule = ParserRule()
+                newParserRule.name = newRuleName
+                newParserRule.returnTypeText = rule.returnTypeText
+                newParserRule.alternativeElements.addAll(elementsToPickOut)
+                newParserRule.bnfExtensionsStrings.add("implements = \"com.intellij.xtextLanguage.xtext.psi.SuffixElement\"")
+                newRulesWithIndex.add(Pair(indexOfRuleInList + 1, newParserRule))
+            }
+            indexOfRuleInList++
+        }
+        var k = 0
+        newRulesWithIndex.forEach { pair ->
+            rules.add(pair.first + k, pair.second)
+            k++
+        }
+    }
+
+
+    private fun getMarkedElementsWithHighestLevel(elements: List<RuleElement>): List<RuleElement> {
+        val resultList = mutableListOf<RuleElement>()
+        val highestLevelActionText = elements.filter { it.suffixMarker != null }.maxBy { it.suffixMarker!!.l }?.suffixMarker?.text
+        highestLevelActionText?.let { text ->
+            resultList.addAll(elements.filter { it.suffixMarker?.text == text })
+        }
+        return resultList
+    }
+
+    private fun setTargetsForCrossReferences() {
+        crossReferences.forEach { reference ->
+            val targets = parserRulesWithFragmentsInlined
+                    .filter {
+                        val returnType = if (it.returnTypeText.isNotEmpty()) it.returnTypeText else it.name
+                        returnType == reference.referenceTargetText
+                    }
+                    .map {
+                        CrossReferenceTarget(it.name, getNameElements(it).map { nameGenerator.toGKitClassName(it) }.distinct())
+                    }
+            reference.targets.addAll(targets)
+        }
+    }
+
+    private fun fillRuleNameToRefactoringsNumberMap(parserRules: List<ParserRule>) {
+        parserRules.forEach { ruleNameToRefactoringsNumber.putIfAbsent(it.name, 0) }
+        terminalRules.forEach { ruleNameToRefactoringsNumber.putIfAbsent(it.name, 0) }
+        enumRules.forEach { ruleNameToRefactoringsNumber.putIfAbsent(it.name, 0) }
+    }
+
+    private fun refactorParserRules(rules: MutableList<ParserRule>) {
+
+        fillRuleNameToRefactoringsNumberMap(rules)
+
+        refactorRulesIfAssignmentCollision(parserRulesWithFragmentsInlined, rules)
+
+        refactorRulesWithActions(parserRulesWithFragmentsInlined, rules)
+    }
+
+    private fun createRuleCopyListWithInlinedFragments(rules: List<ParserRule>): MutableList<ParserRule> {
+        val resultList = mutableListOf<ParserRule>()
+        val fragmentRuleNames = fragmentRules.map { it.name }
+        var fragmentInlined = true
+        resultList.addAll(rules.filter { !it.isPrivate }.map { it.copy() })
+        while (fragmentInlined) {
+            fragmentInlined = false
+            resultList.forEach { rule ->
+//                val ruleCopy =  rule.copy()
+                val ruleCopyAlternatives = rule.alternativeElements
+                val ruleCallsToFragments = ruleCopyAlternatives
+                        .filterIsInstance<ParserRuleCallElement>()
+                        .filter { fragmentRuleNames.contains(it.getBnfName()) }
+                ruleCallsToFragments.forEach { ruleCall ->
+                    val fragmentRule = rules.firstOrNull { it.name == ruleCall.getBnfName() }
+                    val ruleCallIndex = ruleCopyAlternatives.indexOf(ruleCall)
+                    ruleCopyAlternatives.removeAt(ruleCallIndex)
+                    ruleCopyAlternatives.addAll(ruleCallIndex, fragmentRule!!.alternativeElements)
+                    fragmentInlined = true
+                }
+            }
+        }
+        return resultList
+
     }
 
     private fun markReferencedDelegateOnlyRules() {
         val referensedRuleNames = crossReferences.flatMap { it.targets }.map { it.superRuleName }
         parserRules.filter { referensedRuleNames.contains(it.name) }.forEach {
-            if (isDelegateOnlyRule(it)) it.isReferensedDelegateRule = true
+            if (isDelegateOnlyRule(it)) it.isReferencedDelegateRule = true
         }
     }
 
@@ -99,33 +197,33 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         return true
     }
 
-    private fun findAllCrossReferences(rules: List<ParserRule>): List<ParserCrossReferenceElement> {
+    private fun getAllCrossReferences(rules: List<ParserRule>): List<ParserCrossReferenceElement> {
         val resultList = rules
                 .flatMap { it.alternativeElements }
                 .filterIsInstance<ParserCrossReferenceElement>()
                 .toList()
-        resultList.forEach { reference ->
-            val targets = rules
-                    .filter {
-                        val returnType = if (it.returnTypeText.isNotEmpty()) it.returnTypeText else it.name
-                        returnType == reference.referenceTargetText
-                    }
-                    .map { CrossReferenceTarget(it.name) }
-            reference.targets.addAll(targets)
-        }
+
+
+
+
+
         return resultList
     }
 
 
-    private fun addExtensionsToRules(rules: List<ParserRule>) {
+    private fun fixInheritanceOfNamedRules(rules: List<ParserRule>) {
         crossReferences.distinctBy { it.name }.flatMap { it.targets }.forEach { target ->
-            val targetRule = getRuleByName(target.superRuleName, rules) as ParserRule
+            val targetRule = getRuleByName(target.superRuleName, parserRulesWithFragmentsInlined) as ParserRule
             setSupertypeToDelegatedRules(targetRule, target, rules)
         }
+    }
+
+    private fun setIsRefencedField(rules: List<ParserRule>) {
 
         val rulesWithReferencedSupertype = crossReferences
                 .flatMap { it.targets }
-                .flatMap { it.subRuleNames }
+                .flatMap { it.subRules }
+                .map { it.name }
                 .distinct()
 
         crossReferences.distinctBy { it.name }
@@ -140,23 +238,52 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
     }
 
 
-    private fun setSupertypeToDelegatedRules(rule: ParserRule, target: CrossReferenceTarget, allRules: List<ParserRule>) {
-        val ruleCallElementsWithoutAssignment = rule.alternativeElements.filter { it is ParserRuleCallElement && it.assignment.isEmpty() }
+//    private fun setSupertypeToDelegatedRules(rule: ParserRule, target: CrossReferenceTarget, realRules: List<ParserRule>, lastNotPrivateRule: ParserRule? = null ) {
+//        val ruleCallElementsWithoutAssignment = rule.alternativeElements.filter { it is ParserRuleCallElement && it.assignment.isEmpty() }.distinctBy { it.getBnfName() }
+//        ruleCallElementsWithoutAssignment.forEach {
+//            val calledRule = getRuleByName(it.getBnfName(), parserRulesWithFragmentsInlined)
+//            if (calledRule is ParserRule) {
+//                var lastNotPrivate : ParserRule? = lastNotPrivateRule
+//                if(!calledRule.isPrivate) lastNotPrivate = calledRule
+//                setSupertypeToDelegatedRules(calledRule, target, realRules, lastNotPrivate)
+//
+//                if (hasName(calledRule)) {
+//                    if(!calledRule.isPrivate){
+//                        calledRule.bnfExtensionsStrings.add("extends=${target.superRuleName}")
+//
+//                        target.subRuleNames.add(calledRule.name)
+//                    }else{
+//                        lastNotPrivateRule?.let {
+//                            it.bnfExtensionsStrings.add("extends=${target.superRuleName}")
+//                            target.subRuleNames.add(it.name)
+//                        }
+//
+//                    }
+//                }
+//            }
+//
+//        }
+//    }
+
+    private fun setSupertypeToDelegatedRules(rule: ParserRule, target: CrossReferenceTarget, realRules: List<ParserRule>) {
+        val ruleCallElementsWithoutAssignment = rule.alternativeElements.filter { it is ParserRuleCallElement && it.assignment.isEmpty() }.distinctBy { it.getBnfName() }
         ruleCallElementsWithoutAssignment.forEach {
-            val calledRule = getRuleByName(it.getBnfName(), allRules)
+            val calledRule = getRuleByName(it.getBnfName(), parserRulesWithFragmentsInlined)
             if (calledRule is ParserRule) {
-                setSupertypeToDelegatedRules(calledRule, target, allRules)
-                if (hasName(calledRule)) {
-                    calledRule.bnfExtensionsStrings.add("extends=${target.superRuleName}")
-                    target.subRuleNames.add(calledRule.name)
+                setSupertypeToDelegatedRules(calledRule, target, realRules)
+                val ruleNameElements = getNameElements(calledRule).distinct()
+                if (ruleNameElements.isNotEmpty()) {
+                    realRules.firstOrNull { it.name == calledRule.name }?.bnfExtensionsStrings?.add("extends=${target.superRuleName}")
+                    val subRule = TargetSubRule(calledRule.name, ruleNameElements.map { nameGenerator.toGKitClassName(it) })
+                    target.subRules.add(subRule)
                 }
             }
 
         }
     }
 
-    private fun hasName(rule: ParserRule): Boolean {
-        return rule.alternativeElements.any { it.assignment == "name=" }
+    private fun getNameElements(rule: ParserRule): List<String> {
+        return rule.alternativeElements.filter { it.assignment == "name=" }.map { it.getBnfName() }.toList()
     }
 
 
@@ -164,16 +291,17 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         val result = mutableListOf<BridgeModelRule>()
         val duplicates = refactorInfoList.flatMap { it.duplicateRuleNames }
         val referensedRules = crossReferences.flatMap { it.targets }.map { it.superRuleName }
-        val rulesDelegatedToPrivate = findRulesDelegatedToPrivate()
+//        val rulesDelegatedToPrivate = findRulesDelegatedToPrivate()
         parserRules
-                .filter { !it.isDataTypeRule && !it.isPrivate && !duplicates.contains(it.name) && !it.isReferensedDelegateRule }
+                .filter { !it.isDataTypeRule && !it.isPrivate && !duplicates.contains(it.name) && !it.isReferencedDelegateRule }
                 .forEach { rule ->
+
                     val literalAssignments = mutableListOf<AssignableObject>()
                     val objectAssignments = mutableListOf<AssignableObject>()
                     val rewrites = mutableListOf<Rewrite>()
                     val simpleActions = mutableListOf<BridgeSimpleAction>()
                     var hasName = false
-                    val alternatives = if (rulesDelegatedToPrivate.containsKey(rule.name)) getRuleByName(rulesDelegatedToPrivate[rule.name]!!)!!.alternativeElements else rule.alternativeElements
+                    val alternatives = if (hasFragment(rule)) parserRulesWithFragmentsInlined.first { it.name == rule.name }!!.alternativeElements else rule.alternativeElements
                     alternatives
                             .filter { it.assignment.isNotEmpty() && it !is ParserCrossReferenceElement }
                             .forEach { ruleElement ->
@@ -210,8 +338,9 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
                             .filter { it.action.isNotEmpty() }
                             .forEach {
                                 val action = it.action
-                                val calledRule = getRuleByName(it.getBnfName())
-                                val returnType = if (calledRule != null) getRuleReturnType(calledRule) else BridgeRuleType("String", "")
+//                                val calledRule = getRuleByName(it.getBnfName())
+//                                val returnType = if (calledRule != null) getRuleReturnType(calledRule) else BridgeRuleType("String", "")
+                                val returnType = getRuleReturnType(rule)
                                 val psiElementType = if (isKeyword(it.getBnfName())) nameGenerator.toGKitTypesName(getKeywordName(it.getBnfName())!!) else nameGenerator.toGKitTypesName(it.getBnfName())
                                 if (action.endsWith("current}")) {
                                     rewrites.add(createRewriteFromText(action, psiElementType, returnType))
@@ -223,6 +352,11 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         }
 
         return result.toList()
+    }
+
+    private fun hasFragment(rule: ParserRule): Boolean {
+        val fragmentRuleNames = fragmentRules.map { it.name }
+        return rule.alternativeElements.any { it is ParserRuleCallElement && fragmentRuleNames.contains(it.getBnfName()) }
     }
 
     private fun findDelegatedRuleNames(rule: ModelRule): List<String> {
@@ -289,25 +423,54 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         }
     }
 
-    private fun refactorRulesWithActions(rules: MutableList<ParserRule>) {
-        val newRules = mutableListOf<ParserRule>()
+    private fun refactorRulesWithActions(rules: MutableList<ParserRule>, realRules: MutableList<ParserRule>? = null) {
+//        val newRules = mutableListOf<ParserRule>()
+        val changedElementNames = mutableListOf<Pair<String, String>>()
         rules.forEach { rule ->
             rule.alternativeElements
                     .filter { it.action.isNotEmpty() }
+//                    .forEach {
+//                        if (it.refactoredName == null && !isUniqueElementInRule(rule, it)) {
+//                            val oldName = it.getBnfName()
+//                            val newName = if (isUniqueElementInRule(rule, it)) oldName else createRefactoredName()
+//                            it.refactoredName = newName
+//                            val originRule = getRuleByName(oldName, rules)
+//                            val newParserRule = if (originRule == null) createParserRuleWithExtension(newName, "", oldName) else createParserRuleWithExtension(newName, originRule.returnTypeText, oldName)
+//                            newParserRule.isDataTypeRule = isDataTypeRuleOrKeyword(oldName, rules)
+//
+//                            newRules.add(newParserRule)
+//                        }
+//                    }
                     .forEach {
-                        if (it.refactoredName == null && !isUniqueElementInRule(rule, it)) {
+                        if (refactorOnActionNeeded(rule, it)) {
                             val oldName = it.getBnfName()
-                            val newName = if (isUniqueElementInRule(rule, it)) oldName else createRefactoredName()
+                            val newName = createRefactoredName()
                             it.refactoredName = newName
-                            val originRule = getRuleByName(oldName, rules)
-                            val newParserRule = if (originRule == null) createParserRuleWithExtension(newName, "", oldName) else createParserRuleWithExtension(newName, originRule.returnTypeText, oldName)
-                            newParserRule.isDataTypeRule = isDataTypeRuleOrKeyword(oldName, rules)
-
-                            newRules.add(newParserRule)
+                            changedElementNames.add(Pair(oldName, newName))
+//                            val originRule = getRuleByName(oldName, rules)
+//                            val newParserRule = if (originRule == null) createParserRuleWithExtension(newName, "", oldName) else createParserRuleWithExtension(newName, originRule.returnTypeText, oldName)
+//                            newParserRule.isDataTypeRule = isDataTypeRuleOrKeyword(oldName, rules)
+//
+//                            newRules.add(newParserRule)
                         }
                     }
         }
-        rules.addAll(newRules)
+
+        realRules?.let {
+            createNewRulesAccordingToChangedElements(realRules, changedElementNames)
+//            realRules.addAll(newRules)
+        } ?: kotlin.run {
+            createNewRulesAccordingToChangedElements(rules, changedElementNames)
+//            rules.addAll(newRules)
+        }
+
+    }
+
+
+    private fun refactorOnActionNeeded(context: ParserRule, element: RuleElement): Boolean {
+        val elementName = element.getBnfName()
+        val actionText = element.action
+        return context.alternativeElements.any { it.getBnfName() == elementName && it.action != actionText }
     }
 
     private fun isUniqueElementInRule(rule: ParserRule, ruleElement: RuleElement): Boolean {
@@ -380,24 +543,43 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
     }
 
 
-    private fun refactorRulesIfAssignmentCollision(rules: MutableList<ParserRule>) {
+    private fun refactorRulesIfAssignmentCollision(rules: MutableList<ParserRule>, realRules: MutableList<ParserRule>? = null) {
         val changedElementNames = mutableListOf<Pair<String, String>>()
         rules.forEach { rule ->
             val elementsToChange = findRuleElementsToRenameInParserRule(rule)
             if (elementsToChange.isNotEmpty()) {
-                val leafsToChangeInRule = mutableMapOf<LeafPsiElement, String>()
+//                val leafsToChangeInRule = mutableMapOf<LeafPsiElement, String>()
                 elementsToChange.forEach {
-                    var newElementName = "${it.getBnfName().capitalize()}${rule.name.capitalize()}${createAssignmentName(it.assignment).capitalize()}"
-                    if (it is ParserRuleCallElement && getRuleByName(it.getBnfName(), rules) is TerminalRule) {
-                        newElementName = nameGenerator.toGKitTypesName(newElementName)
+                    var newElementName = ""
+//                    var newElementName = "${it.getBnfName().capitalize()}${rule.name.capitalize()}${createAssignmentName(it.assignment).capitalize()}"
+                    if (it is ParserRuleCallElement || it is ParserCrossReferenceElement) {
+                        val calledRule = getRuleByName(it.getBnfName(), rules)
+                        calledRule?.let {
+                            val number = ruleNameToRefactoringsNumber[calledRule.name]!!
+                            newElementName = "${calledRule.name}${number + 1}"
+                            ruleNameToRefactoringsNumber.put(calledRule.name, number + 1)
+                            if (it is TerminalRule) {
+                                newElementName = nameGenerator.toGKitTypesName(newElementName)
+                            }
+
+                        }
+                        changedElementNames.add(Pair(it.getBnfName(), newElementName))
+//                        leafsToChangeInRule.put(PsiTreeUtil.firstChild(it.psiElement) as LeafPsiElement, it.getBnfName())
+                    } else {
+                        newElementName = createRefactoredName()
+                        val newRule = createParserRuleWithExtension(newElementName, "", it.getBnfName())
+                        newRule.isDataTypeRule = true
+                        realRules?.add(newRule) ?: rules.add(newRule)
                     }
-                    changedElementNames.add(Pair(it.getBnfName(), newElementName))
                     it.refactoredName = newElementName
-                    leafsToChangeInRule.put(PsiTreeUtil.firstChild(it.psiElement) as LeafPsiElement, it.getBnfName())
                 }
             }
         }
-        createNewRulesAccordingToChangedElements(rules, changedElementNames)
+        realRules?.let {
+            createNewRulesAccordingToChangedElements(realRules, changedElementNames)
+        } ?: kotlin.run {
+            createNewRulesAccordingToChangedElements(rules, changedElementNames)
+        }
     }
 
 
@@ -406,22 +588,24 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
         changedElements.forEach { (originName, newName) ->
             val bnfExtension = "extends=$originName"
             val originRule = getRuleByName(originName, rules)
-            if (originRule is ParserRule) {
+            if (originRule is ParserRule && !originRule.isDataTypeRule) {
                 if (!duplicatedRules.contains(originName)) {
                     duplicatedRules.add(originName)
                     val privateRule = createPrivateDuplicateRuleToOrigin(originRule)
                     rules.add(privateRule)
+                    fragmentRules.add(privateRule)
                     replaceParserRuleBodyWithText(originRule, privateRule.name)
                     refactorInfoList.add(RefactorOnAssignmentInfo(originName, privateRule.name))
                 }
-                val newParserRule = createParserRuleWithExtension(newName, originRule.returnTypeText, "${originName}Private")
+                val newRuleExtension = if (originRule.returnTypeText.isEmpty()) originRule.name else originRule.returnTypeText
+                val newParserRule = createParserRuleWithExtension(newName, newRuleExtension, "${originName}Private")
                 newParserRule.bnfExtensionsStrings.add(bnfExtension)
                 newParserRule.isDataTypeRule = originRule.isDataTypeRule
                 rulesWithSuperClass.put(newName, originName)
                 rules.add(newParserRule)
                 refactorInfoList.first { it.originRuleName == originName }.duplicateRuleNames.add(newName)
 
-            } else if (originRule is TerminalRule) {
+            } else if (originRule is TerminalRule || originRule!!.isDataTypeRule) {
                 val newRule = createParserRuleWithExtension(newName, "", originName)
                 newRule.isDataTypeRule = true
                 rules.add(newRule)
@@ -430,7 +614,7 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
     }
 
     private fun replaceParserRuleBodyWithText(rule: ParserRule, text: String) {
-        val stubElement = ParserSimpleElement(XtextElementFactory.createValidID(text))
+        val stubElement = ParserRuleCallElement(XtextElementFactory.createValidID(text))
         rule.alternativeElements.clear()
         rule.alternativeElements.add(stubElement)
     }
@@ -502,30 +686,25 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
 
     private fun getBridgeCrossReferences(): List<BridgeCrossReference> {
         val resultList = mutableListOf<BridgeCrossReference>()
-        parserRules.forEach { rule ->
-            val crossReferenceElements = findCrossReferencesInParserRule(rule)
-            crossReferenceElements.forEach {
-                resultList.add(createBridgeCrossReferenceFromCrossReferenceElement(it, getRuleReturnType(rule)))
-            }
+        crossReferences.distinctBy { it.name to it.containerName }.forEach {
+            resultList.add(createBridgeCrossReferenceFromCrossReferenceElement(it))
         }
-        return resultList
+        return resultList.distinctBy { it.psiElementName to it.container.name }
     }
 
-    private fun createBridgeCrossReferenceFromCrossReferenceElement(crossReferenceElement: ParserCrossReferenceElement, containerType: BridgeRuleType): BridgeCrossReference {
+    private fun createBridgeCrossReferenceFromCrossReferenceElement(crossReferenceElement: ParserCrossReferenceElement): BridgeCrossReference {
+        val containerRule = getRuleByName(crossReferenceElement.containerName)
+        val containerType = getRuleReturnType(containerRule!!)
         return BridgeCrossReference(createAssignmentFromString(crossReferenceElement.assignment), containerType, createBridgeRuleTypeFromTypeName(crossReferenceElement.referenceTargetText), crossReferenceElement.name.replace("_", ""))
-    }
-
-    private fun findCrossReferencesInParserRule(rule: ParserRule): List<ParserCrossReferenceElement> {
-        val resultList = mutableListOf<ParserCrossReferenceElement>()
-        rule.alternativeElements.forEach {
-            if (it is ParserCrossReferenceElement) resultList.add(it)
-        }
-        return resultList
     }
 
 
     private fun addParserRulesForCrossReferences(rules: MutableList<ParserRule>) {
         val newRules = mutableListOf<ParserRule>()
+        val crossReferences = rules
+                .flatMap { it.alternativeElements }
+                .filterIsInstance<ParserCrossReferenceElement>()
+                .toList()
         crossReferences.distinctBy { it.name }.forEach { reference ->
             val newRule = createParserRuleWithExtension(reference.getBnfName(), "", reference.referenceType)
             newRule.returnTypeText = "String"
@@ -561,43 +740,67 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
     }
 
 
-    class TreeRefactor {
-
-        fun refactorXtextParserRules(oldRules: List<XtextParserRule>): List<XtextParserRule> {
-            return refactorComplicatedDeligateRules(oldRules)
-        }
-
-        fun refactorComplicatedDeligateRules(oldRules: List<XtextParserRule>): List<XtextParserRule> {
-            val refactoredRules = mutableListOf<XtextParserRule>()
-            oldRules.forEach {
-                var ruleCopy = it.copy() as XtextParserRule
-                val branchesToRefactor = ComplicatedConditionalBranchesFinder.getComplicateBranchesForParserRule(it)
-                for (i: Int in 0..branchesToRefactor.size - 1) {
-                    val newRule = getNewRuleFromBrunch(it, branchesToRefactor[i], i + 1)
-                    ruleCopy = refactorOldRule(ruleCopy, branchesToRefactor[i], newRule.ruleNameAndParams.text)
-                    refactoredRules.add(newRule)
-                }
-                refactoredRules.add(ruleCopy)
+    private fun refactorComplicatedDeligateRules(oldRules: List<XtextParserRule>): List<XtextParserRule> {
+        val refactoredRules = mutableListOf<XtextParserRule>()
+        oldRules.forEach {
+            var ruleCopy = it.copy() as XtextParserRule
+            val branchesToRefactor = findCompositeBranchesInRule(it)
+            for (i: Int in 0..branchesToRefactor.size - 1) {
+                val newRule = getNewRuleFromBrunch(it, branchesToRefactor[i])
+                ruleCopy = refactorOldRule(ruleCopy, branchesToRefactor[i], newRule.ruleNameAndParams.text)
+                refactoredRules.add(newRule)
             }
-            return refactoredRules
+            refactoredRules.add(ruleCopy)
         }
-
-
-
-        fun refactorOldRule(oldRule: XtextParserRule, branchToReplaceWithRuleCall: XtextConditionalBranch, newRuleName: String): XtextParserRule {
-            var ruleText = oldRule.text
-            ruleText = ruleText.replace(branchToReplaceWithRuleCall.text, newRuleName)
-            return XtextElementFactory.createParserRule(ruleText)
-        }
-
-        fun getNewRuleFromBrunch(mainRule: XtextParserRule, branch: XtextConditionalBranch, branchNumber: Int): XtextParserRule {
-            val ruleName = mainRule.ruleNameAndParams.text.replace("^", "Caret").capitalize()
-            val newRuleName = "${ruleName}$branchNumber"
-            val newRuleReturnType = mainRule.typeRef?.text ?: ruleName
-
-            val newRule = XtextElementFactory.createParserRule("$newRuleName returns $newRuleReturnType : ${branch.text};")
-            return newRule
-        }
-
+        return refactoredRules
     }
+
+    private fun refactorOldRule(oldRule: XtextParserRule, branchToReplaceWithRuleCall: XtextConditionalBranch, newRuleName: String): XtextParserRule {
+        var ruleText = oldRule.text
+        ruleText = ruleText.replace(branchToReplaceWithRuleCall.text, newRuleName)
+        return XtextElementFactory.createParserRule(ruleText)
+    }
+
+    private fun getNewRuleFromBrunch(mainRule: XtextParserRule, branch: XtextConditionalBranch): XtextParserRule {
+        val ruleName = mainRule.ruleNameAndParams.text.replace("^", "").capitalize()
+        if (ruleNameToRefactoringsNumber[ruleName] == null) {
+            ruleNameToRefactoringsNumber.put(ruleName, 0)
+        }
+        val num = ruleNameToRefactoringsNumber[ruleName]!!
+        ruleNameToRefactoringsNumber.put(ruleName, num + 1)
+        val newRuleName = "${ruleName}$num"
+        val newRuleReturnType = mainRule.typeRef?.text ?: ruleName
+
+        val newRule = XtextElementFactory.createParserRule("$newRuleName returns $newRuleReturnType : ${branch.text};")
+        return newRule
+    }
+
+    private fun findCompositeBranchesInRule(rule: XtextParserRule): List<XtextConditionalBranch> {
+        val complicatedBranches = mutableListOf<XtextConditionalBranch>()
+        val alternatives = rule.alternatives
+        if (alternatives.conditionalBranchList.size > 1) {
+            alternatives.conditionalBranchList.forEach {
+                if (!isSimpleBranch(it)) complicatedBranches.add(it)
+            }
+        }
+        return complicatedBranches
+    }
+
+
+    private fun isSimpleBranch(conditionalBranch: XtextConditionalBranch): Boolean {
+        val branchAbstractTokens = conditionalBranch.unorderedGroup?.groupList
+                ?.flatMap { it.abstractTokenList }
+                ?.map { it.abstractTokenWithCardinality }
+        branchAbstractTokens?.let { tokens ->
+            if (tokens.size == 1) {
+                tokens[0]!!.abstractTerminal?.let {
+                    it.ruleCall?.let { return true }
+                    it.keyword?.let { return true }
+                }
+            }
+        }
+        return false
+    }
+
+
 }

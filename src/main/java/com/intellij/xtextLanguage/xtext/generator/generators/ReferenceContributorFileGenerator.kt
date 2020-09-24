@@ -26,7 +26,7 @@ class ReferenceContributorFileGenerator(extension: String, val references: List<
             |    @Override
             |    public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         """.trimMargin("|"))
-        references.distinctBy { it.name }.forEach {
+        references.distinctBy { it.name }.filter { it.targets.isNotEmpty() }.forEach {
             val referenceName = it.name.replace("_", "")
             out.print("""
             |        registrar.registerReferenceProvider(PlatformPatterns.psiElement(${extension.capitalize()}${referenceName}.class).withLanguage(${extension.capitalize()}Language.INSTANCE),

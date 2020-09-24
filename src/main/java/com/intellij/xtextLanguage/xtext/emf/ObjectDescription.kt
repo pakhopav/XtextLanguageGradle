@@ -1,9 +1,11 @@
 package com.intellij.xtextLanguage.xtext.emf
 
+import org.eclipse.emf.ecore.EClass
 import org.eclipse.emf.ecore.EObject
 
 interface ObjectDescription {
-    val obj: EObject
-    val objectName: String
+    fun getName(): String
+    fun getObject(): EObject
+    fun getClass(): EClass
 
 }

@@ -5,6 +5,8 @@ import com.intellij.openapi.components.ServiceManager
 import org.eclipse.emf.ecore.EPackage
 import org.eclipse.emf.ecore.EcorePackage
 import org.xtext.example.entity.entity.EntityPackage
+import org.xtext.example.xtext.xtext.XtextPackage
+import simple.SimplePackage
 import statemachine.StatemachinePackage
 
 interface EcorePackageRegistry {
@@ -37,6 +39,8 @@ interface EcorePackageRegistry {
             packages.add(ArithmeticsPackage.eINSTANCE)
             packages.add(StatemachinePackage.eINSTANCE)
             packages.add(EntityPackage.eINSTANCE)
+            packages.add(XtextPackage.eINSTANCE)
+            packages.add(SimplePackage.eINSTANCE)
         }
 
         override fun getPackage(nsUri: String): EPackage? {

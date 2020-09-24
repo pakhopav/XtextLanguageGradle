@@ -34,7 +34,6 @@ class XtextKeywordModel(abstractRules: List<XtextAbstractRule>) {
                 "." to "DOT",
                 "+=" to "PLUS_EQUALS",
                 "?=" to "QUES_EQUALS",
-                "EOF" to "EOF_KEY",
                 "::" to "COLONS",
                 "-" to "MINUS",
                 "/" to "SLASH",

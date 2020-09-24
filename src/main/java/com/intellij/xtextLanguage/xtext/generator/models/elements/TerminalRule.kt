@@ -13,7 +13,7 @@ class TerminalRule : ModelRule {
     override var isDataTypeRule = true
 
     constructor(myRule: XtextTerminalRule, resolver: RuleResolver) {
-        name = myRule.validID.text.replace("^", "Caret")
+        name = myRule.validID.text.replace("^", "")
         returnTypeText = myRule.typeRef?.text ?: "String"
         alternativeElements.addAll(AlternativeElementsFinder.getRuleElementListOfTerminalRule(myRule, resolver))
         isFragment = myRule.fragmentKeyword != null

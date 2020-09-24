@@ -25,7 +25,7 @@ class PsiImplUtilFileGenerator(extension: String, val rules: List<ParserRule>, v
             |public class ${extension.capitalize()}PsiImplUtil {
         """.trimMargin("|"))
         references.distinctBy { it.name }.flatMap { it.targets }.forEach { target ->
-            var targetHasName = false
+            var targetHasName = target.nameElements.isNotEmpty()
             val targetName = target.superRuleName
             val targetParserRule = rules.firstOrNull { it.name == targetName }
             out.println("""
@@ -42,18 +42,27 @@ class PsiImplUtilFileGenerator(extension: String, val rules: List<ParserRule>, v
                         |    
                         |    public static PsiElement getNameIdentifier($capitalizedExtension$targetName element) {
                     """.trimMargin("|"))
-            val targetsNameElement = getElementAssignedToName(targetParserRule!!)
-            targetsNameElement?.let {
-                val elementName = nameGenerator.toGKitClassName(it.getBnfName())
-                out.println("        return element.get${elementName}();")
-                targetHasName = true
+//            val targetsNameElement = getElementAssignedToName(targetParserRule!!)
+//            targetsNameElement?.let {
+//                val elementName = nameGenerator.toGKitClassName(it.getBnfName())
+//                out.println("        return element.get${elementName}();")
+//                targetHasName = true
+//            }
+
+            if (target.nameElements.size == 1) {
+                out.println("        return element.get${target.nameElements[0]}();")
+            } else if (target.nameElements.size > 1) {
+                target.nameElements.forEach {
+                    out.println("            if(element.get$it() != null) return element.get$it();")
+                }
             }
-            target.subRuleNames.forEach { subRuleName ->
-                out.println("        if(element instanceof $capitalizedExtension$subRuleName){")
-                val subRule = rules.firstOrNull { it.name == subRuleName }
-                val nameElement = getElementAssignedToName(subRule!!)
-                val elementName = nameGenerator.toGKitClassName(nameElement!!.getBnfName())
-                out.println("            return (($capitalizedExtension$subRuleName)element).get${elementName}();\n        }")
+            target.subRules.forEach {
+                out.println(it.getGeneratorString(capitalizedExtension))
+//                out.println("        if(element instanceof $capitalizedExtension$subRuleName){")
+//                val subRule = rules.firstOrNull { it.name == subRuleName }
+//                val nameElement = getElementAssignedToName(subRule!!)
+//                val elementName = nameGenerator.toGKitClassName(nameElement!!.getBnfName())
+//                out.println("            return (($capitalizedExtension$subRuleName)element).get${elementName}();\n        }")
             }
             out.println("""
                         |        ${if (targetHasName) "" else "return null;"}

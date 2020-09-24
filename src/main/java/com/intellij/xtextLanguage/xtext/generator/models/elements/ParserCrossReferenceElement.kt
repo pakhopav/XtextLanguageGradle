@@ -2,7 +2,7 @@ package com.intellij.xtextLanguage.xtext.generator.models.elements
 
 import com.intellij.xtextLanguage.xtext.psi.XtextCrossReference
 
-class ParserCrossReferenceElement(override val psiElement: XtextCrossReference) : RuleElement(psiElement) {
+class ParserCrossReferenceElement(override val psiElement: XtextCrossReference, val containerName: String) : RuleElement(psiElement) {
 
     val name: String
     val referenceType = psiElement.crossReferenceableTerminal?.text ?: "ID"
@@ -26,10 +26,10 @@ class ParserCrossReferenceElement(override val psiElement: XtextCrossReference) 
     override var assignment = ""
 
     override fun getBnfName(): String {
-        return name
+        return refactoredName ?: name
     }
 
-    fun createReferenceName(): String {
+    private fun createReferenceName(): String {
         refactoredName?.let { return it }
         var targetText = if (referenceTargetText.contains("::")) referenceTargetText.split("::")[1] else referenceTargetText
 //        if (targetText.contains("::")) targetText = targetText.slice(targetText.indexOf(":") + 2..targetText.length - 1)

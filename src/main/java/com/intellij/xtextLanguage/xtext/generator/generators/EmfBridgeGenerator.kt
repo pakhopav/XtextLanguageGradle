@@ -2,11 +2,13 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 
 import com.intellij.xtextLanguage.xtext.generator.models.BridgeModel
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.*
+import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
 class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGenerator(extension) {
     private val capitalizedExtension = extension.capitalize()
+    private val nameGenerator = NameGenerator()
 
 
     fun generateAllBridgeRuleFiles() {
@@ -168,7 +170,7 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
                 |       ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${it.psiElementType}) {
                 |           return object : Rewrite {
                 |               override fun rewrite(obj: EObject): EObject {
-                |                   val temp = ${getFactoryName(it.newObjectType)}.create(${getPackageName(it.newObjectType)}.${it.newObjectType.name.decapitalize()})
+                |                   val temp = ${getFactoryName(it.newObjectType)}.create(${getPackageName(it.newObjectType)}.${nameGenerator.toGKitClassName(it.newObjectType.name).decapitalize()})
                 |                   val feature = temp.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${it.assignment.text}" }
             """.trimMargin("|"))
             when (it.assignment.type) {
@@ -208,7 +210,7 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
     private fun generateFactoryMethod(returnType: BridgeRuleType, out: PrintWriter) {
         out.println("""
             |    override fun createObject(): EObject {
-            |       return ${getFactoryName(returnType)}.create(${getPackageName(returnType)}.${returnType.name.decapitalize()})
+            |       return ${getFactoryName(returnType)}.create(${getPackageName(returnType)}.${nameGenerator.toGKitClassName(returnType.name).decapitalize()})
             |    }
             |
         """.trimMargin("|"))
@@ -222,7 +224,7 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
             var elseWord = ""
             out.println("""
             |        ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${it.psiElementType}){
-            |            return ${getFactoryName(it.returnType)}.create(${getPackageName(it.returnType)}.${it.returnType.name.decapitalize()})
+            |            return ${getFactoryName(it.returnType)}.create(${getPackageName(it.returnType)}.${nameGenerator.toGKitClassName(it.returnType.name).decapitalize()})
             |        }
         """.trimMargin("|"))
             elseWord = "else "
@@ -282,7 +284,7 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
         val resultSet = mutableSetOf<String>()
         model.crossReferences.forEach {
             resultSet.add(it.container.path)
-
+            resultSet.add(it.target.path)
         }
         model.bridgeRules.filter { it.hasName }.forEach {
             resultSet.add(it.returnType.path)
@@ -301,6 +303,8 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
         model.crossReferences.forEach {
             out.println("    private val ${createCrossReferenceMapName(it)} = mutableListOf<Pair<${it.container.name}, String>>()")
         }
+        out.println("    private val scope = ${capitalizedExtension}Scope(modelDescriptions)")
+
     }
 
     private fun createCrossReferenceMapName(reference: BridgeCrossReference): String {
@@ -360,15 +364,14 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
     private fun generateCompleteRawModelMethod(out: PrintWriter) {
         out.println("""
                         |    override fun completeRawModel() {
-                        |        val scope = ${capitalizedExtension}Scope(modelDescriptions)
                     """.trimMargin("|"))
         model.crossReferences.forEach {
             out.println("""
                         |        ${createCrossReferenceMapName(it)}.forEach {
                         |            val container = it.first
-                        |            val resolvedDefinition = scope.getSingleElement(it.second)?.obj
-                        |            val feature = container.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${it.assignment.text}" }
-                        |            resolvedDefinition?.let { 
+                        |            val resolvedObject = scope.getSingleElementOfType(it.second, ${getPackageName(it.target)}.${nameGenerator.toGKitClassName(it.target.name).decapitalize()})
+                        |            resolvedObject?.let { 
+                        |               val feature = container.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${it.assignment.text}" }
                     """.trimMargin("|"))
             when (it.assignment.type) {
                 AssignmentType.EQUALS -> {
@@ -454,13 +457,9 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
             |package com.intellij.${extension}Language.${extension}.emf.scope
             |
             |import com.intellij.xtextLanguage.xtext.emf.ObjectDescription
-            |import com.intellij.xtextLanguage.xtext.emf.Scope
+            |import com.intellij.xtextLanguage.xtext.emf.impl.ScopeImpl
             |
-            |class ${capitalizedExtension}Scope(val descriptions: List<ObjectDescription>) : Scope {
-            |
-            |    override fun getSingleElement(name: String): ObjectDescription? {
-            |        return descriptions.firstOrNull { it.objectName == name }
-            |    }
+            |class ${capitalizedExtension}Scope(descriptions: List<ObjectDescription>) : ScopeImpl(descriptions) {
             |}
         """.trimMargin("|"))
         out.close()

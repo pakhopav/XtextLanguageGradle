@@ -1,8 +1,8 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements
 
-import com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEAbstractRuleRuleID
+import com.intellij.psi.PsiElement
 
-class ParserRuleCallElement(override val psiElement: XtextREFERENCEAbstractRuleRuleID) : RuleElement(psiElement) {
+class ParserRuleCallElement(override val psiElement: PsiElement) : RuleElement(psiElement) {
 
 
     override var assignment = ""

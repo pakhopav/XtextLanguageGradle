@@ -1,11 +1,8 @@
 package com.intellij.xtextLanguage.xtext.generator.visitors
 
-import com.intellij.psi.PsiElement
-import com.intellij.psi.impl.source.tree.LeafPsiElement
 import com.intellij.xtextLanguage.xtext.psi.XtextAlternatives
 import com.intellij.xtextLanguage.xtext.psi.XtextConditionalBranch
 import com.intellij.xtextLanguage.xtext.psi.XtextParserRule
-import com.intellij.xtextLanguage.xtext.psi.XtextRuleCall
 
 class ComplicatedConditionalBranchesFinder : XtextVisitor() {
 
@@ -24,19 +21,33 @@ class ComplicatedConditionalBranchesFinder : XtextVisitor() {
     override fun visitAlternatives(o: XtextAlternatives) {
         if (o.conditionalBranchList.size > 1) {
             o.conditionalBranchList.forEach {
-                if (!isRuleCall(it)) complicatedBranches.add(it)
+                if (!isSimpleBranch(it)) complicatedBranches.add(it)
             }
         }
     }
 
 
-    fun isRuleCall(conditionalBranch: XtextConditionalBranch): Boolean {
-        var tempElement: PsiElement = conditionalBranch
-        for (k: Int in 0..5) {
-            if (tempElement is LeafPsiElement) return false
-            tempElement = tempElement.firstChild
+    fun isSimpleBranch(conditionalBranch: XtextConditionalBranch): Boolean {
+        val branchAbstractTokens = conditionalBranch.unorderedGroup?.groupList
+                ?.flatMap { it.abstractTokenList }
+                ?.map { it.abstractTokenWithCardinality }
+        branchAbstractTokens?.let { tokens ->
+            if (tokens.size == 1) {
+                tokens[0]!!.abstractTerminal?.let {
+                    it.ruleCall?.let { return true }
+                    it.keyword?.let { return true }
+                }
+            }
         }
-        return tempElement is XtextRuleCall
+        return false
+
+
+//        var tempElement: PsiElement = conditionalBranch
+//        for (k: Int in 0..5) {
+//            if (tempElement is LeafPsiElement) return false
+//            tempElement = tempElement.firstChild
+//        }
+//        return tempElement is XtextRuleCall
 
 
 //        conditionalBranch.firstChild?.let {

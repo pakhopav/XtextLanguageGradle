@@ -2,6 +2,7 @@ package com.intellij.xtextLanguage.xtext.emf
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.impl.source.tree.PsiWhiteSpaceImpl
+import com.intellij.xtextLanguage.xtext.psi.SuffixElement
 import org.eclipse.emf.ecore.EObject
 
 abstract class EmfCreator {
@@ -35,39 +36,42 @@ abstract class EmfCreator {
         return result
     }
 
-    protected fun visitElement(element: PsiElement): EObject? {
-        val utilRule = getBridgeRuleForPsiElement(element) ?: return null
-        var current: EObject? = null
-        getAllChildren(element).forEach {
+    protected fun visitElement(element: PsiElement, p_current: EObject? = null, p_utilRule: EmfBridgeRule? = null): EObject? {
+        val utilRule = p_utilRule ?: getBridgeRuleForPsiElement(element) ?: return null
+        var current: EObject? = p_current
+        getAllChildren(element).forEach { psiElement ->
             if (current == null) {
-                val newObject = utilRule.findAction(it)
+                val newObject = utilRule.findAction(psiElement)
                 newObject?.let {
-//                    current = eFACTORY.create(it)
                     current = it
                 }
             }
-            val rewrite = utilRule.findRewrite(it)
+            val rewrite = utilRule.findRewrite(psiElement)
             rewrite?.let {
                 if (current == null) current = utilRule.createObject()
                 current = it.rewrite(current!!)
+                if (psiElement is SuffixElement) {
+                    current = visitElement(psiElement, current)
+                    return@forEach
+                }
             }
-            val literalAssignment = utilRule.findLiteralAssignment(it)
+            val literalAssignment = utilRule.findLiteralAssignment(psiElement)
             if (literalAssignment != null) {
                 if (current == null) current = utilRule.createObject()
-                literalAssignment.assign(current!!, it)
+                literalAssignment.assign(current!!, psiElement)
             } else {
-                val newObject = visitElement(it)
+                val newObject = visitElement(psiElement)
                 if (newObject != null) {
-                    val assigment = utilRule.findObjectAssignment(it)
+                    val assigment = utilRule.findObjectAssignment(psiElement)
                     if (assigment != null) {
                         if (current == null) current = utilRule.createObject()
                         assigment.assign(current!!, newObject)
                     } else {
                         current = newObject
                     }
-                } else if (isCrossReference(it)) {
+                } else if (isCrossReference(psiElement)) {
                     if (current == null) current = utilRule.createObject()
-                    createCrossReference(it, current!!)
+                    createCrossReference(psiElement, current!!)
                 }
             }
         }
