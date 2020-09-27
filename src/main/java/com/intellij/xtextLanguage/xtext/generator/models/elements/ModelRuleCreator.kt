@@ -6,7 +6,6 @@ interface ModelRuleCreator {
 
     fun createRule(psiRule: PsiElement): CreationOutput?
 
-
     interface CreationOutput {
         fun getRule(): ModelRule?
         fun getSuffixList(): List<ModelRule>

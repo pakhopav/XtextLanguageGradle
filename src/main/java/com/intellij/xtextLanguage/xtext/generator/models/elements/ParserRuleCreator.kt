@@ -9,6 +9,13 @@ import java.util.*
 class ParserRuleCreator : ModelRuleCreator {
     private val visitor = XtextParserRuleVisitor()
 
+    fun createRuleSimple(psiRule: PsiElement): ParserRule? {
+        if (psiRule is XtextParserRule) {
+            return createRuleFromXtextParserRule(psiRule).getRule()
+        }
+        return null
+    }
+
 
     override fun createRule(psiRule: PsiElement): ParserRuleCreationOutput? {
         if (psiRule is XtextParserRule) {
@@ -19,10 +26,12 @@ class ParserRuleCreator : ModelRuleCreator {
     }
 
 
+
     private fun createRuleFromXtextParserRule(rule: XtextParserRule): ParserRuleCreationOutput {
         val resultRule = ParserRule()
         resultRule.name = rule.ruleNameAndParams.validID.text.replace("^", "").capitalize()
         visitor.visitRule(rule)
+        resultRule.root = visitor.getRoot()
         resultRule.alternativeElements.addAll(visitor.getAlternativeElementsList())
         resultRule.returnTypeText = visitor.getReturnType()
         resultRule.isPrivate = rule.fragmentKeyword != null
@@ -49,6 +58,8 @@ class ParserRuleCreator : ModelRuleCreator {
         private var currentRuleName = ""
         private var ruleReturnType = ""
 
+        private val treeNodeStack = Stack<TreeNodeImpl>()
+
         /*
         stack of actual info about last action visited if the action isn`t followed by not optional token.
         All elements to be added to result list marked
@@ -58,10 +69,12 @@ class ParserRuleCreator : ModelRuleCreator {
 
         fun visitRule(rule: XtextParserRule) {
             clearAll()
+            val treeRoot = TreeRootImpl(rule)
+            treeNodeStack.push(treeRoot)
             currentRuleName = rule.ruleNameAndParams.validID.text.replace("^", "").capitalize()
             visitAlternatives(rule.alternatives)
             ruleReturnType = (changedReturnType ?: rule.typeRef?.text ?: "").replace("^", "")
-            refactorSuffixes()
+//            refactorSuffixes()
         }
 
         fun getAlternativeElementsList() = listOfAlternativesElements
@@ -70,10 +83,13 @@ class ParserRuleCreator : ModelRuleCreator {
 
         fun getReturnType() = ruleReturnType
 
+        fun getRoot() = treeNodeStack.peek() as TreeRoot
+
         private fun clearAll() {
             listOfAlternativesElements = mutableListOf()
             markedElements = mutableMapOf()
             suffixList = mutableListOf()
+            treeNodeStack.clear()
             lastAction = null
             changedReturnType = ""
             currentRuleName = ""
@@ -119,6 +135,10 @@ class ParserRuleCreator : ModelRuleCreator {
             element.assignment = assignment
             if (visitedActionsStack.isNotEmpty()) {
                 markedElements.put(element, visitedActionsStack.peek())
+            }
+            if (element !is BnfServiceElement) {
+                val treeLeaf = TreeLeafImpl(element)
+                treeNodeStack.peek().addChild(treeLeaf)
             }
             listOfAlternativesElements.add(element)
         }
@@ -177,7 +197,11 @@ class ParserRuleCreator : ModelRuleCreator {
                 visitRuleCall(it)
             }
             o.parenthesizedElement?.let {
+                val treeGroup = TreeGroupImpl1(it)
+                treeNodeStack.peek().addChild(treeGroup)
+                treeNodeStack.push(treeGroup)
                 visitParenthesizedElement(it)
+                treeNodeStack.pop()
             }
             o.predicatedKeyword?.let {
                 visitPredicatedKeyword(it)
@@ -205,6 +229,12 @@ class ParserRuleCreator : ModelRuleCreator {
 
         override fun visitAlternatives(alternatives: XtextAlternatives) {
             val lastActionOnEntry = lastAction
+            var moreThanOneChild = alternatives.conditionalBranchList.size > 1
+            if (moreThanOneChild) {
+                val treeBranch = TreeBranchImpl(alternatives)
+                treeNodeStack.peek().addChild(treeBranch)
+                treeNodeStack.push(treeBranch)
+            }
             alternatives.conditionalBranchList.forEach {
                 if (lastActionOnEntry != null && lastAction == null) lastAction = lastActionOnEntry
                 visitConditionalBranch(it)
@@ -212,24 +242,29 @@ class ParserRuleCreator : ModelRuleCreator {
                     addElementToList(BnfServiceElement(it), "")
                 }
             }
-
+            if (moreThanOneChild) treeNodeStack.pop()
         }
 
         override fun visitConditionalBranch(o: XtextConditionalBranch) {
             super.visitConditionalBranch(o)
         }
 
-        fun visitAssignableAlternatives(o: XtextAssignableAlternatives, assignmentString: String) {
+        fun visitAssignableAlternatives(xtextAssignableAlternatives: XtextAssignableAlternatives, assignmentString: String) {
             val lastActionOnEntry = lastAction
-            o.assignableTerminalList.forEach {
+            var moreThanOneChild = xtextAssignableAlternatives.assignableTerminalList.size > 1
+            if (moreThanOneChild) {
+                val treeBranch = TreeBranchImpl1(xtextAssignableAlternatives)
+                treeNodeStack.peek().addChild(treeBranch)
+                treeNodeStack.push(treeBranch)
+            }
+            xtextAssignableAlternatives.assignableTerminalList.forEach {
                 if (lastActionOnEntry != null && lastAction == null) lastAction = lastActionOnEntry
                 visitAssignableTerminal(it, assignmentString)
-                if (it != o.assignableTerminalList.last()) {
-                }
                 getPipePsiElementIfExists(it)?.let {
                     addElementToList(BnfServiceElement(it), "")
                 }
             }
+            if (moreThanOneChild) treeNodeStack.pop()
         }
 
         fun visitAssignableTerminal(o: XtextAssignableTerminal, assignmentString: String) {
@@ -240,7 +275,11 @@ class ParserRuleCreator : ModelRuleCreator {
                 addElementToList(ParserRuleCallElement(it.referenceAbstractRuleRuleID), assignmentString)
             }
             o.parenthesizedAssignableElement?.let {
+                val treeGroup = TreeGroupImpl2(it)
+                treeNodeStack.peek().addChild(treeGroup)
+                treeNodeStack.push(treeGroup)
                 visitParenthesizedAssignableElement(it, assignmentString)
+                treeNodeStack.pop()
             }
             o.crossReference?.let {
                 addElementToList(ParserCrossReferenceElement(it, currentRuleName), assignmentString)
@@ -280,6 +319,7 @@ class ParserRuleCreator : ModelRuleCreator {
         fun visitParenthesizedAssignableElement(o: XtextParenthesizedAssignableElement, assignmentString: String) {
             addElementToList(BnfServiceElement(o.lBracketKeyword), "")
             l++
+
             visitAssignableAlternatives(o.assignableAlternatives, assignmentString)
             l--
             removeIrrelevantActionsFromStack()

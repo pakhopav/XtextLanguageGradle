@@ -5,6 +5,7 @@ open class ParserRule : ModelRule() {
     override lateinit var returnTypeText: String
     var bnfExtensionsStrings = mutableListOf<String>()
     override val alternativeElements = mutableListOf<RuleElement>()
+    lateinit var root: TreeRoot
 
     override var isDataTypeRule = false
     var isReferenced = false
@@ -12,18 +13,21 @@ open class ParserRule : ModelRule() {
     var isPrivate = false
 
 
-//
-//    constructor(myRule: XtextParserRule) {
-//        name = myRule.ruleNameAndParams.validID.text.replace("^", "").capitalize()
-//        visitor.visitRule(myRule)
-//        alternativeElements.addAll(visitor.getAlternativeElementsList())
-//        returnTypeText = (visitor.getChangedType() ?: myRule.typeRef?.text ?: "").replace("^", "")
-//        isPrivate = myRule.fragmentKeyword != null
-//    }
+    fun getRuleElementsList(): List<RuleElement> {
+        val resultList = mutableListOf<RuleElement>()
+        visitNode(root, resultList)
+        return resultList
+    }
 
-//    constructor()
-
-
+    private fun visitNode(node: TreeNode, resultList: MutableList<RuleElement>) {
+        if (node is TreeLeaf) {
+            resultList.add(node.ruleElement)
+        } else {
+            node.children.forEach {
+                visitNode(it, resultList)
+            }
+        }
+    }
 
     fun copy(): ParserRule {
         val copy = ParserRule()
