@@ -2,12 +2,13 @@ package com.intellij.xtextLanguage.xtext.generator.models.elements
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.xtextLanguage.xtext.generator.models.BridgeRuleTypeRegistry
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 import java.util.*
 
-class ParserRuleCreator : ModelRuleCreator {
-    private val visitor = XtextParserRuleVisitor()
+class ParserRuleCreator(val emfRegistry: BridgeRuleTypeRegistry) : ModelRuleCreator {
+    private val visitor = XtextParserRuleVisitor(emfRegistry)
 
     fun createRuleSimple(psiRule: PsiElement): ParserRule? {
         if (psiRule is XtextParserRule) {
@@ -49,7 +50,7 @@ class ParserRuleCreator : ModelRuleCreator {
     }
 
 
-    class XtextParserRuleVisitor : XtextVisitor() {
+    class XtextParserRuleVisitor(val emfRegistry: BridgeRuleTypeRegistry) : XtextVisitor() {
         private var listOfAlternativesElements = mutableListOf<RuleElement>()
         private var lastAction: String? = null
         private var changedReturnType: String? = null
@@ -69,7 +70,7 @@ class ParserRuleCreator : ModelRuleCreator {
 
         fun visitRule(rule: XtextParserRule) {
             clearAll()
-            val treeRoot = TreeRootImpl(rule)
+            val treeRoot = TreeRootImpl(rule, emfRegistry)
             treeNodeStack.push(treeRoot)
             currentRuleName = rule.ruleNameAndParams.validID.text.replace("^", "").capitalize()
             visitAlternatives(rule.alternatives)
@@ -137,7 +138,8 @@ class ParserRuleCreator : ModelRuleCreator {
                 markedElements.put(element, visitedActionsStack.peek())
             }
             if (element !is BnfServiceElement) {
-                val treeLeaf = TreeLeafImpl(element)
+                val treeLeaf = TreeLeafImpl(element, treeNodeStack.peek())
+
                 treeNodeStack.peek().addChild(treeLeaf)
             }
             listOfAlternativesElements.add(element)
@@ -197,7 +199,7 @@ class ParserRuleCreator : ModelRuleCreator {
                 visitRuleCall(it)
             }
             o.parenthesizedElement?.let {
-                val treeGroup = TreeGroupImpl1(it)
+                val treeGroup = TreeGroupImpl1(it, treeNodeStack.peek())
                 treeNodeStack.peek().addChild(treeGroup)
                 treeNodeStack.push(treeGroup)
                 visitParenthesizedElement(it)
@@ -232,7 +234,7 @@ class ParserRuleCreator : ModelRuleCreator {
             val lastActionOnEntry = lastAction
             var moreThanOneChild = alternatives.conditionalBranchList.size > 1
             if (moreThanOneChild) {
-                val treeBranch = TreeBranchImpl(alternatives)
+                val treeBranch = TreeBranchImpl(alternatives, treeNodeStack.peek())
                 treeNodeStack.peek().addChild(treeBranch)
                 treeNodeStack.push(treeBranch)
             }
@@ -254,7 +256,7 @@ class ParserRuleCreator : ModelRuleCreator {
             val lastActionOnEntry = lastAction
             var moreThanOneChild = xtextAssignableAlternatives.assignableTerminalList.size > 1
             if (moreThanOneChild) {
-                val treeBranch = TreeBranchImpl1(xtextAssignableAlternatives)
+                val treeBranch = TreeBranchImpl1(xtextAssignableAlternatives, treeNodeStack.peek())
                 treeNodeStack.peek().addChild(treeBranch)
                 treeNodeStack.push(treeBranch)
             }
@@ -276,7 +278,7 @@ class ParserRuleCreator : ModelRuleCreator {
                 addElementToList(ParserRuleCallElement(it.referenceAbstractRuleRuleID), assignmentString)
             }
             o.parenthesizedAssignableElement?.let {
-                val treeGroup = TreeGroupImpl2(it)
+                val treeGroup = TreeGroupImpl2(it, treeNodeStack.peek())
                 treeNodeStack.peek().addChild(treeGroup)
                 treeNodeStack.push(treeGroup)
                 visitParenthesizedAssignableElement(it, assignmentString)

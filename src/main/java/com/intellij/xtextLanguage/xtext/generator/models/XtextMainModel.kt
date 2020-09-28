@@ -28,7 +28,7 @@ class XtextMainModel(val xtextFiles: List<XtextFile>) {
     private val ruleNameToRefactoringsNumber = mutableMapOf<String, Int>()
     private val parserRulesWithFragmentsInlined: MutableList<ParserRule>
     private val fragmentRules: MutableList<ModelRule>
-    private val parserRuleCreator = ParserRuleCreator()
+    private val parserRuleCreator = ParserRuleCreator(emfRegistry)
 
 
     init {
