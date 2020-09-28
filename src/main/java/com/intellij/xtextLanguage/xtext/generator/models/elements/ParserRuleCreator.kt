@@ -128,7 +128,7 @@ class ParserRuleCreator : ModelRuleCreator {
         private fun addElementToList(element: RuleElement, assignment: String) {
             lastAction?.let {
                 if (element !is BnfServiceElement) {
-                    element.action = lastAction as String
+                    element.action = it
                     lastAction = null
                 }
             }
@@ -216,7 +216,8 @@ class ParserRuleCreator : ModelRuleCreator {
 
         override fun visitAssignment(o: XtextAssignment) {
             var assignmentString = o.validID.text.replace("^", "")
-            o.equalsKeyword?.let { assignmentString = "$assignmentString=" }
+            val psiAssignment =
+                    o.equalsKeyword?.let { assignmentString = "$assignmentString=" }
             o.plusEqualsKeyword?.let { assignmentString = "$assignmentString+=" }
             o.quesEqualsKeyword?.let { assignmentString = "$assignmentString?=" }
 

@@ -1,6 +1,6 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements.emf
 
-class BridgeSimpleAction(val returnType: BridgeRuleType, val psiElementType: String) {
+data class BridgeSimpleAction(val returnType: BridgeRuleType, val psiElementType: String) {
 
     override fun equals(other: Any?): Boolean {
         if (other is BridgeSimpleAction) {

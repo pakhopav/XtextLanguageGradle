@@ -1,7 +1,9 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements.emf
 
+import com.intellij.xtextLanguage.xtext.generator.models.elements.ParserRule
+
 class BridgeModelRule(
-        val name: String,
+        val rule: ParserRule,
         val returnType: BridgeRuleType,
         val literalAssignments: List<AssignableObject>,
         val objectAssignments: List<AssignableObject>,
@@ -10,6 +12,7 @@ class BridgeModelRule(
         val hasName: Boolean) {
 
     val importStrings: Set<String>
+    val name get() = rule.name
 
     init {
         val imports = mutableSetOf<String>()

@@ -4,12 +4,37 @@ import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.xtextLanguage.xtext.psi.*
 
+
+interface MetaAction {
+
+}
+
+interface MetaSimpleAction : MetaAction
+
+interface MetaAssignedAction : MetaAction
+
+class MetaSimpleActionImpl(val psiAction: XtextAction) : MetaSimpleAction {
+
+}
+
+class MetaAssignedActionImpl(val psiAction: XtextAction) : MetaAssignedAction {
+
+}
+
+interface MetaAssignment {}
+
+class MetaAssignmentImpl(val psiAssignment: XtextAssignment) : MetaAssignment {
+
+}
+
 interface TreeRoot : TreeNode {
 }
 
 interface TreeNode {
     val children: List<TreeNode>
     val cardinality: Cardinality
+    val action: MetaAction?
+    val assignment: MetaAssignment?
 }
 
 interface TreeBranch : TreeNode {
@@ -48,34 +73,48 @@ abstract class TreeNodeImpl(protected val psiElement: PsiElement) : TreeNode {
 class TreeRootImpl(psiRule: XtextParserRule) : TreeNodeImpl(psiRule), TreeRoot {
     override val cardinality: Cardinality
         get() = Cardinality.NONE
+    override val action = null
+    override val assignment = null
 }
 
 class TreeBranchImpl(psiAlternatives: XtextAlternatives) : TreeNodeImpl(psiAlternatives), TreeBranch {
     override val cardinality: Cardinality
         get() = Cardinality.NONE
+    override val action = null
+    override val assignment = null
 }
 
 class TreeBranchImpl1(psiAlternatives: XtextAssignableAlternatives) : TreeNodeImpl(psiAlternatives), TreeBranch {
     override val cardinality: Cardinality
         get() = Cardinality.NONE
+    override val action = null
+    override val assignment = null
 }
 
-class TreeGroupImpl(psiElement: XtextConditionalBranch) : TreeNodeImpl(psiElement), TreeGroup {
+class TreeGroupImpl(psiElement: XtextConditionalBranch, action: MetaAction? = null, assignment: MetaAssignment? = null) : TreeNodeImpl(psiElement), TreeGroup {
     override val cardinality: Cardinality
         get() = Cardinality.NONE
+    override val action = action
+    override val assignment = assignment
 
 }
 
-class TreeGroupImpl1(psiElement: XtextParenthesizedElement) : TreeNodeImpl(psiElement), TreeGroup {
+class TreeGroupImpl1(psiElement: XtextParenthesizedElement, action: MetaAction? = null, assignment: MetaAssignment? = null) : TreeNodeImpl(psiElement), TreeGroup {
     override val cardinality = getCardinalityOfPsiElement()
+    override val action = action
+    override val assignment = assignment
 }
 
-class TreeGroupImpl2(psiElement: XtextParenthesizedAssignableElement) : TreeNodeImpl(psiElement), TreeGroup {
+class TreeGroupImpl2(psiElement: XtextParenthesizedAssignableElement, action: MetaAction? = null, assignment: MetaAssignment? = null) : TreeNodeImpl(psiElement), TreeGroup {
     override val cardinality: Cardinality
         get() = Cardinality.NONE
+    override val action = action
+    override val assignment = assignment
 }
 
-class TreeLeafImpl(override val ruleElement: RuleElement) : TreeNodeImpl(ruleElement.psiElement), TreeLeaf {
+class TreeLeafImpl(override val ruleElement: RuleElement, action: MetaAction? = null, assignment: MetaAssignment? = null) : TreeNodeImpl(ruleElement.psiElement), TreeLeaf {
     override val cardinality: Cardinality
         get() = getCardinalityOfPsiElement()
+    override val action = action
+    override val assignment = assignment
 }
