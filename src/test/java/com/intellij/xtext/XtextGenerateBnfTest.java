@@ -4,8 +4,9 @@ package com.intellij.xtext;
 
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.TestDataPath;
-import com.intellij.xtextLanguage.xtext.generator.generators.Generator;
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel;
+import com.intellij.xtextLanguage.xtext.generator.generators.MainGenerator;
+import com.intellij.xtextLanguage.xtext.generator.models.MetaContext;
+import com.intellij.xtextLanguage.xtext.generator.models.MetaContextImpl;
 import com.intellij.xtextLanguage.xtext.psi.XtextFile;
 
 import java.io.IOException;
@@ -36,7 +37,7 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
 //
 //    }
 
-//    public void testInvalidRules() {
+    //    public void testInvalidRules() {
 //        List<XtextFile> allXtextFiles = findAllFiles();
 //        XtextMainModel model = new XtextMainModel(allXtextFiles);
 //        Generator generator = new Generator("ErrRules", model);
@@ -46,11 +47,56 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
 //            e.printStackTrace();
 //        }
 //    }
-
-    public void testExpressions() {
+    public void testActionsGrammar() {
         List<XtextFile> allXtextFiles = findAllFiles();
-        XtextMainModel model = new XtextMainModel(allXtextFiles);
-        Generator generator = new Generator("expr", model);
+        MetaContextImpl c = new MetaContextImpl(allXtextFiles);
+//    XtextMainModel model = new XtextMainModel(allXtextFiles);
+//    MainGenerator generator = new MainGenerator("simple", model);
+//    try {
+//        generator.generate();
+//    } catch (IOException e) {
+//        e.printStackTrace();
+//    }
+    }
+
+
+    //    public void testSimple() {
+//        List<XtextFile> allXtextFiles = findAllFiles();
+//        XtextMainModel model = new XtextMainModel(allXtextFiles);
+//        MainGenerator generator = new MainGenerator("simple", model);
+//        try {
+//            generator.generate();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void testXtextCopy() {
+//        List<XtextFile> allXtextFiles = findAllFiles();
+//        XtextMainModel model = new XtextMainModel(allXtextFiles);
+//        MainGenerator generator = new MainGenerator("xtextt", model);
+//        try {
+//            generator.generate();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+//    public void testExpressions() {
+//        List<XtextFile> allXtextFiles = findAllFiles();
+//        XtextMainModel model = new XtextMainModel(allXtextFiles);
+//        MainGenerator generator = new MainGenerator("expr", model);
+//        try {
+//            generator.generate();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+//
+    public void testEntityLan() {
+        List<XtextFile> allXtextFiles = findAllFiles();
+        MetaContext context = new MetaContextImpl(allXtextFiles);
+        MainGenerator generator = new MainGenerator("entity", context);
         try {
             generator.generate();
         } catch (IOException e) {
@@ -58,11 +104,22 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         }
     }
 
+    //
+    public void testStatemachine() {
+        List<XtextFile> allXtextFiles = findAllFiles();
+        MetaContext context = new MetaContextImpl(allXtextFiles);
+        MainGenerator generator = new MainGenerator("stat", context);
+        try {
+            generator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
 
     public void testArithmetics() {
         List<XtextFile> allXtextFiles = findAllFiles();
-        XtextMainModel model = new XtextMainModel(allXtextFiles);
-        Generator generator = new Generator("calc", model);
+        MetaContext context = new MetaContextImpl(allXtextFiles);
+        MainGenerator generator = new MainGenerator("calc2", context);
         try {
             generator.generate();
         } catch (IOException e) {

@@ -1,13 +1,16 @@
 package com.intellij.xtext.emf
 
+//import com.intellij.calcLanguage.calc.emf.CalcEmfBridge
+//import com.intellij.statLanguage.stat.emf.StatEmfBridge
+//import com.intellij.statLanguage.stat.psi.StatFile
+//import com.intellij.xtexttLanguage.xtextt.emf.XtexttEmfBridge
+//import com.intellij.xtexttLanguage.xtextt.psi.XtexttFile
 import arithmetics.ArithmeticsPackage
 import arithmetics.Module
-import com.intellij.calcLanguage.calc.emf.CalcEmfBridge
-import com.intellij.calcLanguage.calc.psi.CalcFile
+import com.intellij.calc2Language.calc2.emf.Calc2EmfBridge
+import com.intellij.calc2Language.calc2.psi.Calc2File
 import com.intellij.entityLanguage.entity.emf.EntityEmfBridge
 import com.intellij.entityLanguage.entity.psi.EntityFile
-import com.intellij.statLanguage.stat.emf.StatEmfBridge
-import com.intellij.statLanguage.stat.psi.StatFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.xtext.AllTests
 import junit.framework.TestCase
@@ -18,7 +21,7 @@ import org.eclipse.emf.ecore.resource.impl.ResourceSetImpl
 import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl
 import org.xtext.example.entity.entity.Domainmodel
 import org.xtext.example.entity.entity.EntityPackage
-import statemachine.Statemachine
+import org.xtext.example.xtext.xtext.XtextPackage
 import statemachine.StatemachinePackage
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -59,26 +62,45 @@ open class EmfTestsBase(val myDataFolder: String) : BasePlatformTestCase() {
         }
         return null
     }
+//
+//    fun getCalcEmfModel(): Module? {
+//        val fileName = getCurrentInputFileName("calc")
+//        fileName?.let {
+//            val file = myFixture.configureByFile(it) as CalcFile
+//            val bridge = CalcEmfBridge()
+//            return bridge.createEmfModel(file) as Module
+//        }
+//        return null
+//    }
 
-    fun getCalcEmfModel(): Module? {
-        val fileName = getCurrentInputFileName("calc")
+    fun getCalc2EmfModel(): Module? {
+        val fileName = getCurrentInputFileName("calc2")
         fileName?.let {
-            val file = myFixture.configureByFile(it) as CalcFile
-            val bridge = CalcEmfBridge()
+            val file = myFixture.configureByFile(it) as Calc2File
+            val bridge = Calc2EmfBridge()
             return bridge.createEmfModel(file) as Module
         }
         return null
     }
-
-    fun getStatEmfModel(): Statemachine? {
-        val fileName = getCurrentInputFileName("stat")
-        fileName?.let {
-            val file = myFixture.configureByFile(it) as StatFile
-            val bridge = StatEmfBridge()
-            return bridge.createEmfModel(file) as Statemachine
-        }
-        return null
-    }
+//
+//    fun getStatEmfModel(): Statemachine? {
+//        val fileName = getCurrentInputFileName("stat")
+//        fileName?.let {
+//            val file = myFixture.configureByFile(it) as StatFile
+//            val bridge = StatEmfBridge()
+//            return bridge.createEmfModel(file) as Statemachine
+//        }
+//        return null
+//    }
+//    fun getXtextEmfModel(): Grammar? {
+//        val fileName = getCurrentInputFileName("xtextt")
+//        fileName?.let {
+//            val file = myFixture.configureByFile(it) as XtexttFile
+//            val bridge = XtexttEmfBridge()
+//            return bridge.createEmfModel(file) as Grammar
+//        }
+//        return null
+//    }
 
     fun persistEntityEmfModel(model: EObject) {
         val testFileName = getCurrentInputFileName("entity")
@@ -86,6 +108,22 @@ open class EmfTestsBase(val myDataFolder: String) : BasePlatformTestCase() {
         val reg = Resource.Factory.Registry.INSTANCE
         val m = reg.getExtensionToFactoryMap()
         m.put("entity", XMIResourceFactoryImpl())
+        val resSet = ResourceSetImpl()
+
+        val resource = resSet.createResource(
+                URI.createFileURI(
+                        "$basePath/$testFileName"))
+
+        resource.getContents().add(model);
+        resource.save(null);
+    }
+
+    fun persistCalc2EmfModel(model: EObject) {
+        val testFileName = getCurrentInputFileName("calc2")
+        ArithmeticsPackage.eINSTANCE.eClass()
+        val reg = Resource.Factory.Registry.INSTANCE
+        val m = reg.getExtensionToFactoryMap()
+        m.put("calc2", XMIResourceFactoryImpl())
         val resSet = ResourceSetImpl()
 
         val resource = resSet.createResource(
@@ -118,6 +156,22 @@ open class EmfTestsBase(val myDataFolder: String) : BasePlatformTestCase() {
         val reg = Resource.Factory.Registry.INSTANCE
         val m = reg.getExtensionToFactoryMap()
         m.put("stat", XMIResourceFactoryImpl())
+        val resSet = ResourceSetImpl()
+
+        val resource = resSet.createResource(
+                URI.createFileURI(
+                        "$basePath/$testFileName"))
+
+        resource.getContents().add(model)
+        resource.save(null)
+    }
+
+    fun persistXtexttEmfModel(model: EObject) {
+        val testFileName = getCurrentInputFileName("xtextt")
+        XtextPackage.eINSTANCE.eClass()
+        val reg = Resource.Factory.Registry.INSTANCE
+        val m = reg.getExtensionToFactoryMap()
+        m.put("xtextt", XMIResourceFactoryImpl())
         val resSet = ResourceSetImpl()
 
         val resource = resSet.createResource(

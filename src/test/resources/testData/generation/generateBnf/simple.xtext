@@ -1,0 +1,22 @@
+grammar org.xtext.example.simple.Simple with Terminals
+
+import "http://www.xtext.org/example/simple/Simple"
+import "http://www.eclipse.org/emf/2002/Ecore" as ecore
+Model:
+	elements+=AbstractElement+;
+AbstractElement: (Chel | Ziv) ";";
+Chel: "chel"
+	Names
+	("drugan:" drug=[AbstractElement])?
+	Fam
+	("klikucha:" klikucha=ID)
+;
+
+fragment Names: "(" name=ID surname=ID ")";
+
+fragment Fam: "[" mama=[Chel] papa=[AbstractElement] "]";
+
+Ziv: "ziv"
+	Names
+;
+

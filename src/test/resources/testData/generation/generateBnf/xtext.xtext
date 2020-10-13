@@ -1,6 +1,6 @@
 grammar org.eclipse.xtext.Xtext with Terminals
 
-import "http://www.eclipse.org/2008/Xtext"
+import "http://www.xtext.org/example/xtext/Xtext"
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore
 
 Grammar:

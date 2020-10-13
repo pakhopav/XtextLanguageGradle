@@ -6,6 +6,7 @@ Model:
 	elements+=AbstractElement*;
 
 AbstractElement: Addition| Condition| Entity;
+
 Addition returns Expression:
 	Multiplication ({AdditionalExpression.left=current} "+" right=Multiplication)*
 ;

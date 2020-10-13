@@ -1,7 +1,5 @@
 package com.intellij.xtext.emf
 
-import org.eclipse.emf.ecore.EObject
-
 class EmfTests : EmfTestsBase("/emf") {
 
 
@@ -49,34 +47,50 @@ class EmfTests : EmfTestsBase("/emf") {
 
     //========================== Arithmetics
 
-    fun testCalcAll() {
-        val myRes = getCalcEmfModel()
-        myRes?.let { persistEntityEmfModel(it) }
-    }
+//    fun testCalcAll() {
+//        val myRes = getCalcEmfModel()
+//        myRes?.let { persistEntityEmfModel(it) }
+//    }
 
-    fun testCalcMultiPluses() {
-        val myRes = getCalcEmfModel()
-        myRes?.let { persistCalcEmfModel(it as EObject) }
-        assertEqualXmi("calcMultiPlusesExpected.calc", "calc")
+    //    fun testCalcMultiPluses() {
+//        val myRes = getCalcEmfModel()
+//        myRes?.let { persistCalcEmfModel(it as EObject) }
+//        assertEqualXmi("calcMultiPlusesExpected.calc", "calc")
+//    }
+//
+//    fun testCalcWithDefinitions() {
+//        val myRes = getCalcEmfModel()
+//        myRes?.let { persistCalcEmfModel(it) }
+//        assertEqualXmi("calcWithDefinitionsExpected.calc", "calc")
+//    }
+//
+//    fun testCalcWithDefinitionsDifficult() {
+//        val myRes = getCalcEmfModel()
+//        myRes?.let { persistCalcEmfModel(it) }
+//        assertEqualXmi("calcWithDefinitionsDifficultExpected.calc", "calc")
+//    }
+//
+//   ========================== Calc2
+    fun testCalc2WithDefinitionsDifficult() {
+        val myRes = getCalc2EmfModel()
+        myRes?.let { persistCalc2EmfModel(it) }
+        assertEqualXmi("calcWithDefinitionsDifficultExpected.calc", "calc2")
     }
+//    //========================== Statemachine
+//
+//    fun testStatSimple() {
+//        val myRes = getStatEmfModel()
+//        myRes?.let { persistStatEmfModel(it as EObject) }
+//        assertEqualXmi("statSimpleExpected.stat", "stat")
+//    }
 
-    fun testCalcWithDefinitions() {
-        val myRes = getCalcEmfModel()
-        myRes?.let { persistCalcEmfModel(it) }
-        assertEqualXmi("calcWithDefinitionsExpected.calc", "calc")
-    }
 
-    fun testCalcWithDefinitionsDifficult() {
-        val myRes = getCalcEmfModel()
-        myRes?.let { persistCalcEmfModel(it) }
-        assertEqualXmi("calcWithDefinitionsDifficultExpected.calc", "calc")
-    }
+    //=========================== Xtext
 
-    //========================== Statemachine
+//    fun testXtextArithmetics() {
+//        val myRes = getXtextEmfModel()
+//        myRes?.let { persistXtexttEmfModel(it as EObject) }
+//        assertEqualXmi("xtextArithmeticsExpected.xtextt", "xtextt")
+//    }
 
-    fun testStatSimple() {
-        val myRes = getStatEmfModel()
-        myRes?.let { persistStatEmfModel(it as EObject) }
-        assertEqualXmi("statSimpleExpected.stat", "stat")
-    }
 }

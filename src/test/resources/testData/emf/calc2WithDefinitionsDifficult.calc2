@@ -1,0 +1,4 @@
+module A
+def difficult : 2 + 3 / (12 /884 *(32 + 2 + 9 )) * 7;
+def mult(arg) : difficult * 2 * 4 * difficult / 5 - 2 * arg;
+6 * (5 - (( 3 - 10 ) / (23 + 2 * mult(difficult)) + mult(3) - 9 ) * 6 * 1 ) -100;
