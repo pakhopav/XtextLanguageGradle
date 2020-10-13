@@ -6,12 +6,19 @@ import com.intellij.util.containers.JBIterable
 import java.util.*
 
 class NameGenerator {
-    fun toGKitClassName(text: String): String {
-        return toIdentifier(text, null, Case.CAMEL)!!
-    }
 
-    fun toGKitTypesName(text: String): String {
-        return toIdentifier(text, null, Case.UPPER)!!
+    companion object {
+        val g = NameGenerator()
+
+        @JvmStatic
+        fun toGKitClassName(text: String): String {
+            return g.toIdentifier(text, null, Case.CAMEL)!!
+        }
+
+        @JvmStatic
+        fun toGKitTypesName(text: String): String {
+            return g.toIdentifier(text, null, Case.UPPER)!!
+        }
     }
 
     fun toIdentifier(text: String, format: NameFormat?, cas: Case): String? {

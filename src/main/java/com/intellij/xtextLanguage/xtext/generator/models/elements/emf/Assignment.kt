@@ -1,6 +1,6 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements.emf
 
-data class Assignment(val text: String, val type: AssignmentType) {
+data class Assignment(val featureName: String, val type: AssignmentType) {
 
     companion object {
         fun fromString(string: String): Assignment {

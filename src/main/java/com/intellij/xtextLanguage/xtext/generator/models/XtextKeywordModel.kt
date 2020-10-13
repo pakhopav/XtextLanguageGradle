@@ -45,7 +45,7 @@ class XtextKeywordModel(abstractRules: List<XtextAbstractRule>) {
     val keywords: List<Keyword>
     val keywordsForParserDefinitionFile: List<Keyword>
 
-    var i = 0
+    var i = 1
 
     init {
         val list = mutableListOf<String>()
@@ -64,8 +64,6 @@ class XtextKeywordModel(abstractRules: List<XtextAbstractRule>) {
 
         keywords = listOfKeywords
         keywordsForParserDefinitionFile = listOfKeywordsForParserDefinition
-
-
     }
 
     fun createKeywordName(text: String): String {

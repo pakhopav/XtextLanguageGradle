@@ -1,7 +1,6 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements
 
 import com.intellij.psi.PsiElement
-import com.intellij.xtextLanguage.xtext.generator.RuleResolver
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 
@@ -12,10 +11,10 @@ class TerminalRule : ModelRule {
     override val alternativeElements = mutableListOf<RuleElement>()
     override var isDataTypeRule = true
 
-    constructor(myRule: XtextTerminalRule, resolver: RuleResolver) {
+    constructor(myRule: XtextTerminalRule) {
         name = myRule.validID.text.replace("^", "")
         returnTypeText = myRule.typeRef?.text ?: "String"
-        alternativeElements.addAll(AlternativeElementsFinder.getRuleElementListOfTerminalRule(myRule, resolver))
+        alternativeElements.addAll(AlternativeElementsFinder.getRuleElementListOfTerminalRule(myRule))
         isFragment = myRule.fragmentKeyword != null
     }
 
@@ -31,14 +30,14 @@ class TerminalRule : ModelRule {
         return copy
     }
 
-    class AlternativeElementsFinder(val resolver: RuleResolver) : XtextVisitor() {
+    class AlternativeElementsFinder() : XtextVisitor() {
         val ruleElementsList = mutableListOf<TerminalRuleElement>()
 
 
         companion object {
-            fun getRuleElementListOfTerminalRule(rule: XtextTerminalRule, resolver: RuleResolver): MutableList<TerminalRuleElement> {
+            fun getRuleElementListOfTerminalRule(rule: XtextTerminalRule): MutableList<TerminalRuleElement> {
 
-                val visitor = AlternativeElementsFinder(resolver)
+                val visitor = AlternativeElementsFinder()
                 visitor.visitTerminalRule(rule)
                 return visitor.ruleElementsList
             }
@@ -95,7 +94,7 @@ class TerminalRule : ModelRule {
         }
 
         override fun visitTerminalRuleCall(o: XtextTerminalRuleCall) {
-            ruleElementsList.add(TerminalRuleCallElelment(o, resolver))
+            ruleElementsList.add(TerminalRuleCallElelment(o))
         }
 
         override fun visitNegatedToken(o: XtextNegatedToken) {
