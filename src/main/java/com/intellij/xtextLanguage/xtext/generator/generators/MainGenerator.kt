@@ -1,15 +1,14 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
+import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import java.io.File
 import java.io.IOException
 
 
-open class MainGenerator(extension: String, val fileModel: XtextMainModel) : AbstractGenerator(extension) {
+open class MainGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
 
     @Throws(IOException::class)
     fun generate() {
-
         generateLanguageFile()
         generateFileTypeFile()
         generateIconsFile()
@@ -28,8 +27,6 @@ open class MainGenerator(extension: String, val fileModel: XtextMainModel) : Abs
         generateCompletionContributorFile()
         generateNamedElementFile()
         generatePsiImplUtilFile()
-//        generateElementFactoryFile()
-//        generateNameVisitorFile()
         generateReferenceContributorFile()
         generateReferenceFile()
         generateUtilFile()
@@ -55,7 +52,7 @@ open class MainGenerator(extension: String, val fileModel: XtextMainModel) : Abs
 
 
     private fun generateBnfFile() {
-        val bnfGenerator = BnfGenerator(extension, fileModel)
+        val bnfGenerator = BnfGenerator(extension, context)
         bnfGenerator.generateBnf()
     }
 
@@ -96,7 +93,7 @@ open class MainGenerator(extension: String, val fileModel: XtextMainModel) : Abs
     }
 
     private fun generateFlexFile() {
-        val generator = FlexFileGenerator(extension, fileModel)
+        val generator = FlexFileGenerator(extension, context)
         generator.generateFlexFile()
     }
 
@@ -116,7 +113,7 @@ open class MainGenerator(extension: String, val fileModel: XtextMainModel) : Abs
     }
 
     private fun generateParserDefinitionFile() {
-        val generator = ParserDefinitionFileGenerator(extension, fileModel)
+        val generator = ParserDefinitionFileGenerator(extension, context)
         generator.generateParserDefinitionFile()
 
     }
@@ -127,7 +124,7 @@ open class MainGenerator(extension: String, val fileModel: XtextMainModel) : Abs
     }
 
     private fun generateSyntaxHighlighterFile() {
-        val generator = SyntaxHighlighterFileGenerator(extension, fileModel)
+        val generator = SyntaxHighlighterFileGenerator(extension, context)
         generator.generateSyntaxHighlighterFile()
     }
 
@@ -147,34 +144,11 @@ open class MainGenerator(extension: String, val fileModel: XtextMainModel) : Abs
     }
 
     private fun generatePsiImplUtilFile() {
-        val generator = PsiImplUtilFileGenerator(extension, fileModel.parserRules, fileModel.crossReferences)
+        val generator = PsiImplUtilFileGenerator(extension, context)
         generator.geneneratePsiImplUtilFile()
-//        val generator2 = PsiImplUtilFileGenerator2(extension,fileModel.parserRules,  fileModel.crossReferences)
-//        generator2.geneneratePsiImplUtilFile()
     }
-
-//    private fun generateElementFactoryFile() {
-//        val file = createFile(extention + "ElementFactory.java", myGenDir + "/psi")
-//        val out = PrintWriter(FileOutputStream(file))
-//        out.print("""
-//            |package $packageDir.psi;
-//
-//            |public abstract class ${extention}ElementFactory  {
-//            |
-//            |}
-//        """.trimMargin("|"))
-//        out.close()
-//
-//    }
-
-//    private fun generateNameVisitorFile() {
-//        val visitorGenerator = VisitorGenerator(extension, fileModel.visitorGeneratorModel)
-//        visitorGenerator.generateNameVisitor()
-//
-//    }
-
     private fun generateReferenceContributorFile() {
-        val generator = ReferenceContributorFileGenerator(extension, fileModel.crossReferences)
+        val generator = ReferenceContributorFileGenerator(extension, context)
         generator.generateReferenceContributorFile()
     }
 
@@ -189,8 +163,8 @@ open class MainGenerator(extension: String, val fileModel: XtextMainModel) : Abs
     }
 
     private fun generateBridgeFiles() {
-        val generator = EmfBridgeGenerator(extension, fileModel.bridgeModel)
-        generator.generateAllBridgeRuleFiles()
+        val generator = EmfBridgeGenerator(extension, context)
+        generator.generateAll()
     }
 
 }

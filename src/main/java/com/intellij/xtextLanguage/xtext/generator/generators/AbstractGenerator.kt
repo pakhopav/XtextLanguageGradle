@@ -4,6 +4,7 @@ import java.io.File
 import java.io.IOException
 
 abstract class AbstractGenerator(val extension: String) {
+    internal val extensionCapitalized = extension.capitalize()
     internal val myGenDir = "src/main/java/com/intellij/${extension.toLowerCase()}Language/${extension.toLowerCase()}"
     internal val packageDir = "com.intellij.${extension.toLowerCase()}Language.${extension.toLowerCase()}"
 

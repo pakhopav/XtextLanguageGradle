@@ -1,271 +1,44 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.BridgeModel
-import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.*
+import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
+import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.Assignment
+import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.AssignmentType
+import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.EmfClassDescriptor
 import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.*
 import java.io.FileOutputStream
 import java.io.PrintWriter
+import kotlin.test.assertNotNull
 
-class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGenerator(extension) {
+class EmfBridgeGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
     private val capitalizedExtension = extension.capitalize()
-    private val nameGenerator = NameGenerator()
+    private val relevantRules = filterRelevantRules()
+    private val crossReferences = createCrossReferenceList()
 
-
-    fun generateAllBridgeRuleFiles() {
-//        generateSuperClass()
-        model.bridgeRules.forEach {
-            generateEmfBridgeRuleFile(it)
-        }
+    fun generateAll() {
+        generateBridgeRuleFiles()
         generateScopeFile()
         generateEmfCreator()
         generateBridgeFile()
 
     }
 
-//    private fun generateSuperClass() {
-//        val file = createFile("${capitalizedExtension}BridgeRule.kt", myGenDir + "/emf/rules")
-//        val out = PrintWriter(FileOutputStream(file))
-//        out.print("""
-//            |package $packageDir.emf;
-//
-//            |import ${model.emfModelPath}.${model.emfModelPrefix}Factory
-//            |import ${model.emfModelPath}.${model.emfModelPrefix}Package
-//            |import com.intellij.xtextLanguage.xtext.emf.EmfBridgeRule
-//
-//            |abstract class ${capitalizedExtension}BridgeRule : EmfBridgeRule {
-//            |protected val eFACTORY = ${model.emfModelPrefix}Factory.eINSTANCE
-//            |protected val ePACKAGE = ${model.emfModelPrefix}Package.eINSTANCE
-//            |}
-//        """.trimMargin("|"))
-//        out.close()
-//    }
-
-    private fun generateEmfBridgeRuleFile(rule: BridgeModelRule) {
-        val file = createFile("$capitalizedExtension${rule.name}BridgeRule.kt", myGenDir + "/emf/rules")
+    private fun generateEmfCreator() {
+        val file = createFile("${capitalizedExtension}EmfCreator.kt", myGenDir + "/emf")
         val out = PrintWriter(FileOutputStream(file))
-        out.println("package $packageDir.emf")
-        rule.importStrings.forEach {
-            out.println("import $it")
-        }
-        out.println("""
-            |import org.eclipse.emf.common.util.EList
-            |import com.intellij.${extension}Language.$extension.${capitalizedExtension}ParserDefinition
-            |import com.intellij.${extension}Language.$extension.psi.*
-            |import com.intellij.psi.PsiElement
-            |import com.intellij.xtextLanguage.xtext.emf.*
-            |import org.eclipse.emf.ecore.EObject
-            |import org.eclipse.emf.ecore.EClass
-            
-            |class ${capitalizedExtension}${rule.name}BridgeRule : EmfBridgeRule {
-        """.trimMargin("|"))
-        generateLiteralAssignmentMethod(rule.literalAssignments, out)
-        generateObjectAssignmentMethod(rule.objectAssignments, out)
-        generateRewriteMethod(rule.rewrites, out)
-        generateFactoryMethod(rule.returnType, out)
-        generateActionMethod(rule.simpleActions, out)
-        out.print("\n}")
+        generateEmfCreatorImports(out)
+        out.println("class ${capitalizedExtension}EmfCreator : EmfCreator() {")
+        generateEmfCreatorFields(out)
+        generateGetBridgeRuleForPsiElementMethod(out)
+        generateRegisterObjectMethod(out)
+        generateCompleteRawModelMethod(out)
+        generateIsCrossReferenceMethod(out)
+        generateCreateCrossReferenceMethod(out)
+        out.print("}")
         out.close()
     }
 
-    private fun generateLiteralAssignmentMethod(assignments: List<AssignableObject>, out: PrintWriter) {
-        out.println("    override fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment? {")
-        var elseWord = ""
-        assignments.forEach { assignment ->
-//            val elementTypeString = if(it is AssignableKeyword) "${it.keywordText.toUpperCase()}_KEYWORD" else "${it.psiElementType.toUpperCase()}"
-            val toAssignString = if (assignment.returnType.name != "String") "${assignment.returnType.name}(literal.text)" else "literal.text"
-            out.print("""
-                |        ${elseWord}if (
-            """.trimMargin("|"))
-            assignment.psiElementTypes.forEach {
-                out.print("pointer.node.elementType == ${capitalizedExtension}Types.${it}")
-                if (assignment.psiElementTypes.last() != it) out.print(" || ")
-            }
-            out.println(") {")
-            out.println("""
-                |            return object : LiteralAssignment {
-                |                override fun assign(obj: EObject, literal: PsiElement) {
-                |                    val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${assignment.assignment.text}" }
-            """.trimMargin("|"))
-            "        ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${assignment.psiElementTypes}) {"
-            when (assignment.assignment.type) {
-                AssignmentType.EQUALS -> {
-                    out.println("                    obj.eSet(feature, $toAssignString)")
-                }
-                AssignmentType.PLUS_EQUALS -> {
-                    out.println("""
-                        |                    val list = obj.eGet(feature) as EList<${assignment.returnType.name}>
-                        |                    list.add($toAssignString as ${assignment.returnType.name})
-                    """.trimMargin("|"))
-                }
-                AssignmentType.QUESTION_EQUALS -> {
-                    out.println("                    obj.eSet(feature, true)")
-                }
-            }
-            out.println("""
-                |                }
-                |            }
-                |        }
-            """.trimMargin("|"))
-            if (elseWord.isEmpty()) elseWord = "else "
-        }
-        out.println("""
-            |        return null
-            |    }
-        """.trimMargin("|"))
-    }
-
-
-    private fun generateObjectAssignmentMethod(assignments: List<AssignableObject>, out: PrintWriter) {
-        out.println("    override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {")
-        var elseWord = ""
-        assignments.forEach { assignment ->
-
-
-            out.print("""
-                |        ${elseWord}if (
-            """.trimMargin("|"))
-            assignment.psiElementTypes.forEach {
-                out.print("pointer.node.elementType == ${capitalizedExtension}Types.${it}")
-                if (assignment.psiElementTypes.last() != it) out.print(" || ")
-            }
-            out.println(") {")
-            out.println("""
-                |            return object : ObjectAssignment {
-                |                override fun assign(obj: EObject, toAssign: EObject) {
-                |                    val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${assignment.assignment.text}" }
-            """.trimMargin("|"))
-
-            when (assignment.assignment.type) {
-                AssignmentType.EQUALS -> {
-                    out.println("                    obj.eSet(feature, toAssign)")
-                }
-                AssignmentType.PLUS_EQUALS -> {
-                    out.println("""
-                        |                    val list = obj.eGet(feature) as EList<${assignment.returnType.name}>
-                        |                    list.add(toAssign as ${assignment.returnType.name})
-                    """.trimMargin("|"))
-                }
-                AssignmentType.QUESTION_EQUALS -> {
-                    out.println("                    obj.eSet(feature, true)")
-                }
-            }
-            out.println("""
-                |                }
-                |            }
-                |        }
-            """.trimMargin("|"))
-            if (elseWord.isEmpty()) elseWord = "else "
-        }
-        out.println("""
-            |        return null
-            |    }
-        """.trimMargin("|"))
-    }
-
-    private fun generateRewriteMethod(rewrites: List<Rewrite>, out: PrintWriter) {
-        out.println("   override fun findRewrite(pointer: PsiElement): Rewrite? {")
-        var elseWord = ""
-        rewrites.forEach {
-            out.println("""
-                |       ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${it.psiElementType}) {
-                |           return object : Rewrite {
-                |               override fun rewrite(obj: EObject): EObject {
-                |                   val temp = ${getFactoryName(it.newObjectType)}.create(${getPackageName(it.newObjectType)}.${nameGenerator.toGKitClassName(it.newObjectType.name).decapitalize()})
-                |                   val feature = temp.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${it.assignment.text}" }
-            """.trimMargin("|"))
-            when (it.assignment.type) {
-                AssignmentType.EQUALS -> {
-                    out.println("""
-                        |                   temp.eSet(feature, obj)
-                        |                   return temp
-                    """.trimMargin("|"))
-                }
-                AssignmentType.PLUS_EQUALS -> {
-                    out.println("""
-                        |                   val list = temp.eGet(feature) as EList<${it.returnType.name}>
-                        |                   list.add(obj as ${it.returnType.name})
-                        |                   return temp
-                    """.trimMargin("|"))
-                }
-                AssignmentType.QUESTION_EQUALS -> {
-                    out.println("""
-                        |                   temp.eSet(feature, true)
-                        |                   return temp
-                    """.trimMargin("|"))
-                }
-            }
-            out.println("""
-                |               }
-                |           }
-                |       }
-            """.trimMargin("|"))
-            if (elseWord.isEmpty()) elseWord = "else "
-        }
-        out.println("""
-            |       return null
-            |   }
-        """.trimMargin("|"))
-    }
-
-    private fun generateFactoryMethod(returnType: BridgeRuleType, out: PrintWriter) {
-        out.println("""
-            |    override fun createObject(): EObject {
-            |       return ${getFactoryName(returnType)}.create(${getPackageName(returnType)}.${nameGenerator.toGKitClassName(returnType.name).decapitalize()})
-            |    }
-            |
-        """.trimMargin("|"))
-    }
-
-    private fun generateActionMethod(actions: List<BridgeSimpleAction>, out: PrintWriter) {
-        out.println("""
-            |    override fun findAction(pointer: PsiElement): EObject? {
-        """.trimMargin("|"))
-        actions.forEach {
-            var elseWord = ""
-            out.println("""
-            |        ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${it.psiElementType}){
-            |            return ${getFactoryName(it.returnType)}.create(${getPackageName(it.returnType)}.${nameGenerator.toGKitClassName(it.returnType.name).decapitalize()})
-            |        }
-        """.trimMargin("|"))
-            elseWord = "else "
-        }
-        out.println("""
-            |        return null
-            |    }
-        """.trimMargin("|"))
-    }
-
-    private fun generateBridgeFile() {
-        val file = createFile("${capitalizedExtension}EmfBridge.kt", myGenDir + "/emf")
-        val out = PrintWriter(FileOutputStream(file))
-        out.print("""
-            |package com.intellij.${extension}Language.${extension}.emf
-            |
-            |import com.intellij.${extension}Language.${extension}.psi.${capitalizedExtension}File
-            |import com.intellij.${extension}Language.${extension}.psi.${capitalizedExtension}${model.rootRuleName}
-            |import com.intellij.psi.PsiFile
-            |import com.intellij.psi.util.PsiTreeUtil
-            |import com.intellij.xtextLanguage.xtext.emf.EmfBridge
-            |import org.eclipse.emf.ecore.EObject
-            |
-            |class ${capitalizedExtension}EmfBridge : EmfBridge {
-            |    override fun createEmfModel(file: PsiFile): EObject? {
-            |        if (file is ${capitalizedExtension}File) {
-            |            val filePsiRoot = PsiTreeUtil.findChildOfType(file, ${capitalizedExtension}${model.rootRuleName}::class.java)
-            |            filePsiRoot?.let {
-            |                val emfCreator = ${capitalizedExtension}EmfCreator()
-            |                return emfCreator.createModel(it)
-            |            }
-            |        }
-            |        return null
-            |    }
-            |}
-        """.trimMargin("|"))
-        out.close()
-    }
-
-    private fun generateEmdCreatorImports(out: PrintWriter) {
-
+    private fun generateEmfCreatorImports(out: PrintWriter) {
         out.println("""
             package com.intellij.${extension}Language.${extension}.emf
             import com.intellij.${extension}Language.${extension}.psi.*
@@ -277,64 +50,46 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
             import org.eclipse.emf.ecore.EObject
             import org.eclipse.emf.common.util.EList
             """.trimIndent())
-        getEmfCreatorImports().forEach { out.println("import $it") }
+        relevantRules.map { context.getRuleReturnType(it) }.distinct().forEach {
+            out.println("import ${it.path}")
+        }
     }
 
-    private fun getEmfCreatorImports(): Set<String> {
-        val resultSet = mutableSetOf<String>()
-        model.crossReferences.forEach {
-            resultSet.add(it.container.path)
-            resultSet.add(it.target.path)
-        }
-        model.bridgeRules.filter { it.hasName }.forEach {
-            resultSet.add(it.returnType.path)
-        }
-        return resultSet
-    }
-
-    private fun generateEmdCreatorFields(out: PrintWriter) {
-//        out.println("""
-//            |    override val eFACTORY = ${model.emfModelPrefix}Factory.eINSTANCE
-//            |    val ePACKAGE = ${model.emfModelPrefix}Package.eINSTANCE
-//            """.trimMargin("|"))
-        model.bridgeRules.forEach {
+    private fun generateEmfCreatorFields(out: PrintWriter) {
+        relevantRules.forEach {
             out.println("    private val ${it.name.toUpperCase()} = ${capitalizedExtension}${it.name}BridgeRule()")
         }
-        model.crossReferences.forEach {
+        crossReferences.forEach {
             out.println("    private val ${createCrossReferenceMapName(it)} = mutableListOf<Pair<${it.container.name}, String>>()")
         }
         out.println("    private val scope = ${capitalizedExtension}Scope(modelDescriptions)")
 
     }
 
-    private fun createCrossReferenceMapName(reference: BridgeCrossReference): String {
-        return "${reference.container.name.decapitalize()}To${reference.target.name}NameList"
-    }
-
-
     private fun generateGetBridgeRuleForPsiElementMethod(out: PrintWriter) {
         out.println("    override fun getBridgeRuleForPsiElement(psiElement: PsiElement): EmfBridgeRule? {")
-        model.bridgeRules.forEach {
+        relevantRules.forEach {
+            val rulePsiElementTypeName = NameGenerator.toGKitTypesName(it.name)
             out.println("""
-                |        if(psiElement is ${capitalizedExtension}${it.name}){
+                |        if(psiElement.node.elementType == ${capitalizedExtension}Types.$rulePsiElementTypeName){
                 |            return ${it.name.toUpperCase()}
                 |        } 
             """.trimMargin("|"))
         }
-        model.assignmentRefactoringsInfos.forEach { refactorInfo ->
-            var conditionString = ""
-            refactorInfo.duplicateRuleNames.forEach {
-                conditionString += " psiElement is ${capitalizedExtension}$it ||"
-            }
-            conditionString = conditionString.slice(0..conditionString.length - 3)
+        context.parserRules.filterIsInstance<DuplicateRule>().groupBy { it.originRuleName }.forEach {
+            val conditionString = it.value
+                    .map { "${capitalizedExtension}${it.name}" }
+                    .joinToString(prefix = " psiElement is ", separator = " || psiElement is")
             out.println("""
                 |        if($conditionString){
-                |            return ${refactorInfo.originRuleName.toUpperCase()}
+                |            return ${it.key.toUpperCase()}
                 |        } 
             """.trimMargin("|"))
         }
+
         out.println("        return null\n    }")
     }
+
 
     private fun generateRegisterObjectMethod(out: PrintWriter) {
         var elseWord = ""
@@ -342,10 +97,9 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
                 |    override fun registerObject(obj: EObject?, descriptions: MutableCollection<ObjectDescription>) {
                 |        obj?.let {            
             """.trimMargin("|"))
-        model.bridgeRules
-                .filter { it.hasName }
+        relevantRules
+                .filter { it.hasName() }
                 .forEach {
-
                     out.println("""
                         |            ${elseWord}if (obj is ${it.name}) {     
                         |                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" } 
@@ -365,13 +119,13 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
         out.println("""
                         |    override fun completeRawModel() {
                     """.trimMargin("|"))
-        model.crossReferences.forEach {
+        crossReferences.forEach {
             out.println("""
                         |        ${createCrossReferenceMapName(it)}.forEach {
                         |            val container = it.first
-                        |            val resolvedObject = scope.getSingleElementOfType(it.second, ${getPackageName(it.target)}.${nameGenerator.toGKitClassName(it.target.name).decapitalize()})
+                        |            val resolvedObject = scope.getSingleElementOfType(it.second, ${getPackageName(it.target)}.${NameGenerator.toGKitClassName(it.target.name).decapitalize()})
                         |            resolvedObject?.let { 
-                        |               val feature = container.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${it.assignment.text}" }
+                        |               val feature = container.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${it.assignment.featureName}" }
                     """.trimMargin("|"))
             when (it.assignment.type) {
                 AssignmentType.EQUALS -> {
@@ -404,29 +158,16 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
                         |    override fun isCrossReference(psiElement: PsiElement): Boolean {
                         |        return 
                     """.trimMargin("|"))
-        model.crossReferences.forEach {
-            out.print("psiElement is $capitalizedExtension${it.psiElementName}")
-            if (model.crossReferences.last() != it) {
-                out.print(" || ")
-            } else {
-                out.println()
-            }
-        }
+        out.println(crossReferences.map { "$capitalizedExtension${it.psiElementName}" }.joinToString(prefix = "psiElement is ", separator = " || psiElement is "))
         out.println("    }")
     }
 
     private fun generateCreateCrossReferenceMethod(out: PrintWriter) {
         var elseWord = ""
         out.println("    override fun createCrossReference(psiElement: PsiElement, container: EObject) {")
-//        model.crossReferences.joinToString(separator = "else ") {
-//                    """
-//                        |        if (psiElement is $capitalizedExtension${it.psiElementName})
-//                        |            referenced${it.target}Map.put(container as ${it.container}, psiElement.text)
-//                    """.trimMargin("|")
-//        }
-        model.crossReferences.forEach {
+        crossReferences.forEach {
             out.println("""
-                        |        ${elseWord}if (container is ${it.container.name} && psiElement is $capitalizedExtension${it.psiElementName})
+                        |        ${elseWord}if (container is ${it.container.name} && psiElement is $capitalizedExtension${NameGenerator.toGKitClassName(it.psiElementName)})
                         |            ${createCrossReferenceMapName(it)}.add(Pair(container, psiElement.text))
                     """.trimMargin("|"))
             elseWord = "else "
@@ -435,20 +176,213 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
     }
 
 
-    private fun generateEmfCreator() {
-        val file = createFile("${capitalizedExtension}EmfCreator.kt", myGenDir + "/emf")
+    private fun generateBridgeRuleFiles() {
+        relevantRules.forEach {
+            generateEmfBridgeRuleFile(it)
+        }
+    }
+
+    private fun generateEmfBridgeRuleFile(rule: TreeRoot) {
+        val file = createFile("$capitalizedExtension${rule.name}BridgeRule.kt", myGenDir + "/emf/rules")
         val out = PrintWriter(FileOutputStream(file))
-        generateEmdCreatorImports(out)
-        out.println("class ${capitalizedExtension}EmfCreator : EmfCreator() {")
-        generateEmdCreatorFields(out)
-        generateGetBridgeRuleForPsiElementMethod(out)
-        generateRegisterObjectMethod(out)
-        generateCompleteRawModelMethod(out)
-        generateIsCrossReferenceMethod(out)
-        generateCreateCrossReferenceMethod(out)
-        out.print("}")
+        out.println("package $packageDir.emf")
+        getPathsToImport(rule).forEach {
+            out.println("import ${it.path}")
+        }
+        out.println("""
+            |import com.intellij.${extension}Language.$extension.psi.*
+            |import com.intellij.psi.PsiElement
+            |import com.intellij.xtextLanguage.xtext.emf.*
+            |import org.eclipse.emf.ecore.EObject
+            |class ${capitalizedExtension}${rule.name}BridgeRule : EmfBridgeRule {
+        """.trimMargin("|"))
+        generateLiteralAssignmentMethod(rule, out)
+        generateObjectAssignmentMethod(rule, out)
+        generateRewriteMethod(rule, out)
+        generateFactoryMethod(rule, out)
+        generateActionMethod(rule, out)
+        out.print("\n}")
         out.close()
     }
+
+    private fun generateLiteralAssignmentMethod(rule: TreeRoot, out: PrintWriter) {
+        out.println("    override fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment? {")
+        var elseWord = ""
+        val literalAssignments = context.findLiteralAssignmentsInRule(rule)
+        literalAssignments.forEach { node ->
+            val assignmentLiteralTypeName = if (node is TreeRuleCall) getTypeNameOfCalledRule(node) else "String"
+            val psiElementTypeName = node.getPsiElementTypeName()
+            assertNotNull(psiElementTypeName)
+            val toAssignString = if (assignmentLiteralTypeName != "String") "$assignmentLiteralTypeName(literal.text)" else "literal.text"
+            out.print("""
+                |        ${elseWord}if (
+            """.trimMargin("|"))
+            out.println("pointer.node.elementType == ${capitalizedExtension}Types.$psiElementTypeName) {")
+            out.println("""
+                |            return object : LiteralAssignment {
+                |                override fun assign(obj: EObject, literal: PsiElement) {
+                |                    val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${node.assignment!!.featureName}" }
+            """.trimMargin("|"))
+            when (node.assignment!!.type) {
+                AssignmentType.EQUALS -> {
+                    out.println("                    obj.eSet(feature, $toAssignString)")
+                }
+                AssignmentType.PLUS_EQUALS -> {
+                    out.println("""
+                        |                   feature?.let {
+                        |                       Helper.esetMany(obj, it, toAssign)
+                        |                   }
+                    """.trimMargin("|"))
+                }
+                AssignmentType.QUESTION_EQUALS -> {
+                    out.println("                    obj.eSet(feature, true)")
+                }
+            }
+            out.println("""
+                |                }
+                |            }
+                |        }
+            """.trimMargin("|"))
+            if (elseWord.isEmpty()) elseWord = "else "
+        }
+        out.println("""
+            |        return null
+            |    }
+        """.trimMargin("|"))
+    }
+
+
+    private fun generateObjectAssignmentMethod(rule: TreeRoot, out: PrintWriter) {
+        out.println("    override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {")
+        var elseWord = ""
+        val objectAssignments = context.findObjectAssignmentsInRule(rule)
+        objectAssignments.forEach { node ->
+            val psiElementTypeName = node.getPsiElementTypeName()
+            val psiElementClassName = "$capitalizedExtension${NameGenerator.toGKitClassName(node.getBnfString())}"
+            out.print("""
+                |        ${elseWord}if (
+            """.trimMargin("|"))
+            out.println("pointer is $psiElementClassName) {")
+
+            out.println("""
+                |            return object : ObjectAssignment {
+                |                override fun assign(obj: EObject, toAssign: EObject) {
+                |                    val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${node.assignment!!.featureName}" }
+            """.trimMargin("|"))
+
+            when (node.assignment!!.type) {
+                AssignmentType.EQUALS -> {
+                    out.println("                    obj.eSet(feature, toAssign)")
+                }
+                AssignmentType.PLUS_EQUALS -> {
+                    out.println("""
+                        |                   feature?.let {
+                        |                       Helper.esetMany(obj, it, toAssign)
+                        |                   }
+                    """.trimMargin("|"))
+                }
+                AssignmentType.QUESTION_EQUALS -> {
+                    out.println("                    obj.eSet(feature, true)")
+                }
+            }
+            out.println("""
+                |                }
+                |            }
+                |        }
+            """.trimMargin("|"))
+            if (elseWord.isEmpty()) elseWord = "else "
+        }
+        out.println("""
+            |        return null
+            |    }
+        """.trimMargin("|"))
+    }
+
+
+    private fun generateRewriteMethod(rule: TreeRoot, out: PrintWriter) {
+        out.println("   override fun findRewrite(pointer: PsiElement): Rewrite? {")
+        var elseWord = ""
+        val nodesWithRewrite = rule.filterNodesInSubtree { it is TreeLeaf && it.rewrite != null }.map { it as TreeLeaf }
+        nodesWithRewrite.forEach { node ->
+            val newObjectType = context.getClassDescriptionByName(node.rewrite!!.newObjectClassName)
+            assertNotNull(newObjectType)
+            val psiElementType = node.getPsiElementTypeName()
+            out.println("""
+                |       ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${psiElementType}) {
+                |           return object : Rewrite {
+                |               override fun rewrite(obj: EObject): EObject {
+                |                   val temp = ${getFactoryName(newObjectType)}.create(${getPackageName(newObjectType)}.${NameGenerator.toGKitClassName(newObjectType.name).decapitalize()})
+                |                   val feature = temp.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${node.rewrite!!.assignment.featureName}" }
+            """.trimMargin("|"))
+            when (node.rewrite!!.assignment.type) {
+                AssignmentType.EQUALS -> {
+                    out.println("""
+                        |                   temp.eSet(feature, obj)
+                        |                   return temp
+                    """.trimMargin("|"))
+                }
+                AssignmentType.PLUS_EQUALS -> {
+                    out.println("""
+                        |                   feature?.let {
+                        |                       Helper.esetMany(temp, it, obj)
+                        |                   }
+                    """.trimMargin("|"))
+                }
+                AssignmentType.QUESTION_EQUALS -> {
+                    out.println("""
+                        |                   temp.eSet(feature, true)
+                        |                   return temp
+                    """.trimMargin("|"))
+                }
+            }
+            out.println("""
+                |               }
+                |           }
+                |       }
+            """.trimMargin("|"))
+            if (elseWord.isEmpty()) elseWord = "else "
+        }
+        out.println("""
+            |       return null
+            |   }
+        """.trimMargin("|"))
+
+    }
+
+    private fun generateFactoryMethod(rule: TreeRoot, out: PrintWriter) {
+        val ruleReturnType = context.getRuleReturnType(rule)
+        out.println("""
+            |    override fun createObject(): EObject {
+            |       return ${getFactoryName(ruleReturnType)}.create(${getPackageName(ruleReturnType)}.${NameGenerator.toGKitClassName(ruleReturnType.name).decapitalize()})
+            |    }
+            |
+        """.trimMargin("|"))
+    }
+
+
+    private fun generateActionMethod(rule: TreeRoot, out: PrintWriter) {
+        out.println("""
+            |    override fun findAction(pointer: PsiElement): EObject? {
+        """.trimMargin("|"))
+        val nodesWithSimpleAction = rule.filterNodesInSubtree { it is TreeLeaf && it.simpleActionText != null }.map { it as TreeLeaf }
+        nodesWithSimpleAction.forEach { node ->
+            val newObjectType = context.getClassDescriptionByName(node.simpleActionText!!)
+            assertNotNull(newObjectType)
+            val psiElementType = node.getPsiElementTypeName()
+            var elseWord = ""
+            out.println("""
+            |        ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${psiElementType}){
+            |            return ${getFactoryName(newObjectType)}.create(${getPackageName(newObjectType)}.${NameGenerator.toGKitClassName(newObjectType.name).decapitalize()})
+            |        }
+        """.trimMargin("|"))
+            elseWord = "else "
+        }
+        out.println("""
+            |        return null
+            |    }
+        """.trimMargin("|"))
+    }
+
 
     private fun generateScopeFile() {
         val file = createFile("${capitalizedExtension}Scope.kt", myGenDir + "/emf/scope")
@@ -465,15 +399,93 @@ class EmfBridgeGenerator(extension: String, val model: BridgeModel) : AbstractGe
         out.close()
     }
 
-    private fun getFactoryName(type: BridgeRuleType): String {
+    private fun generateBridgeFile() {
+        val file = createFile("${capitalizedExtension}EmfBridge.kt", myGenDir + "/emf")
+        val out = PrintWriter(FileOutputStream(file))
+        val rootRuleName = context.parserRules.first().name
+        out.print("""
+            |package com.intellij.${extension}Language.${extension}.emf
+            |
+            |import com.intellij.${extension}Language.${extension}.psi.${capitalizedExtension}File
+            |import com.intellij.${extension}Language.${extension}.psi.${capitalizedExtension}${rootRuleName}
+            |import com.intellij.psi.PsiFile
+            |import com.intellij.psi.util.PsiTreeUtil
+            |import com.intellij.xtextLanguage.xtext.emf.EmfBridge
+            |import org.eclipse.emf.ecore.EObject
+            |
+            |class ${capitalizedExtension}EmfBridge : EmfBridge {
+            |    override fun createEmfModel(file: PsiFile): EObject? {
+            |        if (file is ${capitalizedExtension}File) {
+            |            val filePsiRoot = PsiTreeUtil.findChildOfType(file, ${capitalizedExtension}${rootRuleName}::class.java)
+            |            filePsiRoot?.let {
+            |                val emfCreator = ${capitalizedExtension}EmfCreator()
+            |                return emfCreator.createModel(it)
+            |            }
+            |        }
+            |        return null
+            |    }
+            |}
+        """.trimMargin("|"))
+        out.close()
+    }
+
+    private fun getPathsToImport(rule: TreeRoot): List<EmfClassDescriptor> {
+        val nodes = context.findLiteralAssignmentsInRule(rule)
+        return nodes.filterIsInstance<TreeRuleCall>().map { getDescriptorOfCalledRule(it) }.filterNotNull()
+    }
+
+    private fun getTypeNameOfCalledRule(node: TreeRuleCall): String {
+        return getDescriptorOfCalledRule(node)?.name ?: "String"
+    }
+
+    private fun getDescriptorOfCalledRule(node: TreeRuleCall): EmfClassDescriptor? {
+        context.getParserRuleByName(node.getBnfString())?.let {
+            return context.getRuleReturnType(it)
+        }
+        context.terminalRules.firstOrNull { it.name == node.getBnfString() }?.let {
+            return if (it.returnTypeText == "String") null else context.getClassDescriptionByName(it.returnTypeText)
+        }
+        return null
+    }
+
+    private fun filterRelevantRules(): List<TreeRoot> {
+        return context.parserRules
+                .filter { !it.isFragment && !it.isDatatypeRule && it !is DuplicateRule }
+    }
+
+    private fun createCrossReferenceList(): List<BridgeCrossReference> {
+        val crossReferences = mutableListOf<BridgeCrossReference>()
+        relevantRules.forEach {
+            val crossReferencesNodes = it.filterNodesInSubtree { it is TreeCrossReference }.map { it as TreeCrossReference }
+            crossReferencesNodes.forEach {
+                val containerRule = context.getParserRuleByName(it.containerRuleName)
+                assertNotNull(containerRule)
+                val containerClassDescriptor = context.getRuleReturnType(containerRule)
+                val targetClassDescriptor = context.getClassDescriptionByName(it.targetTypeText)
+                val psiElementName = NameGenerator.toGKitClassName(it.getBnfString())
+                crossReferences.add(BridgeCrossReference(it.assignment, containerClassDescriptor, targetClassDescriptor, psiElementName))
+            }
+        }
+        return crossReferences
+    }
+
+    private fun createCrossReferenceMapName(reference: BridgeCrossReference): String {
+        return "${reference.container.name.decapitalize()}To${reference.target.name}NameList"
+    }
+
+    private fun getFactoryName(type: EmfClassDescriptor): String {
         return "${type.path.removeSuffix(type.name)}${type.prefix.capitalize()}Factory.eINSTANCE"
     }
 
-    private fun getPackageName(type: BridgeRuleType): String {
+    private fun getPackageName(type: EmfClassDescriptor): String {
         return "${type.path.removeSuffix(type.name)}${type.prefix.capitalize()}Package.eINSTANCE"
     }
 
-    companion object {
-        private fun PrintWriter.piped(text: String) = this.println(text.trimMargin("|"))
+    data class BridgeCrossReference(val assignment: Assignment,
+                                    val container: EmfClassDescriptor,
+                                    val target: EmfClassDescriptor,
+                                    val psiElementName: String) {
+
+
     }
 }

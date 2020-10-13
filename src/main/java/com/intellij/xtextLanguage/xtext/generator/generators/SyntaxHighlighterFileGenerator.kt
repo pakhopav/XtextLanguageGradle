@@ -1,10 +1,10 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
+import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class SyntaxHighlighterFileGenerator(extension: String, val fileModel: XtextMainModel) : AbstractGenerator(extension) {
+class SyntaxHighlighterFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
     fun generateSyntaxHighlighterFile() {
         val file = createFile(extension.capitalize() + "SyntaxHighlighter.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
@@ -48,7 +48,7 @@ class SyntaxHighlighterFileGenerator(extension: String, val fileModel: XtextMain
             |    public TextAttributesKey[] getTokenHighlights(IElementType tokenType) {
             |        if (${extension.capitalize()}ParserDefinition.KEYWORDS.contains(tokenType)) {
             |            return KEY_KEYS;""".trimMargin("|"))
-        if (fileModel.ruleResolver.getTerminalRuleByName("STRING") != null) {
+        if (context.terminalRules.any { it.name == "STRING" }) {
             out.print("""
             |        } else if (tokenType.equals(${extension.capitalize()}Types.STRING)) {
             |            return VALUE_KEYS;

@@ -1,10 +1,10 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
+import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class ParserDefinitionFileGenerator(extension: String, val fileModel: XtextMainModel) : AbstractGenerator(extension) {
+class ParserDefinitionFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
     fun generateParserDefinitionFile() {
         val file = createFile(extension.capitalize() + "ParserDefinition.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
@@ -31,13 +31,13 @@ class ParserDefinitionFileGenerator(extension: String, val fileModel: XtextMainM
             |    public static final TokenSet KEYWORDS = TokenSet.create(
             """.trimMargin("|"))
 
-        fileModel.keywordModel.keywordsForParserDefinitionFile.forEach {
+        context.keywordModel.keywordsForParserDefinitionFile.forEach {
             out.print("            ${extension.capitalize()}Types.${it.name}")
-            if (it != fileModel.keywordModel.keywordsForParserDefinitionFile.last()) out.print(",\n")
+            if (it != context.keywordModel.keywordsForParserDefinitionFile.last()) out.print(",\n")
 
         }
         out.print(");\n")
-        if (fileModel.ruleResolver.getTerminalRuleByName("ML_COMMENT") != null && fileModel.ruleResolver.getTerminalRuleByName("SL_COMMENT") != null) {
+        if (context.terminalRules.any { it.name == "ML_COMMENT" } && context.terminalRules.any { it.name == "SL_COMMENT" }) {
             out.print("    public static final TokenSet COMMENTS = TokenSet.create(${extension.capitalize()}Types.SL_COMMENT, ${extension.capitalize()}Types.ML_COMMENT);")
         } else out.print("    public static final TokenSet COMMENTS = null;")
         out.print("""

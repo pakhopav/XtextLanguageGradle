@@ -1,20 +1,20 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.elements.ParserCrossReferenceElement
-import com.intellij.xtextLanguage.xtext.generator.models.elements.ParserRule
-import com.intellij.xtextLanguage.xtext.generator.models.elements.RuleElement
+import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
+import com.intellij.xtextLanguage.xtext.generator.models.elements.Cardinality
 import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeLeaf
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRoot
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRuleCall
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class PsiImplUtilFileGenerator(extension: String, val rules: List<ParserRule>, val references: List<ParserCrossReferenceElement>) : AbstractGenerator(extension) {
-    private val capitalizedExtension = extension.capitalize()
-    private val nameGenerator = NameGenerator()
+class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
     fun geneneratePsiImplUtilFile() {
         val file = createFile(extension.capitalize() + "PsiImplUtil.java", myGenDir + "/psi/impl")
         val out = PrintWriter(FileOutputStream(file))
         out.println("""
-            |package $packageDir.psi.impl;
+             |package $packageDir.psi.impl;
                         
             |import com.intellij.psi.*;
             |import $packageDir.psi.*;
@@ -24,52 +24,26 @@ class PsiImplUtilFileGenerator(extension: String, val rules: List<ParserRule>, v
             
             |public class ${extension.capitalize()}PsiImplUtil {
         """.trimMargin("|"))
-        references.distinctBy { it.name }.flatMap { it.targets }.forEach { target ->
-            var targetHasName = target.nameElements.isNotEmpty()
-            val targetName = target.superRuleName
-            val targetParserRule = rules.firstOrNull { it.name == targetName }
+        context.parserRules.filter { context.isReferencedRule(it) }.forEach {
+            val ruleName = it.name
             out.println("""
-                        |    public static PsiElement setName($capitalizedExtension$targetName element, String newName) {
+                        |    public static PsiElement setName($extensionCapitalized$ruleName element, String newName) {
                         |        //TODO
                         |        return element;
                         |    }
                         
-                        |    public static String getName($capitalizedExtension$targetName element) {
+                        |    public static String getName($extensionCapitalized$ruleName element) {
                         |        return Optional.ofNullable(getNameIdentifier(element))
                         |            .map(PsiElement::getText)
                         |            .orElse(null);
                         |    }
                         |    
-                        |    public static PsiElement getNameIdentifier($capitalizedExtension$targetName element) {
+                        |    public static PsiElement getNameIdentifier($extensionCapitalized$ruleName element) {
                     """.trimMargin("|"))
-//            val targetsNameElement = getElementAssignedToName(targetParserRule!!)
-//            targetsNameElement?.let {
-//                val elementName = nameGenerator.toGKitClassName(it.getBnfName())
-//                out.println("        return element.get${elementName}();")
-//                targetHasName = true
-//            }
+            generateGetNameIdentifierMethodBody(out, it, "            ", "element")
+            out.println("            return null;\n        }")
 
-            if (target.nameElements.size == 1) {
-                out.println("        return element.get${target.nameElements[0]}();")
-            } else if (target.nameElements.size > 1) {
-                target.nameElements.forEach {
-                    out.println("            if(element.get$it() != null) return element.get$it();")
-                }
-            }
-            target.subRules.forEach {
-                out.println(it.getGeneratorString(capitalizedExtension))
-//                out.println("        if(element instanceof $capitalizedExtension$subRuleName){")
-//                val subRule = rules.firstOrNull { it.name == subRuleName }
-//                val nameElement = getElementAssignedToName(subRule!!)
-//                val elementName = nameGenerator.toGKitClassName(nameElement!!.getBnfName())
-//                out.println("            return (($capitalizedExtension$subRuleName)element).get${elementName}();\n        }")
-            }
-            out.println("""
-                        |        ${if (targetHasName) "" else "return null;"}
-                        |    }                        
-                    """.trimMargin("|"))
         }
-
         out.println("""
             |}    
         """.trimMargin("|"))
@@ -77,7 +51,33 @@ class PsiImplUtilFileGenerator(extension: String, val rules: List<ParserRule>, v
 
     }
 
-    private fun getElementAssignedToName(rule: ParserRule): RuleElement? {
-        return rule.alternativeElements.firstOrNull { it.assignment == "name=" }
+    private fun generateGetNameIdentifierMethodBody(out: PrintWriter, rule: TreeRoot, indent: String, elementName: String) {
+        var optionalName = true
+        if (rule.hasName()) {
+            val nodesWithName = rule.filterNodesInSubtree { it is TreeLeaf && it.assignment != null && it.assignment!!.featureName == "name" }
+                    .distinctBy { it.getBnfString() }
+            nodesWithName.forEach {
+                if (it.cardinality == Cardinality.NONE) optionalName = false
+                val getMethodName = "get${NameGenerator.toGKitClassName(it.getBnfString())}"
+                out.println("${indent}if($elementName.$getMethodName() != null){")
+                out.println("${indent}    return $elementName.$getMethodName();\n${indent}}")
+            }
+        }
+        if (optionalName) {
+            val rulesCalledWithoutAssignment = rule
+                    .filterNodesInSubtree { it is TreeRuleCall && it.assignment == null }
+                    .map { context.getParserRuleByName(it.getBnfString()) }
+                    .filterNotNull()
+            rulesCalledWithoutAssignment.filter { it.superRuleName == rule.name }.forEach {
+                val calledRuleName = NameGenerator.toGKitClassName(it.name)
+                val calledRuleClassName = "$extensionCapitalized$calledRuleName"
+                out.println("${indent}if($elementName  instanceof $calledRuleClassName){")
+                out.println("${indent}    $calledRuleClassName ${calledRuleName.decapitalize()} = ($calledRuleClassName) $elementName;")
+                generateGetNameIdentifierMethodBody(out, it, "    $indent", calledRuleName.decapitalize())
+                out.println("$indent}")
+
+            }
+        }
+
     }
 }

@@ -1,11 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
+import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import com.intellij.xtextLanguage.xtext.generator.models.elements.TerminalRuleElement
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class FlexFileGenerator(extension: String, val fileModel: XtextMainModel) : AbstractGenerator(extension) {
+class FlexFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
     fun generateFlexFile() {
         val file = createFile(extension.capitalize() + ".flex", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
@@ -33,7 +33,7 @@ class FlexFileGenerator(extension: String, val fileModel: XtextMainModel) : Abst
             |%}
 
         """.trimMargin("|"))
-        fileModel.terminalRules.forEach {
+        context.terminalRules.forEach {
             if (it.name.equals("WS")) {
                 out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
             } else {
@@ -43,17 +43,17 @@ class FlexFileGenerator(extension: String, val fileModel: XtextMainModel) : Abst
                 }
                 out.print("\n")
             }
-            if (fileModel.ruleResolver.getTerminalRuleByName("WS") == null) out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
+            if (!context.terminalRules.any { it.name == "WS" }) out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
         }
         out.print("%%\n<YYINITIAL> {\n")
-        fileModel.keywordModel.keywords.forEach { out.print("\"${it.keyword}\" {return ${it.name.toUpperCase()};}\n") }
-        fileModel.terminalRules.forEach {
+        context.keywordModel.keywords.forEach { out.print("\"${it.keyword}\" {return ${it.name.toUpperCase()};}\n") }
+        context.terminalRules.forEach {
             if (it.name.equals("WS")) {
                 out.print("{WS} {return WHITE_SPACE;}\n")
             } else {
                 out.print("{${it.name.toUpperCase()}} {return ${it.name.toUpperCase()};}\n")
             }
-            if (fileModel.ruleResolver.getTerminalRuleByName("WS") == null) out.print("{WS} {return WHITE_SPACE;}\n")
+            if (!context.terminalRules.any { it.name == "WS" }) out.print("{WS} {return WHITE_SPACE;}\n")
 
         }
         out.print("}\n[^] { return BAD_CHARACTER; }")

@@ -1,10 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.elements.ParserCrossReferenceElement
+import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeCrossReference
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class ReferenceContributorFileGenerator(extension: String, val references: List<ParserCrossReferenceElement>) : AbstractGenerator(extension) {
+class ReferenceContributorFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
     fun generateReferenceContributorFile() {
         val file = createFile(extension.capitalize() + "ReferenceContributor.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
@@ -26,8 +27,10 @@ class ReferenceContributorFileGenerator(extension: String, val references: List<
             |    @Override
             |    public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         """.trimMargin("|"))
-        references.distinctBy { it.name }.filter { it.targets.isNotEmpty() }.forEach {
-            val referenceName = it.name.replace("_", "")
+        val referenceNodes = context.parserRules.flatMap { it.filterNodesInSubtree { it is TreeCrossReference } }.map { it as TreeCrossReference }
+        referenceNodes.distinctBy { it.getBnfString() }.forEach { crossReferenceNode ->
+            val targetRuleNames = context.parserRules.filter { context.getRuleReturnType(it) == context.getClassDescriptionByName(crossReferenceNode.targetTypeText) }.map { it.name }
+            val referenceName = crossReferenceNode.getBnfString().replace("_", "")
             out.print("""
             |        registrar.registerReferenceProvider(PlatformPatterns.psiElement(${extension.capitalize()}${referenceName}.class).withLanguage(${extension.capitalize()}Language.INSTANCE),
             |                new PsiReferenceProvider() {
@@ -39,12 +42,8 @@ class ReferenceContributorFileGenerator(extension: String, val references: List<
             |                String value = reference.getText();
             |                ArrayList<Class<? extends PsiNameIdentifierOwner>> list = new ArrayList<>((Collection<? extends Class<? extends PsiNameIdentifierOwner>>)Arrays.asList(
             """.trimMargin("|"))
-            val targets = it.targets
-            targets.forEach {
-                out.print("${extension.capitalize()}${it.superRuleName}.class")
-                if (it !== targets.last()) out.print(", ")
-            }
-            out.print("));\n")
+            out.print(targetRuleNames.map { "${extension.capitalize()}$it.class" }.joinToString())
+            out.println("));")
             out.println("""
             |                return new PsiReference[]{
             |                    new ${extension.capitalize()}Reference(element, new TextRange(0, value.length()), list)};
@@ -53,9 +52,6 @@ class ReferenceContributorFileGenerator(extension: String, val references: List<
             """.trimMargin("|"))
         }
         out.print("    }\n}")
-
-
         out.close()
-
     }
 }

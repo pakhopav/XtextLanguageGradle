@@ -1,12 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
-import com.intellij.xtextLanguage.xtext.generator.models.XtextMainModel
+import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRoot
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class BnfGenerator(extension: String, val fileModel: XtextMainModel) : AbstractGenerator(extension) {
-
-
+class BnfGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
     fun generateBnf() {
         val file = MainGenerator.createFile(extension.capitalize() + ".bnf", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
@@ -16,13 +15,12 @@ class BnfGenerator(extension: String, val fileModel: XtextMainModel) : AbstractG
         out.print("}\n")
         generateRules(out)
         generateEnumRules(out)
-//        generateReferences(out)
         out.close()
     }
 
     fun generateTerminalRules(out: PrintWriter) {
         out.print("    tokens = [\n")
-        fileModel.terminalRules.forEach {
+        context.terminalRules.forEach {
             out.print(it.name.toUpperCase() + "=\"regexp:")
             it.alternativeElements.forEach {
                 out.print(it.getBnfName())
@@ -35,7 +33,7 @@ class BnfGenerator(extension: String, val fileModel: XtextMainModel) : AbstractG
     }
 
     private fun generateKeywordTokens(out: PrintWriter) {
-        fileModel.keywordModel.keywords.forEach { out.print("      ${it.name} = \'${it.keyword}\'\n") }
+        context.keywordModel.keywords.forEach { out.print("      ${it.name} = \'${it.keyword}\'\n") }
     }
 
     private fun generateAttributes(out: PrintWriter) {
@@ -59,12 +57,9 @@ class BnfGenerator(extension: String, val fileModel: XtextMainModel) : AbstractG
         out.print("\n")
     }
 
-//    private fun generateReferences(out: PrintWriter) {
-//        fileModel.referencesModel.references.forEach { out.print("${it.name} ::= ${it.referenceType}\n") }
-//    }
 
     private fun generateEnumRules(out: PrintWriter) {
-        fileModel.enumRules.forEach {
+        context.enumRules.forEach {
             val rule = it
             out.print("${it.name} ::= ")
             it.alternativeElements.forEach {
@@ -80,57 +75,40 @@ class BnfGenerator(extension: String, val fileModel: XtextMainModel) : AbstractG
     }
 
     private fun generateRules(out: PrintWriter) {
-        fileModel.parserRules.forEach {
-
-            if (it == fileModel.parserRules.first()) {
-                out.print("${extension.capitalize()}File ::= ${it.name}\n")
+        out.print("${extension.capitalize()}File ::= ${context.parserRules[0].name}\n")
+        context.parserRules.forEach {
+            if (context.hasPrivateDuplicate(it)) {
+                generatePrivateDuplicate(it, out)
             }
-            if (it.isPrivate) out.print("private ")
-            out.print("${createGkitRuleName(it.name)} ::= ")
-
-            it.alternativeElements.forEach {
-                out.print(it.getBnfName() + " ")
-
-            }
-            out.print("\n")
-//            if (it.isReferenced) {
-//                out.print("""
-//                |{
-//                |mixin="$packageDir.psi.impl.${extension.capitalize()}NamedElementImpl"
-//                |implements="com.intellij.psi.PsiNameIdentifierOwner"
-//                |methods=[ getName setName getNameIdentifier ]
-//                |}
-//
-//            """.trimMargin("|"))
-//            }
-            if (it.bnfExtensionsStrings.isNotEmpty() || it.isReferenced) {
-                out.println("{")
-                it.bnfExtensionsStrings.forEach {
-                    out.println(it)
-                }
-                if (it.isReferenced) {
-                    out.println("""
+            if (it.isFragment) out.print("private ")
+            out.print("${it.name} ::= ${it.getBnfString()}\n")
+            val bnfExtensions = mutableListOf<String>()
+            if (context.isReferencedRule(it)) {
+                bnfExtensions.add("""
                 mixin="$packageDir.psi.impl.${extension.capitalize()}NamedElementImpl"
                 implements="com.intellij.psi.PsiNameIdentifierOwner"
                 methods=[ getName setName getNameIdentifier ]
                 """.trimIndent())
+            }
+            it.superRuleName?.let {
+                bnfExtensions.add("extends=$it")
+            }
+            if (bnfExtensions.isNotEmpty()) {
+                out.println("{")
+                bnfExtensions.forEach {
+                    out.println(it)
                 }
                 out.println("}")
             }
             out.print("\n")
+
         }
     }
 
-    fun createGkitRuleName(oldName: String?): String {
-        var newName: String? = null
-        oldName?.let {
-            if (it.startsWith("^")) {
-                newName = it.replace("^", "Caret").capitalize()
-            } else {
-                newName = it.capitalize()
-            }
-        }
 
-        return newName ?: ""
+    private fun generatePrivateDuplicate(rule: TreeRoot, out: PrintWriter) {
+        val newName = rule.name + "Private"
+        val body = rule.children.map { it.getBnfString() }.joinToString(separator = " ")
+        out.println("private $newName ::= $body\n")
     }
 }
