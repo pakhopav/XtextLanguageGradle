@@ -2,12 +2,13 @@ package com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl
 
 import com.intellij.xtextLanguage.xtext.generator.models.elements.Cardinality
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeLeaf
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode.Companion.filterNodesInSubtree
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRoot
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.eliminateCaret
 import com.intellij.xtextLanguage.xtext.psi.XtextParserRule
 
 
-open class TreeRootImpl(psiRule: XtextParserRule) : TreeNodeImpl(psiRule, null), TreeRoot {
+open class TreeRootImpl(psiRule: XtextParserRule) : TreeNodeImpl(null), TreeRoot {
     // TreeNode fields
     override val cardinality: Cardinality
         get() = Cardinality.NONE

@@ -7,8 +7,17 @@ interface TreeNode {
     val cardinality: Cardinality
 
     fun getBnfString(): String
-    fun setSpecificBnfString(string: String)
-    fun filterNodesInSubtree(condition: (node: TreeNode) -> Boolean): List<TreeNode>
+
+    companion object {
+        fun TreeNode.filterNodesInSubtree(condition: (node: TreeNode) -> Boolean): List<TreeNode> {
+            val filteredNodes = mutableListOf<TreeNode>()
+            this.children.forEach {
+                filteredNodes.addAll(it.filterNodesInSubtree(condition))
+            }
+            if (condition(this)) filteredNodes.add(this)
+            return filteredNodes
+        }
+    }
 }
 
 fun String.eliminateCaret(): String {

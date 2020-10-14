@@ -217,7 +217,7 @@ class ParserRuleCreator(keywords: List<Keyword>) {
             val lastActionOnEntry = lastAction
             var moreThanOneChild = alternatives.conditionalBranchList.size > 1
             if (moreThanOneChild) {
-                val treeBranch = TreeBranchImpl(alternatives, treeNodeStack.peek())
+                val treeBranch = TreeBranchImpl(treeNodeStack.peek())
                 treeNodeStack.peek().addChild(treeBranch)
                 treeNodeStack.push(treeBranch)
             }
@@ -237,7 +237,7 @@ class ParserRuleCreator(keywords: List<Keyword>) {
                 if (treeNodeStack.peek() is TreeGroup || treeNodeStack.peek() is TreeRoot || tokensListSize < 2) {
                     visitUnorderedGroup(unorderedGroup)
                 } else {
-                    val treeGroup = TreeGroupImpl2(unorderedGroup, treeNodeStack.peek())
+                    val treeGroup = TreeGroupImpl2(treeNodeStack.peek())
                     treeNodeStack.peek().addChild(treeGroup)
                     treeNodeStack.push(treeGroup)
                     visitUnorderedGroup(unorderedGroup)
@@ -253,7 +253,7 @@ class ParserRuleCreator(keywords: List<Keyword>) {
             val lastActionOnEntry = lastAction
             var moreThanOneChild = xtextAssignableAlternatives.assignableTerminalList.size > 1
             if (moreThanOneChild) {
-                val treeBranch = TreeBranchImpl1(xtextAssignableAlternatives, treeNodeStack.peek())
+                val treeBranch = TreeBranchImpl1(treeNodeStack.peek())
                 treeNodeStack.peek().addChild(treeBranch)
                 treeNodeStack.push(treeBranch)
             }
@@ -277,7 +277,7 @@ class ParserRuleCreator(keywords: List<Keyword>) {
                 addTreeNode(treeLeafRuleCall)
             }
             assignableTerminal.parenthesizedAssignableElement?.let {
-                val treeGroup = TreeGroupImpl1(it, treeNodeStack.peek())
+                val treeGroup = TreeGroupImpl1(treeNodeStack.peek())
                 treeNodeStack.peek().addChild(treeGroup)
                 treeNodeStack.push(treeGroup)
                 visitParenthesizedAssignableElement(it, assignmentString)

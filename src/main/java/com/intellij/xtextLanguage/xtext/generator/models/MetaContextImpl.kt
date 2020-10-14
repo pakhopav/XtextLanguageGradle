@@ -8,6 +8,7 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.TerminalRuleCa
 import com.intellij.xtextLanguage.xtext.generator.models.elements.TerminalRuleElement
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.EmfClassDescriptor
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.*
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode.Companion.filterNodesInSubtree
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl.*
 import com.intellij.xtextLanguage.xtext.generator.models.exception.TypeNotFoundException
 import com.intellij.xtextLanguage.xtext.psi.*
@@ -185,9 +186,12 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
             val ruleCallsToFragments = allRuleCalls.filter { fragmentsNames.contains(it.getBnfName()) }
             ruleCallsToFragments.forEach { ruleCall ->
                 val calledFragmentRule = fragmentRules.first { it.name == ruleCall.getBnfName() }
-                val calledFragmentCopy = (calledFragmentRule as TreeNodeImpl).copy()
-                (ruleCall.parent as TreeNodeImpl).replaceChild(ruleCall, calledFragmentCopy)
-                calledFragmentCopy.setSpecificBnfString(ruleCall.getBnfName())
+                val newTreeGroup = TreeGroupImpl2(ruleCall.parent)
+                calledFragmentRule.children.forEach {
+                    newTreeGroup.addChild(it as TreeNodeImpl)
+                }
+                (ruleCall.parent as TreeNodeImpl).replaceChild(ruleCall, newTreeGroup)
+                newTreeGroup.setSpecificBnfString(ruleCall.getBnfName())
             }
         }
     }
