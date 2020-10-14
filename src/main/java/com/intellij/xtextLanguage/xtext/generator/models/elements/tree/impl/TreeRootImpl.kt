@@ -14,8 +14,11 @@ open class TreeRootImpl(psiRule: XtextParserRule) : TreeNodeImpl(psiRule, null),
 
     // TreeRoot fields
     override val name = psiRule.ruleNameAndParams.validID.text.eliminateCaret().capitalize()
+
+    protected var changedReturnTypeText: String? = null
     override val returnTypeText: String = psiRule.typeRef?.text ?: ""
         get() {
+            changedReturnTypeText?.let { return it }
             if (field.isEmpty()) {
                 return if (_isDatatypeRule) "String"
                 else ""
@@ -54,5 +57,9 @@ open class TreeRootImpl(psiRule: XtextParserRule) : TreeNodeImpl(psiRule, null),
 
     fun setSuperRule(superRuleName: String) {
         _superRuleName = superRuleName
+    }
+
+    fun changeReturnType(newReturnTypeText: String) {
+        changedReturnTypeText = newReturnTypeText
     }
 }

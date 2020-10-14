@@ -8,10 +8,7 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.TerminalRuleCa
 import com.intellij.xtextLanguage.xtext.generator.models.elements.TerminalRuleElement
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.EmfClassDescriptor
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.*
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl.TreeCrossReferenceImpl
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl.TreeNodeImpl
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl.TreeRootImpl
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl.TreeRuleCallImpl
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl.*
 import com.intellij.xtextLanguage.xtext.generator.models.exception.TypeNotFoundException
 import com.intellij.xtextLanguage.xtext.psi.*
 import java.util.*
@@ -224,18 +221,31 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         val changedNames = mutableListOf<Pair<String, String>>()
 
         rules.forEach { root ->
-            val nodesToRename = findNodesToRenameIfSameAssignment(root)
-            nodesToRename.forEach {
-                val newName = createNewNameForNode(it)
-                val oldName = it.getBnfName()
-                it.setSpecificBnfString(newName)
+            val leavesToRefactor = findEquallyCalledLeavesWithSameAssignment(root)
+            leavesToRefactor.forEach { leafToRefactor ->
+                leafToRefactor as TreeLeafImpl
+                val newName = createNewNameForLeaf(leafToRefactor)
+                val oldName = leafToRefactor.getBnfName()
+                val newTreeRuleCall = createNewTreeRuleCallToReplaceLeaf(leafToRefactor, newName)
+                (leafToRefactor.parent as TreeNodeImpl).replaceChild(leafToRefactor, newTreeRuleCall)
                 changedNames.add(Pair(oldName, newName))
             }
         }
         createNewRulesAccordingToChanges(rules, changedNames)
     }
 
-    private fun findNodesToRenameIfSameAssignment(rule: TreeRoot): List<TreeLeaf> {
+    private fun createNewTreeRuleCallToReplaceLeaf(leafToReplace: TreeLeafImpl, newNodeName: String): TreeRuleCall {
+        val oldLeafCardinality = leafToReplace.cardinality
+        val psiAbstractTokenWithCardinality = XtextElementFactory.createAbstractTokenWithCardinality("$newNodeName $oldLeafCardinality")
+        val psiRuleCall = psiAbstractTokenWithCardinality.abstractTerminal?.ruleCall
+        assertNotNull(psiRuleCall)
+        val newTreeRuleCall = TreeRuleCallImpl(psiRuleCall, leafToReplace.parent!!, leafToReplace.assignment)
+        leafToReplace.rewrite?.let { newTreeRuleCall.setRewrite(it) }
+        leafToReplace.simpleActionText?.let { newTreeRuleCall.setSimpleAction(it) }
+        return newTreeRuleCall
+    }
+
+    private fun findEquallyCalledLeavesWithSameAssignment(rule: TreeRoot): List<TreeLeaf> {
         val result = mutableListOf<TreeLeaf>()
         val groupedElements = findAllNodesOfType(rule, TreeLeaf::class.java).groupBy { it.getBnfName() }
         groupedElements.values
@@ -251,10 +261,9 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
     }
 
 
-    private fun createNewNameForNode(node: TreeNode): String {
+    private fun createNewNameForLeaf(node: TreeLeaf): String {
         val newName: String
-        if (node is TreeRuleCallImpl || node is TreeCrossReferenceImpl) {
-            node as TreeLeaf
+        if (node is TreeRuleCall || node is TreeCrossReference) {
             val n = ruleNameOccurrences.get(node.getBnfName())
             assertNotNull(n)
             newName = node.getBnfName() + (n + 1).toString()
@@ -265,34 +274,35 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         return newName
     }
 
-
     private fun refactorOnActionsCollision(rules: MutableList<TreeRoot>) {
         val changedNames = mutableListOf<Pair<String, String>>()
         rules.forEach {
-            val nodesToRename = findNodesToRenameIfSameAction(it)
-            nodesToRename.forEach {
-                val newName = createNewNameForNode(it)
-                val oldName = it.getBnfName()
-                it.setSpecificBnfString(newName)
+            val nodesToRename = findEquallyCalledLeavesWithSameAction(it)
+            nodesToRename.forEach { leafToRefactor ->
+                leafToRefactor as TreeLeafImpl
+                val newName = createNewNameForLeaf(leafToRefactor)
+                val oldName = leafToRefactor.getBnfName()
+                val newTreeRuleCall = createNewTreeRuleCallToReplaceLeaf(leafToRefactor, newName)
+                (leafToRefactor.parent as TreeNodeImpl).replaceChild(leafToRefactor, newTreeRuleCall)
                 changedNames.add(Pair(oldName, newName))
             }
         }
-
         createNewRulesAccordingToChanges(rules, changedNames)
     }
 
-    private fun findNodesToRenameIfSameAction(rule: TreeRoot): List<TreeLeaf> {
+
+    private fun findEquallyCalledLeavesWithSameAction(rule: TreeRoot): List<TreeLeaf> {
         val resultList = mutableListOf<TreeLeaf>()
-        val allLeafs = findAllNodesOfType(rule, TreeLeaf::class.java)
-        val leafsWithRewrite = allLeafs.filter { it.rewrite != null }
+        val allLeaves = findAllNodesOfType(rule, TreeLeaf::class.java)
+        val leafsWithRewrite = allLeaves.filter { it.rewrite != null }
         leafsWithRewrite.forEach { leafWithRewrite ->
-            if (allLeafs.any { it.getBnfName() == leafWithRewrite.getBnfName() && it.rewrite != leafWithRewrite.rewrite }) {
+            if (allLeaves.any { it.getBnfName() == leafWithRewrite.getBnfName() && it.rewrite != leafWithRewrite.rewrite }) {
                 resultList.add(leafWithRewrite)
             }
         }
-        val leafsWithSimpleAction = allLeafs.filter { it.simpleActionText != null }
+        val leafsWithSimpleAction = allLeaves.filter { it.simpleActionText != null }
         leafsWithSimpleAction.forEach { leafWithSimpleAction ->
-            if (allLeafs.any { it.getBnfName() == leafWithSimpleAction.getBnfName() && it.simpleActionText != leafWithSimpleAction.simpleActionText }) {
+            if (allLeaves.any { it.getBnfName() == leafWithSimpleAction.getBnfName() && it.simpleActionText != leafWithSimpleAction.simpleActionText }) {
                 resultList.add(leafWithSimpleAction)
             }
         }
@@ -427,8 +437,9 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
                 .flatMap { findAllNodesOfType(it, TreeCrossReference::class.java) }
                 .distinctBy { it.getBnfName() }
         treeCrossReference.forEach { nodeWithReference ->
+            val targetType = getClassDescriptionByName(nodeWithReference.targetTypeText)
             resultList.addAll(_parserRules
-                    .filter { getRuleReturnType(it) == getClassDescriptionByName(nodeWithReference.targetTypeText) }
+                    .filter { getRuleReturnType(it) == targetType }
                     .map { it.name })
         }
         return resultList.distinct()

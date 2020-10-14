@@ -28,9 +28,9 @@ class ReferenceContributorFileGenerator(extension: String, val context: MetaCont
             |    public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         """.trimMargin("|"))
         val referenceNodes = context.parserRules.flatMap { it.filterNodesInSubtree { it is TreeCrossReference } }.map { it as TreeCrossReference }
-        referenceNodes.distinctBy { it.getBnfString() }.forEach { crossReferenceNode ->
+        referenceNodes.distinctBy { it.getBnfName() }.forEach { crossReferenceNode ->
             val targetRuleNames = context.parserRules.filter { context.getRuleReturnType(it) == context.getClassDescriptionByName(crossReferenceNode.targetTypeText) }.map { it.name }
-            val referenceName = crossReferenceNode.getBnfString().replace("_", "")
+            val referenceName = crossReferenceNode.getBnfName().replace("_", "")
             out.print("""
             |        registrar.registerReferenceProvider(PlatformPatterns.psiElement(${extension.capitalize()}${referenceName}.class).withLanguage(${extension.capitalize()}Language.INSTANCE),
             |                new PsiReferenceProvider() {

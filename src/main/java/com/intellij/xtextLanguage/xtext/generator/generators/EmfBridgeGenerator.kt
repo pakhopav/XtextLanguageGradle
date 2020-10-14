@@ -258,7 +258,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         val objectAssignments = context.findObjectAssignmentsInRule(rule)
         objectAssignments.forEach { node ->
             val psiElementTypeName = node.getPsiElementTypeName()
-            val psiElementClassName = "$capitalizedExtension${NameGenerator.toGKitClassName(node.getBnfString())}"
+            val psiElementClassName = "$capitalizedExtension${NameGenerator.toGKitClassName(node.getBnfName())}"
             out.print("""
                 |        ${elseWord}if (
             """.trimMargin("|"))
@@ -431,7 +431,8 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
 
     private fun getPathsToImport(rule: TreeRoot): List<EmfClassDescriptor> {
         val nodes = context.findLiteralAssignmentsInRule(rule)
-        return nodes.filterIsInstance<TreeRuleCall>().map { getDescriptorOfCalledRule(it) }.filterNotNull()
+
+        return nodes.filterIsInstance<TreeRuleCall>().map { getDescriptorOfCalledRule(it) }.filter { it != EmfClassDescriptor.STRING }.filterNotNull()
     }
 
     private fun getTypeNameOfCalledRule(node: TreeRuleCall): String {
@@ -439,10 +440,10 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
     private fun getDescriptorOfCalledRule(node: TreeRuleCall): EmfClassDescriptor? {
-        context.getParserRuleByName(node.getBnfString())?.let {
+        context.getParserRuleByName(node.getBnfName())?.let {
             return context.getRuleReturnType(it)
         }
-        context.terminalRules.firstOrNull { it.name == node.getBnfString() }?.let {
+        context.terminalRules.firstOrNull { it.name == node.getBnfName() }?.let {
             return if (it.returnTypeText == "String") null else context.getClassDescriptionByName(it.returnTypeText)
         }
         return null
@@ -462,7 +463,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
                 assertNotNull(containerRule)
                 val containerClassDescriptor = context.getRuleReturnType(containerRule)
                 val targetClassDescriptor = context.getClassDescriptionByName(it.targetTypeText)
-                val psiElementName = NameGenerator.toGKitClassName(it.getBnfString())
+                val psiElementName = NameGenerator.toGKitClassName(it.getBnfName())
                 crossReferences.add(BridgeCrossReference(it.assignment, containerClassDescriptor, targetClassDescriptor, psiElementName))
             }
         }

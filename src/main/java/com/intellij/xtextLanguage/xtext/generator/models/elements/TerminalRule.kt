@@ -21,15 +21,6 @@ class TerminalRule : ModelRule {
     constructor()
 
 
-    fun copy(): TerminalRule {
-        val copy = TerminalRule()
-        copy.name = name
-        copy.returnTypeText = returnTypeText
-        copy.alternativeElements.addAll(alternativeElements)
-        copy.isFragment = isFragment
-        return copy
-    }
-
     class AlternativeElementsFinder() : XtextVisitor() {
         val ruleElementsList = mutableListOf<TerminalRuleElement>()
 

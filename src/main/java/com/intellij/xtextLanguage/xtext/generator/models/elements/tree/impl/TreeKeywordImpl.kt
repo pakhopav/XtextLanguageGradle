@@ -8,7 +8,7 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode
 
 class TreeKeywordImpl(psiElement: PsiElement,
                       parent: TreeNode,
-                      val keywordName: String,
+                      private val keywordName: String,
                       assignment: Assignment? = null) : TreeLeafImpl(psiElement, parent, assignment), TreeKeyword {
 
     override val cardinality: Cardinality

@@ -33,7 +33,7 @@ class TreeCrossReferenceImpl(psiCrossReference: XtextCrossReference,
     }
 
     override fun getPsiElementTypeName(): String {
-        return NameGenerator.toGKitTypesName(getBnfString())
+        return NameGenerator.toGKitTypesName(getBnfName())
     }
 
     override fun getBnfName(): String {

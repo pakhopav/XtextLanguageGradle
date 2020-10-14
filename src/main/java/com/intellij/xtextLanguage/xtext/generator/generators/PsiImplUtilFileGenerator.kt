@@ -55,10 +55,11 @@ class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : Ab
         var optionalName = true
         if (rule.hasName()) {
             val nodesWithName = rule.filterNodesInSubtree { it is TreeLeaf && it.assignment != null && it.assignment!!.featureName == "name" }
-                    .distinctBy { it.getBnfString() }
+                    .map { it as TreeLeaf }
+                    .distinctBy { it.getBnfName() }
             nodesWithName.forEach {
                 if (it.cardinality == Cardinality.NONE) optionalName = false
-                val getMethodName = "get${NameGenerator.toGKitClassName(it.getBnfString())}"
+                val getMethodName = "get${NameGenerator.toGKitClassName(it.getBnfName())}"
                 out.println("${indent}if($elementName.$getMethodName() != null){")
                 out.println("${indent}    return $elementName.$getMethodName();\n${indent}}")
             }
@@ -66,7 +67,8 @@ class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : Ab
         if (optionalName) {
             val rulesCalledWithoutAssignment = rule
                     .filterNodesInSubtree { it is TreeRuleCall && it.assignment == null }
-                    .map { context.getParserRuleByName(it.getBnfString()) }
+                    .map { it as TreeRuleCall }
+                    .map { context.getParserRuleByName(it.getBnfName()) }
                     .filterNotNull()
             rulesCalledWithoutAssignment.filter { it.superRuleName == rule.name }.forEach {
                 val calledRuleName = NameGenerator.toGKitClassName(it.name)

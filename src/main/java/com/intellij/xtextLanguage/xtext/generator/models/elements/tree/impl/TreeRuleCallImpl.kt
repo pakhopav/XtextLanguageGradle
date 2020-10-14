@@ -15,17 +15,19 @@ class TreeRuleCallImpl(psiElement: PsiElement,
     override val cardinality: Cardinality
         get() = getCardinalityOfPsiElement()
 
+    private val bnfName = psiElement.text.eliminateCaret().capitalize()
+
     override fun getBnfString(): String {
         specificString?.let { return it }
-        return psiElement.text.eliminateCaret().capitalize() + cardinality.toString()
+        return bnfName + cardinality.toString()
     }
 
     override fun getPsiElementTypeName(): String {
-        return NameGenerator.toGKitTypesName(getBnfString())
+        return NameGenerator.toGKitTypesName(bnfName)
     }
 
     override fun getBnfName(): String {
-        return psiElement.text.eliminateCaret().capitalize()
+        return bnfName
     }
 
 }
