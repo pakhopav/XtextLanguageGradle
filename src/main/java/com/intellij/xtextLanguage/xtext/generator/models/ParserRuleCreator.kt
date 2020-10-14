@@ -38,6 +38,7 @@ class ParserRuleCreator(keywords: List<Keyword>) {
         private val treeNodeStack = Stack<TreeNodeImpl>()
         private var suffixWasAdded = false
         private var suffixCounter = 1
+        private var newType = ""
 
 
         fun createRule(rule: XtextParserRule): TreeRootImpl {
@@ -46,6 +47,7 @@ class ParserRuleCreator(keywords: List<Keyword>) {
             treeNodeStack.push(treeRoot)
             currentRuleName = rule.ruleNameAndParams.validID.text.replace("^", "").capitalize()
             visitAlternatives(rule.alternatives)
+            if (newType.isNotEmpty()) treeRoot.changeReturnType(newType)
             return treeRoot
         }
 
@@ -63,6 +65,7 @@ class ParserRuleCreator(keywords: List<Keyword>) {
             lastAction = null
             currentRuleName = ""
             suffixCounter = 1
+            newType = ""
         }
 
         private fun createTreeKeyword(psiElement: PsiElement, assignmentString: String?): TreeKeywordImpl {
@@ -108,25 +111,7 @@ class ParserRuleCreator(keywords: List<Keyword>) {
 
         override fun visitAbstractTokenWithCardinality(o: XtextAbstractTokenWithCardinality) {
             if (lastAction != null && !goodElement(o)) {
-                val suffixName = "${currentRuleName}Suffix${suffixCounter++}"
-                //to change
-                //Case if action is right under root: RULE : {A} (...)?
-                if (noAssignmentsPrecededInBranch(o) && treeNodeStack.peek() !is TreeRoot) {
-                    val currentPeek = treeNodeStack.peek()
-                    val parentGroup = PsiTreeUtil.getParentOfType(o, XtextGroup::class.java)
-                    val suffix = TreeSuffixImpl(parentGroup!!, suffixName, currentPeek.parent!!)
-                    currentPeek.children.forEach { suffix.addChild(it as TreeNodeImpl) }
-                    setActionToTreeLeaf(suffix, lastAction!!)
-                    treeNodeStack.pop()
-                    treeNodeStack.peek().replaceChild(currentPeek, suffix)
-                    treeNodeStack.push(suffix)
-                } else {
-                    //to change
-                    val parentGroup = PsiTreeUtil.getParentOfType(o, XtextGroup::class.java)
-                    val suffix = TreeSuffixImpl(parentGroup!!, suffixName, treeNodeStack.peek())
-                    addTreeNode(suffix)
-                }
-                lastAction = null
+                insertSuffix(o)
             }
 
             o.abstractTerminal?.let {
@@ -135,6 +120,35 @@ class ParserRuleCreator(keywords: List<Keyword>) {
             o.assignment?.let {
                 visitAssignment(it)
             }
+        }
+
+
+        private fun insertSuffix(abstractTokenWithCardinality: XtextAbstractTokenWithCardinality) {
+            val suffixName = "${currentRuleName}Suffix${suffixCounter++}"
+            //to change
+            //Case if action is right under root: RULE : {A} (...)?
+            if (noAssignmentsPrecededInBranch(abstractTokenWithCardinality)) {
+                if (treeNodeStack.peek() is TreeRoot) {
+                    if (lastAction!!.split(".").size < 2) {
+                        newType = lastAction!!.removePrefix("{").removeSuffix("}")
+                    }
+                } else {
+                    val currentPeek = treeNodeStack.peek()
+                    val parentGroup = PsiTreeUtil.getParentOfType(abstractTokenWithCardinality, XtextGroup::class.java)
+                    val suffix = TreeSuffixImpl(parentGroup!!, suffixName, currentPeek.parent!!)
+                    currentPeek.children.forEach { suffix.addChild(it as TreeNodeImpl) }
+                    setActionToTreeLeaf(suffix, lastAction!!)
+                    treeNodeStack.pop()
+                    treeNodeStack.peek().replaceChild(currentPeek, suffix)
+                    treeNodeStack.push(suffix)
+                }
+            } else {
+                //to change
+                val parentGroup = PsiTreeUtil.getParentOfType(abstractTokenWithCardinality, XtextGroup::class.java)
+                val suffix = TreeSuffixImpl(parentGroup!!, suffixName, treeNodeStack.peek())
+                addTreeNode(suffix)
+            }
+            lastAction = null
         }
 
         private fun setActionToTreeLeaf(node: TreeLeafImpl, actionText: String) {

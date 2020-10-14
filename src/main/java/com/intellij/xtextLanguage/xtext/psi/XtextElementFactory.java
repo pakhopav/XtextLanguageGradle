@@ -25,6 +25,25 @@ public abstract class XtextElementFactory {
         return expectedClass.isInstance(psiResult) ? expectedClass.cast(psiResult) : null;
     }
 
+
+    public static XtextAbstractTokenWithCardinality createAbstractTokenWithCardinality(String text) {
+        XtextAbstractTokenWithCardinality token =
+                parseFromString(text, XtextTypes.ABSTRACT_TOKEN_WITH_CARDINALITY, XtextAbstractTokenWithCardinality.class);
+        if (token == null) {
+            throw new IllegalStateException("Can't parse to RULE_CALL declaration: " + text);
+        }
+        return token;
+    }
+
+    public static XtextRuleCall createRuleCall(String ruleCallText) {
+        XtextRuleCall rule =
+                parseFromString(ruleCallText, XtextTypes.RULE_CALL, XtextRuleCall.class);
+        if (rule == null) {
+            throw new IllegalStateException("Can't parse to RULE_CALL declaration: " + ruleCallText);
+        }
+        return rule;
+    }
+
     public static XtextParserRule createParserRule(String name) {
         XtextParserRule rule =
                 parseFromString(name, XtextTypes.PARSER_RULE, XtextParserRule.class);
