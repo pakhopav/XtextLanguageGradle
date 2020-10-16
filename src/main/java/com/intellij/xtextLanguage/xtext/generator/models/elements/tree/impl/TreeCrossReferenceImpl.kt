@@ -19,7 +19,6 @@ class TreeCrossReferenceImpl(psiCrossReference: XtextCrossReference,
 
 
     override fun getBnfString(): String {
-        specificString?.let { return it }
         return bnfName + cardinality.toString()
     }
 

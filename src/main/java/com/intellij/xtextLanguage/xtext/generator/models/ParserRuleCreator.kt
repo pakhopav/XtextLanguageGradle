@@ -2,7 +2,6 @@ package com.intellij.xtextLanguage.xtext.generator.models
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
-import com.intellij.xtextLanguage.xtext.generator.models.elements.Keyword
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.Assignment
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.TreeRewrite
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeGroup
@@ -15,8 +14,8 @@ import com.intellij.xtextLanguage.xtext.psi.*
 import java.util.*
 import kotlin.test.assertNotNull
 
-class ParserRuleCreator(keywords: List<Keyword>) {
-    private val visitor = XtextParserRuleVisitor(keywords)
+class ParserRuleCreator(val context: MetaContext) {
+    private val visitor = XtextParserRuleVisitor(context)
 
     fun createFromXtextParserRule(xtextRule: XtextParserRule): TreeRootImpl {
         return visitor.createRule(xtextRule)
@@ -32,7 +31,8 @@ class ParserRuleCreator(keywords: List<Keyword>) {
     }
 
 
-    private class XtextParserRuleVisitor(private val keywords: List<Keyword>) : XtextVisitor() {
+    private class XtextParserRuleVisitor(private val context: MetaContext) : XtextVisitor() {
+        private val keywords = context.keywordModel.keywords
         private var lastAction: String? = null
         private var currentRuleName = ""
         private val treeNodeStack = Stack<TreeNodeImpl>()
@@ -47,7 +47,7 @@ class ParserRuleCreator(keywords: List<Keyword>) {
             treeNodeStack.push(treeRoot)
             currentRuleName = rule.ruleNameAndParams.validID.text.replace("^", "").capitalize()
             visitAlternatives(rule.alternatives)
-            if (newType.isNotEmpty()) treeRoot.changeReturnType(newType)
+            if (newType.isNotEmpty()) treeRoot.returnTypeText = newType
             return treeRoot
         }
 
@@ -237,7 +237,7 @@ class ParserRuleCreator(keywords: List<Keyword>) {
                 if (treeNodeStack.peek() is TreeGroup || treeNodeStack.peek() is TreeRoot || tokensListSize < 2) {
                     visitUnorderedGroup(unorderedGroup)
                 } else {
-                    val treeGroup = TreeGroupImpl2(treeNodeStack.peek())
+                    val treeGroup = TreeSyntheticGroup(treeNodeStack.peek(), false)
                     treeNodeStack.peek().addChild(treeGroup)
                     treeNodeStack.push(treeGroup)
                     visitUnorderedGroup(unorderedGroup)
@@ -253,7 +253,7 @@ class ParserRuleCreator(keywords: List<Keyword>) {
             val lastActionOnEntry = lastAction
             var moreThanOneChild = xtextAssignableAlternatives.assignableTerminalList.size > 1
             if (moreThanOneChild) {
-                val treeBranch = TreeBranchImpl1(treeNodeStack.peek())
+                val treeBranch = TreeBranchImpl(treeNodeStack.peek())
                 treeNodeStack.peek().addChild(treeBranch)
                 treeNodeStack.push(treeBranch)
             }
@@ -277,7 +277,7 @@ class ParserRuleCreator(keywords: List<Keyword>) {
                 addTreeNode(treeLeafRuleCall)
             }
             assignableTerminal.parenthesizedAssignableElement?.let {
-                val treeGroup = TreeGroupImpl1(treeNodeStack.peek())
+                val treeGroup = TreeSyntheticGroup(treeNodeStack.peek(), true)
                 treeNodeStack.peek().addChild(treeGroup)
                 treeNodeStack.push(treeGroup)
                 visitParenthesizedAssignableElement(it, assignmentString)

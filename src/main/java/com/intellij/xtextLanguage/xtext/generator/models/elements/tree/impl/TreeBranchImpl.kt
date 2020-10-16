@@ -10,7 +10,6 @@ class TreeBranchImpl(parent: TreeNode) : TreeNodeImpl(parent), TreeBranch {
 
 
     override fun getBnfString(): String {
-        specificString?.let { return it }
         return _children.map { it.getBnfString() }.joinToString(separator = " | ")
     }
 }

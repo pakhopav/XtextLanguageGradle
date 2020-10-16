@@ -6,6 +6,7 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.Assignment
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.EmfClassDescriptor
 import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.*
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode.Companion.filterNodesInSubtree
 import java.io.FileOutputStream
 import java.io.PrintWriter
 import kotlin.test.assertNotNull
@@ -98,7 +99,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
                 |        obj?.let {            
             """.trimMargin("|"))
         relevantRules
-                .filter { it.hasName() }
+                .filter { it.hasNameFeature() }
                 .forEach {
                     out.println("""
                         |            ${elseWord}if (obj is ${it.name}) {     

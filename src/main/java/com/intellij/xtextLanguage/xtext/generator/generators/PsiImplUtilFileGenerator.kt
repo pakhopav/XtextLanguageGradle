@@ -4,6 +4,7 @@ import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import com.intellij.xtextLanguage.xtext.generator.models.elements.Cardinality
 import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeLeaf
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode.Companion.filterNodesInSubtree
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRoot
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRuleCall
 import java.io.FileOutputStream
@@ -53,7 +54,7 @@ class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : Ab
 
     private fun generateGetNameIdentifierMethodBody(out: PrintWriter, rule: TreeRoot, indent: String, elementName: String) {
         var optionalName = true
-        if (rule.hasName()) {
+        if (rule.hasNameFeature()) {
             val nodesWithName = rule.filterNodesInSubtree { it is TreeLeaf && it.assignment != null && it.assignment!!.featureName == "name" }
                     .map { it as TreeLeaf }
                     .distinctBy { it.getBnfName() }

@@ -12,7 +12,6 @@ class TreeSuffixImpl(psiElement: PsiElement, val suffixName: String, parent: Tre
         get() = Cardinality.NONE
     override val assignment = null
     override fun getBnfString(): String {
-        specificString?.let { return it }
         return suffixName
     }
 

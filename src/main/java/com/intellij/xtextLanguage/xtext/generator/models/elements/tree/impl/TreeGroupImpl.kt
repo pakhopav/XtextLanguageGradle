@@ -12,7 +12,6 @@ import com.intellij.xtextLanguage.xtext.psi.XtextParenthesizedElement
 class TreeGroupImpl(psiElement: XtextParenthesizedElement, parent: TreeNode, assignment: Assignment? = null) : TreeNodeImpl(parent), TreeGroup {
     override val cardinality = getCardinalityOfPsiElement(psiElement)
     override fun getBnfString(): String {
-        specificString?.let { return it }
         return _children.map { it.getBnfString() }.joinToString(separator = " ", prefix = "(", postfix = ")") + cardinality.toString()
     }
 

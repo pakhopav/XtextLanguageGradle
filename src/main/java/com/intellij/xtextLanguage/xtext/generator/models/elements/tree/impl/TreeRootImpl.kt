@@ -8,36 +8,49 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.eliminate
 import com.intellij.xtextLanguage.xtext.psi.XtextParserRule
 
 
-open class TreeRootImpl(psiRule: XtextParserRule) : TreeNodeImpl(null), TreeRoot {
+open class TreeRootImpl : TreeNodeImpl, TreeRoot {
+
     // TreeNode fields
     override val cardinality: Cardinality
         get() = Cardinality.NONE
 
-    // TreeRoot fields
-    override val name = psiRule.ruleNameAndParams.validID.text.eliminateCaret().capitalize()
+    override val name: String
 
-    protected var changedReturnTypeText: String? = null
-    override val returnTypeText: String = psiRule.typeRef?.text ?: ""
+    var returnTypeText: String
         get() {
-            changedReturnTypeText?.let { return it }
             if (field.isEmpty()) {
-                return if (_isDatatypeRule) "String"
-                else ""
+                if (_isDatatypeRule) return "String"
+                else if (!isFragment) return name
+                else return ""
             } else {
                 return field
             }
         }
+
     protected var _isDatatypeRule = false
     override val isDatatypeRule: Boolean
         get() = _isDatatypeRule
-    override val isFragment: Boolean = psiRule.fragmentKeyword != null
+    override val isFragment: Boolean
 
     protected var _superRuleName: String? = null
     override val superRuleName: String?
         get() = _superRuleName
 
+
+    constructor(psiRule: XtextParserRule) : super(null) {
+        name = psiRule.ruleNameAndParams.validID.text.eliminateCaret().capitalize()
+        returnTypeText = psiRule.typeRef?.text ?: ""
+        isFragment = psiRule.fragmentKeyword != null
+    }
+
+    constructor(name: String, returnTypeText: String, isFragment: Boolean) : super(null) {
+        this.name = name
+        this.returnTypeText = returnTypeText
+        this.isFragment = isFragment
+    }
+
+
     override fun getBnfString(): String {
-        specificString?.let { return it }
         val stringBuffer = StringBuffer()
         _children.forEach {
             stringBuffer.append(it.getBnfString())
@@ -46,8 +59,7 @@ open class TreeRootImpl(psiRule: XtextParserRule) : TreeNodeImpl(null), TreeRoot
         return stringBuffer.toString()
     }
 
-
-    override fun hasName(): Boolean {
+    override fun hasNameFeature(): Boolean {
         val nodesWithAssignmentToNameFeature = this.filterNodesInSubtree { it is TreeLeaf && it.assignment?.featureName == "name" }
         return nodesWithAssignmentToNameFeature.isNotEmpty()
     }
@@ -60,7 +72,5 @@ open class TreeRootImpl(psiRule: XtextParserRule) : TreeNodeImpl(null), TreeRoot
         _superRuleName = superRuleName
     }
 
-    fun changeReturnType(newReturnTypeText: String) {
-        changedReturnTypeText = newReturnTypeText
-    }
+
 }

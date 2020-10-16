@@ -15,7 +15,6 @@ class TreeKeywordImpl(psiElement: PsiElement,
         get() = getCardinalityOfPsiElement()
 
     override fun getBnfString(): String {
-        specificString?.let { return it }
         return psiElement.text + cardinality.toString()
     }
 

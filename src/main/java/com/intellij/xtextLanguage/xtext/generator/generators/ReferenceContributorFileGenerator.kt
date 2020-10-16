@@ -2,10 +2,12 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 
 import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeCrossReference
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode.Companion.filterNodesInSubtree
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
 class ReferenceContributorFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+    private val relevantRules = context.parserRules.filter { !it.isFragment }
     fun generateReferenceContributorFile() {
         val file = createFile(extension.capitalize() + "ReferenceContributor.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
@@ -27,9 +29,9 @@ class ReferenceContributorFileGenerator(extension: String, val context: MetaCont
             |    @Override
             |    public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         """.trimMargin("|"))
-        val referenceNodes = context.parserRules.flatMap { it.filterNodesInSubtree { it is TreeCrossReference } }.map { it as TreeCrossReference }
+        val referenceNodes = relevantRules.flatMap { it.filterNodesInSubtree { it is TreeCrossReference } }.map { it as TreeCrossReference }
         referenceNodes.distinctBy { it.getBnfName() }.forEach { crossReferenceNode ->
-            val targetRuleNames = context.parserRules.filter { context.getRuleReturnType(it) == context.getClassDescriptionByName(crossReferenceNode.targetTypeText) }.map { it.name }
+            val targetRuleNames = relevantRules.filter { context.getRuleReturnType(it) == context.getClassDescriptionByName(crossReferenceNode.targetTypeText) }.map { it.name }
             val referenceName = crossReferenceNode.getBnfName().replace("_", "")
             out.print("""
             |        registrar.registerReferenceProvider(PlatformPatterns.psiElement(${extension.capitalize()}${referenceName}.class).withLanguage(${extension.capitalize()}Language.INSTANCE),

@@ -1,7 +1,9 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
 import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode.Companion.filterNodesInSubtree
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRoot
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeSuffix
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
@@ -76,21 +78,18 @@ class BnfGenerator(extension: String, val context: MetaContext) : AbstractGenera
 
     private fun generateRules(out: PrintWriter) {
         out.print("${extension.capitalize()}File ::= ${context.parserRules[0].name}\n")
-        context.parserRules.forEach {
-            if (context.hasPrivateDuplicate(it)) {
-                generatePrivateDuplicate(it, out)
-            }
-            if (it.isFragment) out.print("private ")
-            out.print("${it.name} ::= ${it.getBnfString()}\n")
+        context.parserRules.forEach { rule ->
+            if (rule.isFragment) out.print("private ")
+            out.print("${rule.name} ::= ${rule.getBnfString()}\n")
             val bnfExtensions = mutableListOf<String>()
-            if (context.isReferencedRule(it)) {
+            if (context.isReferencedRule(rule)) {
                 bnfExtensions.add("""
                 mixin="$packageDir.psi.impl.${extension.capitalize()}NamedElementImpl"
                 implements="com.intellij.psi.PsiNameIdentifierOwner"
                 methods=[ getName setName getNameIdentifier ]
                 """.trimIndent())
             }
-            it.superRuleName?.let {
+            rule.superRuleName?.let {
                 bnfExtensions.add("extends=$it")
             }
             if (bnfExtensions.isNotEmpty()) {
@@ -99,6 +98,9 @@ class BnfGenerator(extension: String, val context: MetaContext) : AbstractGenera
                     out.println(it)
                 }
                 out.println("}")
+            }
+            rule.filterNodesInSubtree { it is TreeSuffix }.forEach {
+
             }
             out.print("\n")
 

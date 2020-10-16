@@ -2,15 +2,22 @@ package com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl
 
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode
 
-abstract class TreeNodeImpl(open val parent: TreeNode?) : TreeNode {
+abstract class TreeNodeImpl(open var parent: TreeNode?) : TreeNode {
     protected val _children = mutableListOf<TreeNode>()
     override val children: List<TreeNode>
         get() = _children
 
-    protected var specificString: String? = null
 
     fun addChild(child: TreeNodeImpl) {
         _children.add(child)
+    }
+
+    fun removeChild(child: TreeNodeImpl) {
+        _children.remove(child)
+    }
+
+    fun removeAll(nodes: List<TreeNodeImpl>) {
+        _children.removeAll(nodes)
     }
 
     fun replaceChild(toReplace: TreeNode, newNode: TreeNode) {
@@ -19,10 +26,6 @@ abstract class TreeNodeImpl(open val parent: TreeNode?) : TreeNode {
             _children.remove(toReplace)
             _children.add(index, newNode)
         }
-    }
-
-    fun setSpecificBnfString(string: String) {
-        specificString = string
     }
 
 }

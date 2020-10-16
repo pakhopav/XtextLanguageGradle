@@ -9,7 +9,7 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeLeaf
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode
 import com.intellij.xtextLanguage.xtext.psi.XtextAbstractTokenWithCardinality
 
-abstract class TreeLeafImpl(protected val psiElement: PsiElement, override val parent: TreeNode, assignment: Assignment? = null) : TreeNodeImpl(parent), TreeLeaf {
+abstract class TreeLeafImpl(protected val psiElement: PsiElement, parent: TreeNode, assignment: Assignment? = null) : TreeNodeImpl(parent), TreeLeaf {
     override val assignment = assignment
     protected var _rewrite: TreeRewrite? = null
     override val rewrite: TreeRewrite?
