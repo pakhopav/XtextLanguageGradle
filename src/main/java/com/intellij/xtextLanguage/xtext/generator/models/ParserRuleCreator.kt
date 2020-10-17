@@ -2,26 +2,25 @@ package com.intellij.xtextLanguage.xtext.generator.models
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.xtextLanguage.xtext.generator.models.elements.Keyword
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.Assignment
+import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.EmfClassDescriptor
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.TreeRewrite
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeGroup
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeLeaf
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRoot
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeSuffix
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.*
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl.*
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 import java.util.*
 import kotlin.test.assertNotNull
 
-class ParserRuleCreator(val context: MetaContext) {
-    private val visitor = XtextParserRuleVisitor(context)
+class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
+    private val visitor = XtextParserRuleVisitor(keywords, emfRegistry)
 
-    fun createFromXtextParserRule(xtextRule: XtextParserRule): TreeRootImpl {
+    fun createFromXtextParserRule(xtextRule: XtextParserRule): TreeRoot {
         return visitor.createRule(xtextRule)
     }
 
-    fun createRule(ruleName: String, ruleBody: String, extension: String = "", fragment: Boolean = false, originRuleName: String? = null): TreeRootImpl {
+    fun createRule(ruleName: String, ruleBody: String, extension: String = "", fragment: Boolean = false, originRuleName: String? = null): TreeRoot {
         val ruleText = "${if (fragment) "fragment" else ""}$ruleName ${if (extension.isNotEmpty()) "returns $extension" else ""} : ${ruleBody};"
         val xtextRule = XtextElementFactory.createParserRule(ruleText)
         originRuleName?.let {
@@ -31,8 +30,9 @@ class ParserRuleCreator(val context: MetaContext) {
     }
 
 
-    private class XtextParserRuleVisitor(private val context: MetaContext) : XtextVisitor() {
-        private val keywords = context.keywordModel.keywords
+    private class XtextParserRuleVisitor(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) : XtextVisitor() {
+        private val keywords = keywords
+        private val emfRegistry = emfRegistry
         private var lastAction: String? = null
         private var currentRuleName = ""
         private val treeNodeStack = Stack<TreeNodeImpl>()
@@ -40,20 +40,38 @@ class ParserRuleCreator(val context: MetaContext) {
         private var suffixCounter = 1
         private var newType = ""
 
+        private fun getRuleTypeDescriptor(rule: XtextParserRule): EmfClassDescriptor {
+            val returnTypeText = rule.typeRef?.text ?: rule.ruleNameAndParams.validID.text.eliminateCaret()
+            val ruleType = emfRegistry.findOrCreateType(returnTypeText)
+            if (ruleType == null) return EmfClassDescriptor.STRING
+            return ruleType
+        }
 
-        fun createRule(rule: XtextParserRule): TreeRootImpl {
+        fun createRule(rule: XtextParserRule): TreeRoot {
             clearAll()
-            val treeRoot = TreeRootImpl(rule)
-            treeNodeStack.push(treeRoot)
+            val treeRoot: TreeRoot =
+                    rule.fragmentKeyword?.let {
+                        TreeFragmentRuleImpl(rule)
+                    } ?: kotlin.run {
+                        val type = getRuleTypeDescriptor(rule)
+                        TreeParserRuleImpl(rule, type)
+                    }
+            treeNodeStack.push(treeRoot as TreeNodeImpl)
             currentRuleName = rule.ruleNameAndParams.validID.text.replace("^", "").capitalize()
             visitAlternatives(rule.alternatives)
-            if (newType.isNotEmpty()) treeRoot.returnTypeText = newType
+            if (newType.isNotEmpty()) {
+                assert(treeRoot is TreeParserRule)
+                emfRegistry.findOrCreateType(newType)?.let {
+                    (treeRoot as TreeParserRuleImpl).setReturnType(it)
+                }
+            }
             return treeRoot
         }
 
-        fun createDuplicateRule(rule: XtextParserRule, originRuleName: String): TreeRootImpl {
+        fun createDuplicateRule(rule: XtextParserRule, originRuleName: String): TreeParserRuleImpl {
             clearAll()
-            val treeRoot = DuplicateRuleImpl(rule, originRuleName)
+            val type = getRuleTypeDescriptor(rule)
+            val treeRoot = DuplicateRuleImpl(rule, type, originRuleName)
             treeNodeStack.push(treeRoot)
             currentRuleName = rule.ruleNameAndParams.validID.text.replace("^", "").capitalize()
             visitAlternatives(rule.alternatives)
@@ -285,7 +303,10 @@ class ParserRuleCreator(val context: MetaContext) {
                 treeNodeStack.pop()
             }
             assignableTerminal.crossReference?.let {
-                addTreeNode(TreeCrossReferenceImpl(it, currentRuleName, treeNodeStack.peek(), Assignment.fromString(assignmentString)))
+                val referenceType = emfRegistry.findOrCreateType(it.typeRef.text)
+                assertNotNull(referenceType)
+                val referenceNode = TreeCrossReferenceImpl(it, currentRuleName, treeNodeStack.peek(), referenceType, Assignment.fromString(assignmentString))
+                addTreeNode(referenceNode)
             }
         }
 

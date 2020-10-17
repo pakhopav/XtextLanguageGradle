@@ -51,7 +51,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
             import org.eclipse.emf.ecore.EObject
             import org.eclipse.emf.common.util.EList
             """.trimIndent())
-        relevantRules.map { context.getRuleReturnType(it) }.distinct().forEach {
+        relevantRules.map { it.returnType }.distinct().forEach {
             out.println("import ${it.path}")
         }
     }
@@ -77,7 +77,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
                 |        } 
             """.trimMargin("|"))
         }
-        context.parserRules.filterIsInstance<DuplicateRule>().groupBy { it.originRuleName }.forEach {
+        context.rules.filterIsInstance<DuplicateRule>().groupBy { it.originRuleName }.forEach {
             val conditionString = it.value
                     .map { "${capitalizedExtension}${it.name}" }
                     .joinToString(prefix = " psiElement is ", separator = " || psiElement is")
@@ -183,7 +183,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         }
     }
 
-    private fun generateEmfBridgeRuleFile(rule: TreeRoot) {
+    private fun generateEmfBridgeRuleFile(rule: TreeParserRule) {
         val file = createFile("$capitalizedExtension${rule.name}BridgeRule.kt", myGenDir + "/emf/rules")
         val out = PrintWriter(FileOutputStream(file))
         out.println("package $packageDir.emf")
@@ -350,11 +350,10 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
 
     }
 
-    private fun generateFactoryMethod(rule: TreeRoot, out: PrintWriter) {
-        val ruleReturnType = context.getRuleReturnType(rule)
+    private fun generateFactoryMethod(rule: TreeParserRule, out: PrintWriter) {
         out.println("""
             |    override fun createObject(): EObject {
-            |       return ${getFactoryName(ruleReturnType)}.create(${getPackageName(ruleReturnType)}.${NameGenerator.toGKitClassName(ruleReturnType.name).decapitalize()})
+            |       return ${getFactoryName(rule.returnType)}.create(${getPackageName(rule.returnType)}.${NameGenerator.toGKitClassName(rule.returnType.name).decapitalize()})
             |    }
             |
         """.trimMargin("|"))
@@ -403,7 +402,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
     private fun generateBridgeFile() {
         val file = createFile("${capitalizedExtension}EmfBridge.kt", myGenDir + "/emf")
         val out = PrintWriter(FileOutputStream(file))
-        val rootRuleName = context.parserRules.first().name
+        val rootRuleName = context.rules.first().name
         out.print("""
             |package com.intellij.${extension}Language.${extension}.emf
             |
@@ -442,7 +441,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
 
     private fun getDescriptorOfCalledRule(node: TreeRuleCall): EmfClassDescriptor? {
         context.getParserRuleByName(node.getBnfName())?.let {
-            return context.getRuleReturnType(it)
+            return it.returnType
         }
         context.terminalRules.firstOrNull { it.name == node.getBnfName() }?.let {
             return if (it.returnTypeText == "String") null else context.getClassDescriptionByName(it.returnTypeText)
@@ -450,9 +449,10 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         return null
     }
 
-    private fun filterRelevantRules(): List<TreeRoot> {
-        return context.parserRules
-                .filter { !it.isFragment && !it.isDatatypeRule && it !is DuplicateRule }
+    private fun filterRelevantRules(): List<TreeParserRule> {
+        return context.rules
+                .filter { it !is TreeFragmentRule && !it.isDatatypeRule && it !is DuplicateRule }
+                .map { it as TreeParserRule }
     }
 
     private fun createCrossReferenceList(): List<BridgeCrossReference> {
@@ -460,10 +460,10 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         relevantRules.forEach {
             val crossReferencesNodes = it.filterNodesInSubtree { it is TreeCrossReference }.map { it as TreeCrossReference }
             crossReferencesNodes.forEach {
-                val containerRule = context.getParserRuleByName(it.containerRuleName)
+                val containerRule = context.getParserRuleByName(it.containerRuleName) as TreeParserRule
                 assertNotNull(containerRule)
-                val containerClassDescriptor = context.getRuleReturnType(containerRule)
-                val targetClassDescriptor = context.getClassDescriptionByName(it.targetTypeText)
+                val containerClassDescriptor = containerRule.returnType
+                val targetClassDescriptor = it.targetType
                 val psiElementName = NameGenerator.toGKitClassName(it.getBnfName())
                 crossReferences.add(BridgeCrossReference(it.assignment, containerClassDescriptor, targetClassDescriptor, psiElementName))
             }

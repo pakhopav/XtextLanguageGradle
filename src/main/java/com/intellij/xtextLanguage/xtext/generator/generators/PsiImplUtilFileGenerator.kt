@@ -5,7 +5,7 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.Cardinality
 import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeLeaf
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode.Companion.filterNodesInSubtree
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRoot
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeParserRule
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRuleCall
 import java.io.FileOutputStream
 import java.io.PrintWriter
@@ -25,7 +25,7 @@ class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : Ab
             
             |public class ${extension.capitalize()}PsiImplUtil {
         """.trimMargin("|"))
-        context.parserRules.filter { context.isReferencedRule(it) }.forEach {
+        context.rules.filterIsInstance<TreeParserRule>().filter { context.isReferencedRule(it) }.forEach {
             val ruleName = it.name
             out.println("""
                         |    public static PsiElement setName($extensionCapitalized$ruleName element, String newName) {
@@ -52,7 +52,7 @@ class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : Ab
 
     }
 
-    private fun generateGetNameIdentifierMethodBody(out: PrintWriter, rule: TreeRoot, indent: String, elementName: String) {
+    private fun generateGetNameIdentifierMethodBody(out: PrintWriter, rule: TreeParserRule, indent: String, elementName: String) {
         var optionalName = true
         if (rule.hasNameFeature()) {
             val nodesWithName = rule.filterNodesInSubtree { it is TreeLeaf && it.assignment != null && it.assignment!!.featureName == "name" }
@@ -70,7 +70,7 @@ class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : Ab
                     .filterNodesInSubtree { it is TreeRuleCall && it.assignment == null }
                     .map { it as TreeRuleCall }
                     .map { context.getParserRuleByName(it.getBnfName()) }
-                    .filterNotNull()
+                    .filterIsInstance<TreeParserRule>()
             rulesCalledWithoutAssignment.filter { it.superRuleName == rule.name }.forEach {
                 val calledRuleName = NameGenerator.toGKitClassName(it.name)
                 val calledRuleClassName = "$extensionCapitalized$calledRuleName"
