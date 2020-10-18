@@ -6,4 +6,5 @@ interface TreeParserRule : TreeRoot {
     val returnType: EmfClassDescriptor
     val superRuleName: String?
     val isReferenced: Boolean
+    val isSuffix: Boolean
 }

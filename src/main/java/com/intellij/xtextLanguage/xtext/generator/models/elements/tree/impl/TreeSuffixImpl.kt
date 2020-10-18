@@ -7,7 +7,7 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGene
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeSuffix
 
-class TreeSuffixImpl(psiElement: PsiElement, val suffixName: String, parent: TreeNode, assignment: Assignment? = null) : TreeLeafImpl(psiElement, parent, assignment), TreeSuffix {
+class TreeSuffixImpl(psiElement: PsiElement, val suffixName: String, parent: TreeNode, cardinality: Cardinality, assignment: Assignment? = null) : TreeLeafImpl(psiElement, parent, cardinality, assignment), TreeSuffix {
     override val cardinality: Cardinality
         get() = Cardinality.NONE
     override val assignment = null

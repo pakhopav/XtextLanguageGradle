@@ -41,7 +41,7 @@ class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : Ab
                         |    
                         |    public static PsiElement getNameIdentifier($extensionCapitalized$ruleName element) {
                     """.trimMargin("|"))
-            generateGetNameIdentifierMethodBody(out, it, "            ", "element")
+            generateGetNameIdentifierMethodBody(out, it, "      ", "element")
             out.println("            return null;\n        }")
 
         }

@@ -1,5 +1,5 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements.tree
 
 interface TreeRuleCall : TreeLeaf {
-    fun getCalledFragmentRule(): TreeRoot?
+    fun getCalledRule(): TreeRoot?
 }

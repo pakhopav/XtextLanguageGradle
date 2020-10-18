@@ -8,11 +8,9 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode
 
 class TreeKeywordImpl(psiElement: PsiElement,
                       parent: TreeNode,
+                      cardinality: Cardinality,
                       private val keywordName: String,
-                      assignment: Assignment? = null) : TreeLeafImpl(psiElement, parent, assignment), TreeKeyword {
-
-    override val cardinality: Cardinality
-        get() = getCardinalityOfPsiElement()
+                      assignment: Assignment? = null) : TreeLeafImpl(psiElement, parent, cardinality, assignment), TreeKeyword {
 
     override fun getBnfString(): String {
         return psiElement.text + cardinality.toString()

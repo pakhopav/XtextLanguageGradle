@@ -327,6 +327,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
                         |                   feature?.let {
                         |                       Helper.esetMany(temp, it, obj)
                         |                   }
+                        |                   return temp
                     """.trimMargin("|"))
                 }
                 AssignmentType.QUESTION_EQUALS -> {
@@ -431,8 +432,10 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
 
     private fun getPathsToImport(rule: TreeRoot): List<EmfClassDescriptor> {
         val nodes = context.findLiteralAssignmentsInRule(rule)
-
-        return nodes.filterIsInstance<TreeRuleCall>().map { getDescriptorOfCalledRule(it) }.filter { it != EmfClassDescriptor.STRING }.filterNotNull()
+        return nodes.filterIsInstance<TreeRuleCall>()
+                .map { getDescriptorOfCalledRule(it) }
+                .filter { it != EmfClassDescriptor.STRING }
+                .filterNotNull().distinct()
     }
 
     private fun getTypeNameOfCalledRule(node: TreeRuleCall): String {
@@ -456,7 +459,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
     private fun createCrossReferenceList(): List<BridgeCrossReference> {
-        val crossReferences = mutableListOf<BridgeCrossReference>()
+        val crossReferences = mutableSetOf<BridgeCrossReference>()
         relevantRules.forEach {
             val crossReferencesNodes = it.filterNodesInSubtree { it is TreeCrossReference }.map { it as TreeCrossReference }
             crossReferencesNodes.forEach {
@@ -468,7 +471,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
                 crossReferences.add(BridgeCrossReference(it.assignment, containerClassDescriptor, targetClassDescriptor, psiElementName))
             }
         }
-        return crossReferences
+        return crossReferences.toList()
     }
 
     private fun createCrossReferenceMapName(reference: BridgeCrossReference): String {

@@ -13,7 +13,7 @@ interface TreeNode {
         fun TreeNode.filterNodesInSubtree(condition: (node: TreeNode) -> Boolean): List<TreeNode> {
             val filteredNodes = mutableListOf<TreeNode>()
             if (this is TreeRuleCall) {
-                this.getCalledFragmentRule()?.let {
+                this.getCalledRule()?.let {
                     it.children.forEach {
                         filteredNodes.addAll(it.filterNodesInSubtree(condition))
                     }

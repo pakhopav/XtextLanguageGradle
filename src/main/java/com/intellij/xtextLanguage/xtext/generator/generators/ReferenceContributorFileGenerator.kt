@@ -33,6 +33,7 @@ class ReferenceContributorFileGenerator(extension: String, val context: MetaCont
         val referenceNodes = relevantRules.flatMap { it.filterNodesInSubtree { it is TreeCrossReference } }.map { it as TreeCrossReference }
         referenceNodes.distinctBy { it.getBnfName() }.forEach { crossReferenceNode ->
             val targetRuleNames = relevantRules.filter { it.returnType == crossReferenceNode.targetType }.map { it.name }
+            if (targetRuleNames.isEmpty()) return@forEach
             val referenceName = crossReferenceNode.getBnfName().replace("_", "")
             out.print("""
             |        registrar.registerReferenceProvider(PlatformPatterns.psiElement(${extension.capitalize()}${referenceName}.class).withLanguage(${extension.capitalize()}Language.INSTANCE),

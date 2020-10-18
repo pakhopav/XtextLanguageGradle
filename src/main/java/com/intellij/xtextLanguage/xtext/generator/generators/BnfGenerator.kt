@@ -91,6 +91,9 @@ class BnfGenerator(extension: String, val context: MetaContext) : AbstractGenera
                 rule.superRuleName?.let {
                     bnfExtensions.add("extends=$it")
                 }
+                if ((rule as? TreeParserRule)?.isSuffix == true) {
+                    bnfExtensions.add("implements=\"com.intellij.xtextLanguage.xtext.psi.SuffixElement\"")
+                }
                 if (bnfExtensions.isNotEmpty()) {
                     out.println("{")
                     bnfExtensions.forEach {

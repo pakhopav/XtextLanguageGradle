@@ -12,10 +12,10 @@ import com.intellij.xtextLanguage.xtext.psi.XtextCrossReference
 class TreeCrossReferenceImpl(psiCrossReference: XtextCrossReference,
                              override val containerRuleName: String,
                              parent: TreeNode,
+                             cardinality: Cardinality,
                              override val targetType: EmfClassDescriptor,
-                             assignment: Assignment) : TreeLeafImpl(psiCrossReference, parent, assignment), TreeCrossReference {
-    override val cardinality: Cardinality
-        get() = getCardinalityOfPsiElement()
+                             assignment: Assignment) : TreeLeafImpl(psiCrossReference, parent, cardinality, assignment), TreeCrossReference {
+
     override val assignment = assignment
 
 

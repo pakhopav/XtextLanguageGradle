@@ -2,6 +2,7 @@ package com.intellij.xtextLanguage.xtext.generator.models
 
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.xtextLanguage.xtext.generator.models.elements.Cardinality
 import com.intellij.xtextLanguage.xtext.generator.models.elements.Keyword
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.Assignment
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.EmfClassDescriptor
@@ -16,17 +17,8 @@ import kotlin.test.assertNotNull
 class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
     private val visitor = XtextParserRuleVisitor(keywords, emfRegistry)
 
-    fun createFromXtextParserRule(xtextRule: XtextParserRule): TreeRoot {
+    fun createFromXtextParserRule(xtextRule: XtextParserRule): List<TreeRoot> {
         return visitor.createRule(xtextRule)
-    }
-
-    fun createRule(ruleName: String, ruleBody: String, extension: String = "", fragment: Boolean = false, originRuleName: String? = null): TreeRoot {
-        val ruleText = "${if (fragment) "fragment" else ""}$ruleName ${if (extension.isNotEmpty()) "returns $extension" else ""} : ${ruleBody};"
-        val xtextRule = XtextElementFactory.createParserRule(ruleText)
-        originRuleName?.let {
-            return visitor.createDuplicateRule(xtextRule, it)
-        }
-        return createFromXtextParserRule(xtextRule)
     }
 
 
@@ -35,10 +27,14 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
         private val emfRegistry = emfRegistry
         private var lastAction: String? = null
         private var currentRuleName = ""
+        private var currentRoot: TreeRoot? = null
         private val treeNodeStack = Stack<TreeNodeImpl>()
-        private var suffixWasAdded = false
+        private val addedSuffixesInfos = Stack<SuffixInsertionInfo>()
+        private var l = 0
         private var suffixCounter = 1
         private var newType = ""
+        private val suffixes = mutableListOf<TreeRoot>()
+        private var cardinality: Cardinality = Cardinality.NONE
 
         private fun getRuleTypeDescriptor(rule: XtextParserRule): EmfClassDescriptor {
             val returnTypeText = rule.typeRef?.text ?: rule.ruleNameAndParams.validID.text.eliminateCaret()
@@ -47,8 +43,9 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             return ruleType
         }
 
-        fun createRule(rule: XtextParserRule): TreeRoot {
+        fun createRule(rule: XtextParserRule): List<TreeRoot> {
             clearAll()
+            val result = mutableListOf<TreeRoot>()
             val treeRoot: TreeRoot =
                     rule.fragmentKeyword?.let {
                         TreeFragmentRuleImpl(rule)
@@ -56,6 +53,7 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
                         val type = getRuleTypeDescriptor(rule)
                         TreeParserRuleImpl(rule, type)
                     }
+            currentRoot = treeRoot
             treeNodeStack.push(treeRoot as TreeNodeImpl)
             currentRuleName = rule.ruleNameAndParams.validID.text.replace("^", "").capitalize()
             visitAlternatives(rule.alternatives)
@@ -65,17 +63,9 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
                     (treeRoot as TreeParserRuleImpl).setReturnType(it)
                 }
             }
-            return treeRoot
-        }
-
-        fun createDuplicateRule(rule: XtextParserRule, originRuleName: String): TreeParserRuleImpl {
-            clearAll()
-            val type = getRuleTypeDescriptor(rule)
-            val treeRoot = DuplicateRuleImpl(rule, type, originRuleName)
-            treeNodeStack.push(treeRoot)
-            currentRuleName = rule.ruleNameAndParams.validID.text.replace("^", "").capitalize()
-            visitAlternatives(rule.alternatives)
-            return treeRoot
+            result.add(treeRoot)
+            result.addAll(suffixes)
+            return result
         }
 
         private fun clearAll() {
@@ -83,7 +73,11 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             lastAction = null
             currentRuleName = ""
             suffixCounter = 1
+            l = 0
             newType = ""
+            suffixes.clear()
+            currentRoot = null
+            cardinality = Cardinality.NONE
         }
 
         private fun createTreeKeyword(psiElement: PsiElement, assignmentString: String?): TreeKeywordImpl {
@@ -91,7 +85,7 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             val keywordName = keywords.firstOrNull { it.keyword == psiElementText }?.name
             assertNotNull(keywordName)
             val assignment = assignmentString?.let { Assignment.fromString(it) }
-            return TreeKeywordImpl(psiElement, treeNodeStack.peek(), keywordName, assignment)
+            return TreeKeywordImpl(psiElement, treeNodeStack.peek(), getCurrentCardinality(), keywordName, assignment)
         }
 
         private fun addTreeNode(node: TreeNodeImpl) {
@@ -103,10 +97,6 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             if (node !is TreeLeaf) {
                 treeNodeStack.add(node)
             }
-            if (node is TreeSuffix) {
-                treeNodeStack.add(node)
-                suffixWasAdded = true
-            }
         }
 
 
@@ -114,8 +104,12 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             return token.quesMarkKeyword != null || token.asteriskKeyword != null || token.plusKeyword != null
         }
 
+        //look ahead and check if token is NOT optional
         private fun goodElement(token: XtextAbstractTokenWithCardinality): Boolean {
             if (hasCardinality(token)) return false
+
+            //if token itself is not optional, check if it is parenthesized,
+            // if so check optionality of every first token in group branches
             token.abstractTerminal?.parenthesizedElement?.let { parenthesizedElement ->
                 parenthesizedElement.alternatives.conditionalBranchList.forEach { branch ->
                     val firstTokenInBrackets = PsiTreeUtil.getChildrenOfType(branch, XtextAbstractTokenWithCardinality::class.java)?.get(0)
@@ -125,48 +119,6 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
                 }
             }
             return true
-        }
-
-        override fun visitAbstractTokenWithCardinality(o: XtextAbstractTokenWithCardinality) {
-            if (lastAction != null && !goodElement(o)) {
-                insertSuffix(o)
-            }
-
-            o.abstractTerminal?.let {
-                visitAbstractTerminal(it)
-            }
-            o.assignment?.let {
-                visitAssignment(it)
-            }
-        }
-
-
-        private fun insertSuffix(abstractTokenWithCardinality: XtextAbstractTokenWithCardinality) {
-            val suffixName = "${currentRuleName}Suffix${suffixCounter++}"
-            //to change
-            //Case if action is right under root: RULE : {A} (...)?
-            if (noAssignmentsPrecededInBranch(abstractTokenWithCardinality)) {
-                if (treeNodeStack.peek() is TreeRoot) {
-                    if (lastAction!!.split(".").size < 2) {
-                        newType = lastAction!!.removePrefix("{").removeSuffix("}")
-                    }
-                } else {
-                    val currentPeek = treeNodeStack.peek()
-                    val parentGroup = PsiTreeUtil.getParentOfType(abstractTokenWithCardinality, XtextGroup::class.java)
-                    val suffix = TreeSuffixImpl(parentGroup!!, suffixName, currentPeek.parent!!)
-                    currentPeek.children.forEach { suffix.addChild(it as TreeNodeImpl) }
-                    setActionToTreeLeaf(suffix, lastAction!!)
-                    treeNodeStack.pop()
-                    treeNodeStack.peek().replaceChild(currentPeek, suffix)
-                    treeNodeStack.push(suffix)
-                }
-            } else {
-                //to change
-                val parentGroup = PsiTreeUtil.getParentOfType(abstractTokenWithCardinality, XtextGroup::class.java)
-                val suffix = TreeSuffixImpl(parentGroup!!, suffixName, treeNodeStack.peek())
-                addTreeNode(suffix)
-            }
-            lastAction = null
         }
 
         private fun setActionToTreeLeaf(node: TreeLeafImpl, actionText: String) {
@@ -180,21 +132,50 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
         }
 
 
-        private fun noAssignmentsPrecededInBranch(token: XtextAbstractTokenWithCardinality): Boolean {
-            PsiTreeUtil.getParentOfType(token, XtextUnorderedGroup::class.java)?.let {
-                val allTokensWithCardinalityInBranch = it.groupList
-                        .flatMap { it.abstractTokenList }
-                        .filter { it.abstractTokenWithCardinality != null }
-                        .map { it.abstractTokenWithCardinality }
-                allTokensWithCardinalityInBranch.forEach {
-                    if (it == token) return true
-                    PsiTreeUtil.findChildOfType(it, XtextAssignment::class.java)?.let {
-                        return false
-                    }
-                }
+        override fun visitAbstractTokenWithCardinality(tokenWithCardinality: XtextAbstractTokenWithCardinality) {
+            setCardinality(tokenWithCardinality)
+
+            if (lastAction != null && !goodElement(tokenWithCardinality)) {
+                insertSuffix()
             }
-            return true
+
+            tokenWithCardinality.abstractTerminal?.let {
+                visitAbstractTerminal(it)
+            }
+            tokenWithCardinality.assignment?.let {
+                visitAssignment(it)
+            }
         }
+
+
+        private fun insertSuffix() {
+            val suffixName = "${currentRuleName}Suffix${suffixCounter++}"
+            val suffixRule = TreeParserRuleImpl(suffixName, (currentRoot as TreeParserRule).returnType, true)
+
+            val peek = treeNodeStack.peek()
+            if (peek is TreeRoot && peek.children.isEmpty()) {
+                assert(lastAction!!.split(".").size < 2)
+                newType = lastAction!!.removePrefix("{").removeSuffix("}")
+            } else if (peek is TreeGroup && peek.children.isEmpty()) {
+                treeNodeStack.pop()
+                treeNodeStack.peek().removeChild(peek)
+                val psiRuleCall = XtextElementFactory.createAbstractTokenWithCardinality("$suffixName ${peek.cardinality}").abstractTerminal?.ruleCall
+                assertNotNull(psiRuleCall)
+                val ruleCallNode = TreeRuleCallImpl(psiRuleCall, treeNodeStack.peek(), peek.cardinality)
+                addTreeNode(ruleCallNode)
+                treeNodeStack.add(suffixRule)
+                addedSuffixesInfos.add(SuffixInsertionInfo(l, true))
+            } else {
+                val psiRuleCall = XtextElementFactory.createRuleCall(suffixName)
+                val ruleCallNode = TreeRuleCallImpl(psiRuleCall, treeNodeStack.peek(), Cardinality.NONE)
+                addTreeNode(ruleCallNode)
+                treeNodeStack.add(suffixRule)
+                addedSuffixesInfos.add(SuffixInsertionInfo(l, false))
+            }
+            lastAction = null
+        }
+
+
 
         override fun visitAbstractTerminal(o: XtextAbstractTerminal) {
             o.keyword?.let {
@@ -204,11 +185,13 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
                 visitRuleCall(it)
             }
             o.parenthesizedElement?.let {
-                val treeGroup = TreeGroupImpl(it, treeNodeStack.peek())
+                val treeGroup = TreeGroupImpl(it, treeNodeStack.peek(), getCurrentCardinality())
                 treeNodeStack.peek().addChild(treeGroup)
                 treeNodeStack.push(treeGroup)
+                l++
                 visitParenthesizedElement(it)
-                popSuffixIfNeed()
+                popSuffixIfNeeded()
+                l--
                 treeNodeStack.pop()
             }
             o.predicatedKeyword?.let {
@@ -242,7 +225,7 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             alternatives.conditionalBranchList.forEach {
                 if (lastActionOnEntry != null && lastAction == null) lastAction = lastActionOnEntry
                 visitConditionalBranch(it)
-                popSuffixIfNeed()
+                popSuffixIfNeeded()
             }
             if (moreThanOneChild) {
                 treeNodeStack.pop()
@@ -255,7 +238,7 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
                 if (treeNodeStack.peek() is TreeGroup || treeNodeStack.peek() is TreeRoot || tokensListSize < 2) {
                     visitUnorderedGroup(unorderedGroup)
                 } else {
-                    val treeGroup = TreeSyntheticGroup(treeNodeStack.peek(), false)
+                    val treeGroup = TreeSyntheticGroup(treeNodeStack.peek(), getCurrentCardinality(), false)
                     treeNodeStack.peek().addChild(treeGroup)
                     treeNodeStack.push(treeGroup)
                     visitUnorderedGroup(unorderedGroup)
@@ -278,7 +261,7 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             xtextAssignableAlternatives.assignableTerminalList.forEach {
                 if (lastActionOnEntry != null && lastAction == null) lastAction = lastActionOnEntry
                 visitAssignableTerminal(it, assignmentString)
-                popSuffixIfNeed()
+                popSuffixIfNeeded()
             }
             if (moreThanOneChild) {
                 treeNodeStack.pop()
@@ -291,21 +274,23 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
                 addTreeNode(keywordNode)
             }
             assignableTerminal.ruleCall?.let {
-                val treeLeafRuleCall = TreeRuleCallImpl(it, treeNodeStack.peek(), Assignment.fromString(assignmentString))
+                val treeLeafRuleCall = TreeRuleCallImpl(it, treeNodeStack.peek(), getCurrentCardinality(), Assignment.fromString(assignmentString))
                 addTreeNode(treeLeafRuleCall)
             }
             assignableTerminal.parenthesizedAssignableElement?.let {
-                val treeGroup = TreeSyntheticGroup(treeNodeStack.peek(), true)
+                val treeGroup = TreeSyntheticGroup(treeNodeStack.peek(), getCurrentCardinality(), true)
                 treeNodeStack.peek().addChild(treeGroup)
                 treeNodeStack.push(treeGroup)
+                l++
                 visitParenthesizedAssignableElement(it, assignmentString)
-                popSuffixIfNeed()
+                popSuffixIfNeeded()
+                l--
                 treeNodeStack.pop()
             }
             assignableTerminal.crossReference?.let {
                 val referenceType = emfRegistry.findOrCreateType(it.typeRef.text)
                 assertNotNull(referenceType)
-                val referenceNode = TreeCrossReferenceImpl(it, currentRuleName, treeNodeStack.peek(), referenceType, Assignment.fromString(assignmentString))
+                val referenceNode = TreeCrossReferenceImpl(it, currentRuleName, treeNodeStack.peek(), getCurrentCardinality(), referenceType, Assignment.fromString(assignmentString))
                 addTreeNode(referenceNode)
             }
         }
@@ -343,12 +328,12 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
         }
 
         override fun visitRuleCall(o: XtextRuleCall) {
-            val treeLeaf = TreeRuleCallImpl(o, treeNodeStack.peek())
+            val treeLeaf = TreeRuleCallImpl(o, treeNodeStack.peek(), getCurrentCardinality())
             addTreeNode(treeLeaf)
         }
 
         override fun visitPredicatedRuleCall(o: XtextPredicatedRuleCall) {
-            val treeLeafRuleCall = TreeRuleCallImpl(o, treeNodeStack.peek())
+            val treeLeafRuleCall = TreeRuleCallImpl(o, treeNodeStack.peek(), getCurrentCardinality())
             addTreeNode(treeLeafRuleCall)
         }
 
@@ -363,12 +348,32 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             return TreeRewrite(className, Assignment.fromString(textFragmentForAssignment))
         }
 
-        private fun popSuffixIfNeed() {
-            if (suffixWasAdded) {
-                treeNodeStack.pop()
-                suffixWasAdded = false
+        private fun setCardinality(token: XtextAbstractTokenWithCardinality) {
+            token.asteriskKeyword?.let { cardinality = Cardinality.ASTERISK }
+            token.plusKeyword?.let { cardinality = Cardinality.PLUS }
+            token.quesMarkKeyword?.let { cardinality = Cardinality.QUES }
+        }
+
+        private fun getCurrentCardinality(): Cardinality {
+            val res = cardinality
+            cardinality = Cardinality.NONE
+            return res
+        }
+
+        private fun popSuffixIfNeeded() {
+            if (addedSuffixesInfos.isEmpty()) return
+            if (l == addedSuffixesInfos.peek().level) {
+                assert(treeNodeStack.peek() is TreeRoot)
+                if (addedSuffixesInfos.peek().groupReplaced) {
+                    suffixes.add(treeNodeStack.peek() as TreeRoot)
+                } else {
+                    suffixes.add(treeNodeStack.pop() as TreeRoot)
+                }
+                addedSuffixesInfos.pop()
             }
         }
+
+        private data class SuffixInsertionInfo(val level: Int, val groupReplaced: Boolean)
 
     }
 }

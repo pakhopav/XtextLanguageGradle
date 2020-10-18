@@ -1,9 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl
 
+import com.intellij.xtextLanguage.xtext.generator.models.elements.Cardinality
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode
 
-abstract class TreeNodeImpl(open var parent: TreeNode?) : TreeNode {
+abstract class TreeNodeImpl(open var parent: TreeNode?, override val cardinality: Cardinality) : TreeNode {
     protected val _children = mutableListOf<TreeNode>()
+
     override val children: List<TreeNode>
         get() = _children
 

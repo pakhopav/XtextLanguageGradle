@@ -1,6 +1,5 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl
 
-import com.intellij.psi.PsiElement
 import com.intellij.xtextLanguage.xtext.generator.models.elements.Cardinality
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.Assignment
 import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
@@ -8,25 +7,33 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRoot
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRuleCall
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.eliminateCaret
+import com.intellij.xtextLanguage.xtext.psi.XtextPredicatedRuleCall
+import com.intellij.xtextLanguage.xtext.psi.XtextRuleCall
 
 
-class TreeRuleCallImpl(psiElement: PsiElement,
-                       parent: TreeNode,
-                       assignment: Assignment? = null) : TreeLeafImpl(psiElement, parent, assignment), TreeRuleCall {
+class TreeRuleCallImpl : TreeLeafImpl, TreeRuleCall {
 
-    override val cardinality: Cardinality
-        get() = getCardinalityOfPsiElement()
+    constructor(psiElement: XtextRuleCall,
+                parent: TreeNode,
+                cardinality: Cardinality,
+                assignment: Assignment? = null) : super(psiElement, parent, cardinality, assignment)
+
+    constructor(psiElement: XtextPredicatedRuleCall,
+                parent: TreeNode,
+                cardinality: Cardinality,
+                assignment: Assignment? = null) : super(psiElement, parent, cardinality, assignment)
+
 
     private val bnfName = psiElement.text.eliminateCaret().capitalize()
-    var fragmentRule: TreeRoot? = null
+    var called: TreeRoot? = null
 
 
     override fun getBnfString(): String {
         return bnfName + cardinality.toString()
     }
 
-    override fun getCalledFragmentRule(): TreeRoot? {
-        return fragmentRule
+    override fun getCalledRule(): TreeRoot? {
+        return called
     }
 
     override fun getPsiElementTypeName(): String {
