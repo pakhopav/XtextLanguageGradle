@@ -6,17 +6,14 @@ interface TreeNode {
     val children: List<TreeNode>
     val cardinality: Cardinality
 
-    fun getBnfString(): String
-
+    fun getString(): String
 
     companion object {
         fun TreeNode.filterNodesInSubtree(condition: (node: TreeNode) -> Boolean): List<TreeNode> {
             val filteredNodes = mutableListOf<TreeNode>()
-            if (this is TreeRuleCall) {
-                this.getCalledRule()?.let {
-                    it.children.forEach {
-                        filteredNodes.addAll(it.filterNodesInSubtree(condition))
-                    }
+            if (this is TreeRuleCall && this.getCalledRule() is TreeFragmentRule) {
+                this.getCalledRule()!!.children.forEach {
+                    filteredNodes.addAll(it.filterNodesInSubtree(condition))
                 }
             }
             this.children.forEach {

@@ -42,9 +42,4 @@ class TerminalNegatedElement(override val psiElement: XtextNegatedToken) : Termi
         return sb.toString()
     }
 
-    private fun isOneCharacterString(string: String): Boolean {
-        if (string.length == 3) return true
-        else if (string.length == 4 && string.contains('\\')) return true
-        else return false
-    }
 }

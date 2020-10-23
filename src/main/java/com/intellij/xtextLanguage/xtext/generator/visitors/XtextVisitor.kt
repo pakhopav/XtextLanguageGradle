@@ -6,6 +6,12 @@ open class XtextVisitor {
     }
 
     open fun visitAbstractNegatedToken(o: XtextAbstractNegatedToken) {
+        o.negatedToken?.let {
+            visitNegatedToken(it)
+        }
+        o.untilToken?.let {
+            visitUntilToken(it)
+        }
     }
 
     open fun visitAbstractRule(o: XtextAbstractRule) {
@@ -143,9 +149,14 @@ open class XtextVisitor {
     }
 
     open fun visitEnumLiterals(o: XtextEnumLiterals) {
+        o.enumLiteralDeclarationList.forEach {
+            visitEnumLiteralDeclaration(it)
+        }
     }
 
     open fun visitEnumRule(o: XtextEnumRule) {
+
+        visitEnumLiterals(o.enumLiterals)
     }
 
     open fun visitGeneratedMetamodel(o: XtextGeneratedMetamodel) {

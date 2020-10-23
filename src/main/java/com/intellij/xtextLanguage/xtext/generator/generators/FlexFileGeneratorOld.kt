@@ -1,10 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.generators
 
 import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
+import com.intellij.xtextLanguage.xtext.generator.models.elements.TerminalRuleElement
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class FlexFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class FlexFileGeneratorOld(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
     fun generateFlexFile() {
         val file = createFile(extension.capitalize() + ".flex", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
@@ -32,13 +33,21 @@ class FlexFileGenerator(extension: String, val context: MetaContext) : AbstractG
             |%}
 
         """.trimMargin("|"))
-        context.terminalRs.forEach {
-            out.println("${it.name.toUpperCase()} =${it.getString()}")
-            if (!context.terminalRs.any { it.name == "WS" }) out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
+        context.terminalRules.forEach {
+            if (it.name.equals("WS")) {
+                out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
+            } else {
+                out.print("${it.name.toUpperCase()} =")
+                it.alternativeElements.map { it as TerminalRuleElement }.forEach {
+                    out.print(it.getFlexName())
+                }
+                out.print("\n")
+            }
+            if (!context.terminalRules.any { it.name == "WS" }) out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
         }
         out.print("%%\n<YYINITIAL> {\n")
         context.keywordModel.keywords.forEach { out.print("\"${it.keyword}\" {return ${it.name.toUpperCase()};}\n") }
-        context.terminalRs.forEach {
+        context.terminalRules.forEach {
             if (it.name.equals("WS")) {
                 out.print("{WS} {return WHITE_SPACE;}\n")
             } else {

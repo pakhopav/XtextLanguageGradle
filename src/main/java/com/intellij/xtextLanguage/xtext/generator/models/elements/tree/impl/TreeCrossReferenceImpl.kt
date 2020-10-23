@@ -19,7 +19,7 @@ class TreeCrossReferenceImpl(psiCrossReference: XtextCrossReference,
     override val assignment = assignment
 
 
-    override fun getBnfString(): String {
+    override fun getString(): String {
         return bnfName + cardinality.toString()
     }
 
@@ -28,7 +28,7 @@ class TreeCrossReferenceImpl(psiCrossReference: XtextCrossReference,
     private val bnfName = createReferenceName()
 
     private fun createReferenceName(): String {
-        return "REFERENCE_${targetType.name}_$referenceType"
+        return "REFERENCE_${targetType.className}_$referenceType"
     }
 
     override fun getPsiElementTypeName(): String {

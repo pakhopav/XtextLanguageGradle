@@ -1,13 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl
 
+import com.intellij.psi.PsiElement
 import com.intellij.xtextLanguage.xtext.generator.models.elements.Cardinality
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeBranch
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode
 
-class TreeBranchImpl(parent: TreeNode) : TreeNodeImpl(parent, Cardinality.NONE), TreeBranch {
-
-
+class TreeTerminalSimple(private val psiElement: PsiElement, parent: TreeNode, cardinality: Cardinality) : TreeNodeImpl(parent, cardinality) {
     override fun getString(): String {
-        return _children.map { it.getString() }.joinToString(separator = " | ")
+        return psiElement.text
     }
 }

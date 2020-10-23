@@ -7,8 +7,8 @@ import com.intellij.xtextLanguage.xtext.psi.XtextParenthesizedElement
 
 
 class TreeGroupImpl(psiElement: XtextParenthesizedElement, parent: TreeNode, cardinality: Cardinality) : TreeNodeImpl(parent, cardinality), TreeGroup {
-    override fun getBnfString(): String {
-        return _children.map { it.getBnfString() }.joinToString(separator = " ", prefix = "(", postfix = ")") + cardinality.toString()
+    override fun getString(): String {
+        return _children.map { it.getString() }.joinToString(separator = " ", prefix = "(", postfix = ")") + cardinality.toString()
     }
 
 }

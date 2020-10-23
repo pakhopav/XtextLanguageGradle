@@ -12,7 +12,7 @@ class TreeKeywordImpl(psiElement: PsiElement,
                       private val keywordName: String,
                       assignment: Assignment? = null) : TreeLeafImpl(psiElement, parent, cardinality, assignment), TreeKeyword {
 
-    override fun getBnfString(): String {
+    override fun getString(): String {
         return psiElement.text + cardinality.toString()
     }
 

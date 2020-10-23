@@ -25,7 +25,7 @@ class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : Ab
             
             |public class ${extension.capitalize()}PsiImplUtil {
         """.trimMargin("|"))
-        context.rules.filterIsInstance<TreeParserRule>().filter { context.isReferencedRule(it) }.forEach {
+        context.rules.filterIsInstance<TreeParserRule>().filter { it.isReferenced }.forEach {
             val ruleName = it.name
             out.println("""
                         |    public static PsiElement setName($extensionCapitalized$ruleName element, String newName) {

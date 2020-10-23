@@ -8,13 +8,6 @@ class TerminalRuleCallElelment(psiElement: XtextTerminalRuleCall) : TerminalRule
     private var _bnfName = ""
     override fun getFlexName(): String {
         return _flexName
-//        val sb = StringBuilder()
-//        resolver.getTerminalRuleByName(psiElement.text)?.let {
-//            it.alternativeElements.map { it as TerminalRuleElement }.forEach {
-//                sb.append(it.getFlexName())
-//            }
-//        }
-//        return sb.toString()
     }
 
     fun setFlexName(string: String) {
@@ -24,13 +17,7 @@ class TerminalRuleCallElelment(psiElement: XtextTerminalRuleCall) : TerminalRule
     override fun getBnfName(): String {
         refactoredName?.let { return it }
         return _bnfName
-//        val sb = StringBuilder()
-//        resolver.getTerminalRuleByName(psiElement.text)?.let {
-//            it.alternativeElements.forEach {
-//                sb.append(it.getBnfName())
-//            }
-//        }
-//        return sb.toString()
+
     }
 
     fun setBnfName(string: String) {

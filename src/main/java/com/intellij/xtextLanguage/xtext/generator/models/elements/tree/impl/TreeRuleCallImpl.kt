@@ -4,7 +4,7 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.Cardinality
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.Assignment
 import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRoot
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRule
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRuleCall
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.eliminateCaret
 import com.intellij.xtextLanguage.xtext.psi.XtextPredicatedRuleCall
@@ -25,14 +25,14 @@ class TreeRuleCallImpl : TreeLeafImpl, TreeRuleCall {
 
 
     private val bnfName = psiElement.text.eliminateCaret().capitalize()
-    var called: TreeRoot? = null
+    var called: TreeRule? = null
 
 
-    override fun getBnfString(): String {
+    override fun getString(): String {
         return bnfName + cardinality.toString()
     }
 
-    override fun getCalledRule(): TreeRoot? {
+    override fun getCalledRule(): TreeRule? {
         return called
     }
 

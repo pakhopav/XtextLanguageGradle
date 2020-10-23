@@ -6,13 +6,11 @@ class TerminalRangeElement(override val psiElement: XtextCharacterRange) : Termi
     override var assignment = ""
     init {
         if (psiElement.keywordList.size == 2) {
-
             if (psiElement.keywordList.get(0).text.length != 3
                     || psiElement.keywordList.get(1).text.length != 3
                     || psiElement.keywordList.get(0).text.get(1).toInt() > psiElement.keywordList.get(1).text.get(1).toInt()) {
                 throw Exception("Wrong range terminal")
             }
-
         }
     }
     override fun getFlexName(): String {

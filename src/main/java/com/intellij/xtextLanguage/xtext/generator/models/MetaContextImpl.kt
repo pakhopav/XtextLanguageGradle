@@ -14,22 +14,21 @@ import java.util.*
 import kotlin.test.assertNotNull
 
 class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
-    private val _rules = mutableListOf<TreeRoot>()
-    override val rules: List<TreeRoot>
+    private val _rules = mutableListOf<TreeRule>()
+    override val rules: List<TreeRule>
         get() = _rules.toList()
 
     private val _terminalRules = mutableListOf<TerminalRule>()
     override val terminalRules: List<TerminalRule>
         get() = _terminalRules.toList()
-
-    private val _enumRules = mutableListOf<EnumRule>()
-    override val enumRules: List<EnumRule>
-        get() = _enumRules.toList()
+    private val _terminalRs = mutableListOf<TreeTerminalRule>()
+    override val terminalRs: List<TreeTerminalRule>
+        get() = _terminalRs
 
 
     override val keywordModel: XtextKeywordModel
     private val emfRegistry: EmfModelRegistry
-    private val ruleCreator: ParserRuleCreator
+    private val ruleCreator: RuleCreator
     private val ruleNameOccurrences = mutableMapOf<String, Int>()
     private var numberOfRulesCreatedBecauseOfRefactor = 0
     private val refactoredRulesWithDuplicates = mutableMapOf<String, MutableList<String>>()
@@ -39,9 +38,9 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
     init {
         keywordModel = createKeywordModel(xtextFiles)
         emfRegistry = createRegistry(xtextFiles)
-        ruleCreator = ParserRuleCreator(keywordModel.keywords, emfRegistry)
+        ruleCreator = RuleCreator(keywordModel.keywords, emfRegistry)
         _terminalRules.addAll(getAllTerminalRules(xtextFiles))
-        _enumRules.addAll(getAllEnumRules(xtextFiles))
+        _terminalRs.addAll(getTerminalRules(xtextFiles))
         _rules.addAll(getAllParserRules(xtextFiles))
     }
 
@@ -50,59 +49,57 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         return _rules.filterIsInstance<TreeParserRule>().firstOrNull { it.name == name }
     }
 
+    override fun getRuleByName(name: String): TreeRule {
+        _rules.firstOrNull { it.name == name }?.let { return it }
+        terminalRs.firstOrNull { it.name == name }?.let { return it }
+        throw Exception("Rule ${name} not found")
+    }
+
     override fun getClassDescriptionByName(typeName: String): EmfClassDescriptor {
 
         return emfRegistry.findOrCreateType(typeName.eliminateCaret()) ?: throw TypeNotFoundException(typeName)
     }
 
-//    override fun getRuleReturnType(rule: TreeParserRule): EmfClassDescriptor {
-//        rule as TreeParserRuleImpl
-//        if (rule.returnTypeText == "String") return EmfClassDescriptor.STRING
-//        val ruleType = emfRegistry.findOrCreateType(rule.returnTypeText)
-//        if (ruleType == null) throw TypeNotFoundException(rule.returnTypeText)
-//        return ruleType
-//    }
-
-    override fun isReferencedRule(rule: TreeRoot): Boolean {
+    override fun isReferencedRule(rule: TreeRule): Boolean {
         if (referencedRuleNames == null) referencedRuleNames = getReferencedNames()
         return referencedRuleNames!!.contains(rule.name)
     }
 
-    override fun isDuplicateRule(rule: TreeRoot): Boolean {
+    override fun isDuplicateRule(rule: TreeRule): Boolean {
         return refactoredRulesWithDuplicates.values.flatten().contains(rule.name)
     }
 
-    override fun hasPrivateDuplicate(rule: TreeRoot): Boolean {
+    override fun hasPrivateDuplicate(rule: TreeRule): Boolean {
         return refactoredRulesWithDuplicates.keys.contains(rule.name)
     }
 
-    override fun findLiteralAssignmentsInRule(rule: TreeRoot): List<TreeLeaf> {
+    override fun findLiteralAssignmentsInRule(rule: TreeRule): List<TreeLeaf> {
         val resultList = mutableListOf<TreeLeaf>()
+        if (rule is TreeEnumRule) return resultList
         val nodesWithAssignment = rule.filterNodesInSubtree { it is TreeLeaf && it.assignment != null }.map { it as TreeLeaf }
         nodesWithAssignment.forEach {
             if (it is TreeKeyword) resultList.add(it)
-            else if (it is TreeRuleCall && referencesToDatatypeOrTerminalRule(it)) {
+            else if (it is TreeRuleCall && referencesToLiteral(it)) {
                 resultList.add(it)
             }
         }
         return resultList.distinctBy { it.getBnfName() to it.assignment }
     }
 
-    override fun findObjectAssignmentsInRule(rule: TreeRoot): List<TreeRuleCall> {
+    override fun findObjectAssignmentsInRule(rule: TreeRule): List<TreeRuleCall> {
         val resultList = mutableListOf<TreeRuleCall>()
+        if (rule is TreeEnumRule) return resultList
         val nodesWithAssignment = rule.filterNodesInSubtree { it is TreeLeaf && it.assignment != null }.map { it as TreeLeaf }
         nodesWithAssignment.forEach {
-            if (it is TreeRuleCall && !referencesToDatatypeOrTerminalRule(it)) {
+            if (it is TreeRuleCall && !referencesToLiteral(it)) {
                 resultList.add(it)
             }
         }
         return resultList.distinctBy { it.getBnfName() to it.assignment }
     }
 
-    private fun referencesToDatatypeOrTerminalRule(ruleCall: TreeRuleCall): Boolean {
-        getParserRuleByName(ruleCall.getBnfName())?.let {
-            return it.isDatatypeRule
-        } ?: return true
+    private fun referencesToLiteral(ruleCall: TreeRuleCall): Boolean {
+        return getRuleByName(ruleCall.getBnfName()).isDatatypeRule
     }
 
     //======================================================
@@ -147,15 +144,32 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         return mutableListOfTerminalRules
     }
 
-    private fun getAllParserRules(xtextFiles: List<XtextFile>): List<TreeRoot> {
-        val psiRules = findElementsOfTypeInFiles(xtextFiles, XtextParserRule::class.java)
-        val refactoredPsiRules = refactorComplicatedDeligateRules(psiRules)
-        val rawParserRules = refactoredPsiRules.map { ruleCreator.createFromXtextParserRule(it) }.flatten().toMutableList()
+    private fun getAllParserRules(xtextFiles: List<XtextFile>): List<TreeRule> {
+        val psiParserRules = findElementsOfTypeInFiles(xtextFiles, XtextParserRule::class.java)
+        val psiEnumRules = findElementsOfTypeInFiles(xtextFiles, XtextEnumRule::class.java)
+        val refactoredPsiRules = refactorComplicatedDeligateRules(psiParserRules)
+        val rawParserRules = refactoredPsiRules.map { ruleCreator.createParserRule(it) }.flatten().toMutableList()
+        rawParserRules.addAll(psiEnumRules.map { ruleCreator.createEnumRule(it) })
         refactorRules(rawParserRules)
         return rawParserRules
     }
 
-    private fun refactorRules(rawRules: MutableList<TreeRoot>) {
+    private fun getTerminalRules(xtextFiles: List<XtextFile>): List<TreeTerminalRule> {
+        val psiTerminalRules = findElementsOfTypeInFiles(xtextFiles, XtextTerminalRule::class.java)
+        val rawTerminalRules = psiTerminalRules.map { ruleCreator.createTerminalRule(it) }
+        rawTerminalRules.forEach {
+            it.filterNodesIsInstance(TreeTerminalRuleCall::class.java).forEach { terminalRuleCall ->
+                val calledRule = rawTerminalRules.firstOrNull { it.name == terminalRuleCall.calledRuleName }
+                calledRule?.let {
+                    terminalRuleCall.called = it
+                }
+            }
+        }
+        return rawTerminalRules
+    }
+
+
+    private fun refactorRules(rawRules: MutableList<TreeRule>) {
         initOccurrencesMap(rawRules)
         addRulesForCrossReferences(rawRules)
         setCalledFragmentRuleProperty(rawRules)
@@ -166,8 +180,8 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         fixInheritanceOfNamedRules(rawRules)
     }
 
-    private fun addRulesForCrossReferences(rules: MutableList<TreeRoot>) {
-        val newRules = mutableListOf<TreeRoot>()
+    private fun addRulesForCrossReferences(rules: MutableList<TreeRule>) {
+        val newRules = mutableListOf<TreeRule>()
         val nodesWithCrossReferences = rules.flatMap { it.filterNodesIsInstance(TreeCrossReferenceImpl::class.java) }
         nodesWithCrossReferences.distinctBy { it.getBnfName() }.forEach {
             val newRule = createSimpleRule(it.getBnfName(), it.referenceType, EmfClassDescriptor.STRING)
@@ -184,7 +198,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         return newRule
     }
 
-    private fun setCalledFragmentRuleProperty(rules: List<TreeRoot>) {
+    private fun setCalledFragmentRuleProperty(rules: List<TreeRule>) {
         val fragmentRules = rules.filterIsInstance<TreeFragmentRule>()
         val fragmentsNames = fragmentRules.map { it.name }
         rules.forEach { rule ->
@@ -213,12 +227,12 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
 //        }
 //    }
 
-    private fun markDatatypeRules(rules: List<TreeRoot>) {
+    private fun markDatatypeRules(rules: List<TreeRule>) {
         val dataTypeNames = mutableListOf<String>()
         dataTypeNames.addAll(terminalRules.map { it.name })
         var namesListChanged = true
-        val rulesToCheck = LinkedList<TreeRoot>()
-        val parserRules = mutableListOf<TreeRoot>()
+        val rulesToCheck = LinkedList<TreeRule>()
+        val parserRules = mutableListOf<TreeRule>()
         parserRules.addAll(rules)
         while (namesListChanged) {
             namesListChanged = false
@@ -238,7 +252,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         }
     }
 
-    private fun refactorOnAssignmentsCollision(rules: MutableList<TreeRoot>) {
+    private fun refactorOnAssignmentsCollision(rules: MutableList<TreeRule>) {
         // [old name : new name] pairs
         val changedNames = mutableListOf<Pair<String, String>>()
 
@@ -265,7 +279,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         return newTreeRuleCall
     }
 
-    private fun findEquallyCalledLeavesWithSameAssignment(rule: TreeRoot): List<TreeLeaf> {
+    private fun findEquallyCalledLeavesWithSameAssignment(rule: TreeRule): List<TreeLeaf> {
         val result = mutableListOf<TreeLeaf>()
         val groupedElements = rule.filterNodesIsInstance(TreeLeaf::class.java).groupBy { it.getBnfName() }
         groupedElements.values
@@ -294,7 +308,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         return newName
     }
 
-    private fun refactorOnActionsCollision(rules: MutableList<TreeRoot>) {
+    private fun refactorOnActionsCollision(rules: MutableList<TreeRule>) {
         val changedNames = mutableListOf<Pair<String, String>>()
         rules.forEach {
             val nodesToRename = findEquallyCalledLeavesWithSameAction(it)
@@ -311,7 +325,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
     }
 
 
-    private fun findEquallyCalledLeavesWithSameAction(rule: TreeRoot): List<TreeLeaf> {
+    private fun findEquallyCalledLeavesWithSameAction(rule: TreeRule): List<TreeLeaf> {
         val resultList = mutableListOf<TreeLeaf>()
         val allLeaves = rule.filterNodesIsInstance(TreeLeaf::class.java)
         val leafsWithRewrite = allLeaves.filter { it.rewrite != null }
@@ -329,7 +343,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         return resultList
     }
 
-    private fun createNewRulesAccordingToChanges(rules: MutableList<TreeRoot>, changes: List<Pair<String, String>>) {
+    private fun createNewRulesAccordingToChanges(rules: MutableList<TreeRule>, changes: List<Pair<String, String>>) {
         val rulesWithDuplicate = mutableListOf<String>()
         changes.forEach {
             proceedNewRuleCreation(rules, it, rulesWithDuplicate)
@@ -337,7 +351,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
     }
 
 
-    private fun proceedNewRuleCreation(rules: MutableList<TreeRoot>, pair: Pair<String, String>, rulesWithDuplicate: List<String>) {
+    private fun proceedNewRuleCreation(rules: MutableList<TreeRule>, pair: Pair<String, String>, rulesWithDuplicate: List<String>) {
         val originRule = rules.firstOrNull { it.name == pair.first }
         if (originRule != null && !originRule.isDatatypeRule) {
             originRule as TreeParserRuleImpl
@@ -377,7 +391,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         }
     }
 
-    private fun isDatatypeRule(rule: TreeRoot, datatypeNames: List<String>): Boolean {
+    private fun isDatatypeRule(rule: TreeRule, datatypeNames: List<String>): Boolean {
         val leaves = rule.filterNodesInSubtree { it is TreeLeaf }.map { it as TreeLeaf }
         leaves.forEach {
             if (notAllowedInDatatypeRule(it, datatypeNames)) return false
@@ -393,11 +407,9 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
     }
 
 
-
-    private fun initOccurrencesMap(parserRules: List<TreeRoot>) {
+    private fun initOccurrencesMap(parserRules: List<TreeRule>) {
         parserRules.forEach { ruleNameOccurrences.putIfAbsent(it.name, 0) }
         terminalRules.forEach { ruleNameOccurrences.putIfAbsent(it.name, 0) }
-        enumRules.forEach { ruleNameOccurrences.putIfAbsent(it.name, 0) }
     }
 
     private fun refactorComplicatedDeligateRules(oldRules: List<XtextParserRule>): List<XtextParserRule> {
@@ -488,7 +500,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
     }
 
 
-    private fun fixInheritanceOfNamedRules(rules: MutableList<TreeRoot>) {
+    private fun fixInheritanceOfNamedRules(rules: MutableList<TreeRule>) {
         val crossReferencesNodes = rules.flatMap { it.filterNodesInSubtree { it is TreeCrossReference } }.map { it as TreeCrossReference }
         val targetRules = mutableListOf<TreeParserRuleImpl>()
         crossReferencesNodes.distinctBy { it.getBnfName() }.forEach { treeCrossReference ->
@@ -505,7 +517,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         }
     }
 
-    private fun findRulesCalledWithoutAssignments(rule: TreeParserRuleImpl, allRules: List<TreeRoot>): Set<TreeParserRuleImpl> {
+    private fun findRulesCalledWithoutAssignments(rule: TreeParserRuleImpl, allRules: List<TreeRule>): Set<TreeParserRuleImpl> {
         val resultSet = mutableSetOf<TreeParserRuleImpl>()
         val ruleCallsWithoutAssignment = rule.filterNodesInSubtree { it is TreeRuleCall && it.assignment == null }.map { it as TreeRuleCall }
         ruleCallsWithoutAssignment.forEach { ruleCallNode ->
@@ -516,7 +528,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         return resultSet
     }
 
-    private fun fixInheritanceOfNamedRule(rule: TreeParserRuleImpl, parentRuleName: String, rules: List<TreeRoot>): Boolean {
+    private fun fixInheritanceOfNamedRule(rule: TreeParserRuleImpl, parentRuleName: String, rules: List<TreeRule>): Boolean {
         if (rule.hasNameFeature()) {
             rule.setSuperRule(parentRuleName)
             return true

@@ -7,6 +7,7 @@ import org.eclipse.emf.ecore.EcorePackage
 import org.xtext.example.entity.entity.EntityPackage
 import org.xtext.example.xtext.xtext.XtextPackage
 import simple.SimplePackage
+import smallJava.SmallJavaPackage
 import statemachine.StatemachinePackage
 
 interface EcorePackageRegistry {
@@ -41,6 +42,7 @@ interface EcorePackageRegistry {
             packages.add(EntityPackage.eINSTANCE)
             packages.add(XtextPackage.eINSTANCE)
             packages.add(SimplePackage.eINSTANCE)
+            packages.add(SmallJavaPackage.eINSTANCE)
         }
 
         override fun getPackage(nsUri: String): EPackage? {

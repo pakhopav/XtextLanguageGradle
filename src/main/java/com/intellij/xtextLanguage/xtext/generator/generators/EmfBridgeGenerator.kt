@@ -7,13 +7,16 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.EmfClassDe
 import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.*
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode.Companion.filterNodesInSubtree
+import org.eclipse.emf.ecore.EDataType
+import org.eclipse.emf.ecore.EcoreFactory
+import org.eclipse.emf.ecore.EcorePackage
 import java.io.FileOutputStream
 import java.io.PrintWriter
 import kotlin.test.assertNotNull
 
 class EmfBridgeGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
     private val capitalizedExtension = extension.capitalize()
-    private val relevantRules = filterRelevantRules()
+    private val relevantRules = filterRelevantParserRules()
     private val crossReferences = createCrossReferenceList()
 
     fun generateAll() {
@@ -25,6 +28,16 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
     private fun generateEmfCreator() {
+
+        val d2 = EcorePackage.eINSTANCE.getEClassifier("EInt")
+        d2 as EDataType
+        val i = EcoreFactory.eINSTANCE.createFromString(d2, "5")
+//        val d = SmallJavaPackage.eINSTANCE.sjAccessLevel
+//        val access = SmallJavaFactory.eINSTANCE.createFromString(d, "private")
+//        val fild = SmallJavaFactory.eINSTANCE.createSJMember()
+//        fild.access = access as SJAccessLevel
+
+
         val file = createFile("${capitalizedExtension}EmfCreator.kt", myGenDir + "/emf")
         val out = PrintWriter(FileOutputStream(file))
         generateEmfCreatorImports(out)
@@ -52,7 +65,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
             import org.eclipse.emf.common.util.EList
             """.trimIndent())
         relevantRules.map { it.returnType }.distinct().forEach {
-            out.println("import ${it.path}")
+            out.println("import ${it.classPath}")
         }
     }
 
@@ -61,7 +74,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
             out.println("    private val ${it.name.toUpperCase()} = ${capitalizedExtension}${it.name}BridgeRule()")
         }
         crossReferences.forEach {
-            out.println("    private val ${createCrossReferenceMapName(it)} = mutableListOf<Pair<${it.container.name}, String>>()")
+            out.println("    private val ${createCrossReferenceMapName(it)} = mutableListOf<Pair<${it.container.className}, String>>()")
         }
         out.println("    private val scope = ${capitalizedExtension}Scope(modelDescriptions)")
 
@@ -124,7 +137,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
             out.println("""
                         |        ${createCrossReferenceMapName(it)}.forEach {
                         |            val container = it.first
-                        |            val resolvedObject = scope.getSingleElementOfType(it.second, ${getPackageName(it.target)}.${NameGenerator.toGKitClassName(it.target.name).decapitalize()})
+                        |            val resolvedObject = scope.getSingleElementOfType(it.second, ${getPackageName(it.target)}.${NameGenerator.toPropertyName(it.target.className)})
                         |            resolvedObject?.let { 
                         |               val feature = container.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${it.assignment.featureName}" }
                     """.trimMargin("|"))
@@ -136,8 +149,8 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
                 }
                 AssignmentType.PLUS_EQUALS -> {
                     out.println("""
-                        |                   val list = container.eGet(feature) as EList<${it.target.name}>
-                        |                   list.add(it as ${it.target.name})
+                        |                   val list = container.eGet(feature) as EList<${it.target.className}>
+                        |                   list.add(it as ${it.target.className})
                     """.trimMargin("|"))
                 }
                 AssignmentType.QUESTION_EQUALS -> {
@@ -168,7 +181,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         out.println("    override fun createCrossReference(psiElement: PsiElement, container: EObject) {")
         crossReferences.forEach {
             out.println("""
-                        |        ${elseWord}if (container is ${it.container.name} && psiElement is $capitalizedExtension${NameGenerator.toGKitClassName(it.psiElementName)})
+                        |        ${elseWord}if (container is ${it.container.className} && psiElement is $capitalizedExtension${NameGenerator.toGKitClassName(it.psiElementName)})
                         |            ${createCrossReferenceMapName(it)}.add(Pair(container, psiElement.text))
                     """.trimMargin("|"))
             elseWord = "else "
@@ -177,24 +190,25 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
 
+
     private fun generateBridgeRuleFiles() {
         relevantRules.forEach {
             generateEmfBridgeRuleFile(it)
         }
     }
 
-    private fun generateEmfBridgeRuleFile(rule: TreeParserRule) {
+    private fun generateEmfBridgeRuleFile(rule: TreeRule) {
         val file = createFile("$capitalizedExtension${rule.name}BridgeRule.kt", myGenDir + "/emf/rules")
         val out = PrintWriter(FileOutputStream(file))
         out.println("package $packageDir.emf")
-        getPathsToImport(rule).forEach {
-            out.println("import ${it.path}")
-        }
+
         out.println("""
             |import com.intellij.${extension}Language.$extension.psi.*
             |import com.intellij.psi.PsiElement
             |import com.intellij.xtextLanguage.xtext.emf.*
             |import org.eclipse.emf.ecore.EObject
+            |import org.eclipse.emf.ecore.EDataType
+            |
             |class ${capitalizedExtension}${rule.name}BridgeRule : EmfBridgeRule {
         """.trimMargin("|"))
         generateLiteralAssignmentMethod(rule, out)
@@ -206,15 +220,14 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         out.close()
     }
 
-    private fun generateLiteralAssignmentMethod(rule: TreeRoot, out: PrintWriter) {
+    private fun generateLiteralAssignmentMethod(rule: TreeRule, out: PrintWriter) {
         out.println("    override fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment? {")
         var elseWord = ""
         val literalAssignments = context.findLiteralAssignmentsInRule(rule)
         literalAssignments.forEach { node ->
-            val assignmentLiteralTypeName = if (node is TreeRuleCall) getTypeNameOfCalledRule(node) else "String"
+            val assignableType = if (node is TreeRuleCall) context.getRuleByName(node.getBnfName()).returnType else EmfClassDescriptor.STRING
             val psiElementTypeName = node.getPsiElementTypeName()
             assertNotNull(psiElementTypeName)
-            val toAssignString = if (assignmentLiteralTypeName != "String") "$assignmentLiteralTypeName(literal.text)" else "literal.text"
             out.print("""
                 |        ${elseWord}if (
             """.trimMargin("|"))
@@ -223,15 +236,19 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
                 |            return object : LiteralAssignment {
                 |                override fun assign(obj: EObject, literal: PsiElement) {
                 |                    val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${node.assignment!!.featureName}" }
+                |                    val ePackage = ${getPackageName(assignableType)}
+                |                    val classifier = ePackage.getEClassifier("${assignableType.className}") as EDataType
+                |                    val value = ePackage.eFactoryInstance.createFromString(classifier, literal.text)
+                                    
             """.trimMargin("|"))
             when (node.assignment!!.type) {
                 AssignmentType.EQUALS -> {
-                    out.println("                    obj.eSet(feature, $toAssignString)")
+                    out.println("                    obj.eSet(feature, value)")
                 }
                 AssignmentType.PLUS_EQUALS -> {
                     out.println("""
                         |                   feature?.let {
-                        |                       Helper.esetMany(obj, it, toAssign)
+                        |                       Helper.esetMany(obj, it, value)
                         |                   }
                     """.trimMargin("|"))
                 }
@@ -253,7 +270,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
 
-    private fun generateObjectAssignmentMethod(rule: TreeRoot, out: PrintWriter) {
+    private fun generateObjectAssignmentMethod(rule: TreeRule, out: PrintWriter) {
         out.println("    override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {")
         var elseWord = ""
         val objectAssignments = context.findObjectAssignmentsInRule(rule)
@@ -300,7 +317,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
 
-    private fun generateRewriteMethod(rule: TreeRoot, out: PrintWriter) {
+    private fun generateRewriteMethod(rule: TreeRule, out: PrintWriter) {
         out.println("   override fun findRewrite(pointer: PsiElement): Rewrite? {")
         var elseWord = ""
         val nodesWithRewrite = rule.filterNodesInSubtree { it is TreeLeaf && it.rewrite != null }.map { it as TreeLeaf }
@@ -312,7 +329,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
                 |       ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${psiElementType}) {
                 |           return object : Rewrite {
                 |               override fun rewrite(obj: EObject): EObject {
-                |                   val temp = ${getFactoryName(newObjectType)}.create(${getPackageName(newObjectType)}.${NameGenerator.toGKitClassName(newObjectType.name).decapitalize()})
+                |                   val temp = ${getFactoryName(newObjectType)}.create(${getPackageName(newObjectType)}.${NameGenerator.toPropertyName(newObjectType.className)})
                 |                   val feature = temp.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${node.rewrite!!.assignment.featureName}" }
             """.trimMargin("|"))
             when (node.rewrite!!.assignment.type) {
@@ -351,29 +368,29 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
 
     }
 
-    private fun generateFactoryMethod(rule: TreeParserRule, out: PrintWriter) {
+    private fun generateFactoryMethod(rule: TreeRule, out: PrintWriter) {
         out.println("""
             |    override fun createObject(): EObject {
-            |       return ${getFactoryName(rule.returnType)}.create(${getPackageName(rule.returnType)}.${NameGenerator.toGKitClassName(rule.returnType.name).decapitalize()})
+            |       return ${getFactoryName(rule.returnType)}.create(${getPackageName(rule.returnType)}.${NameGenerator.toPropertyName(rule.returnType.className)})
             |    }
             |
         """.trimMargin("|"))
     }
 
 
-    private fun generateActionMethod(rule: TreeRoot, out: PrintWriter) {
+    private fun generateActionMethod(rule: TreeRule, out: PrintWriter) {
         out.println("""
             |    override fun findAction(pointer: PsiElement): EObject? {
         """.trimMargin("|"))
         val nodesWithSimpleAction = rule.filterNodesInSubtree { it is TreeLeaf && it.simpleActionText != null }.map { it as TreeLeaf }
+        var elseWord = ""
         nodesWithSimpleAction.forEach { node ->
             val newObjectType = context.getClassDescriptionByName(node.simpleActionText!!)
             assertNotNull(newObjectType)
             val psiElementType = node.getPsiElementTypeName()
-            var elseWord = ""
             out.println("""
             |        ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${psiElementType}){
-            |            return ${getFactoryName(newObjectType)}.create(${getPackageName(newObjectType)}.${NameGenerator.toGKitClassName(newObjectType.name).decapitalize()})
+            |            return ${getFactoryName(newObjectType)}.create(${getPackageName(newObjectType)}.${NameGenerator.toPropertyName(newObjectType.className)})
             |        }
         """.trimMargin("|"))
             elseWord = "else "
@@ -430,7 +447,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         out.close()
     }
 
-    private fun getPathsToImport(rule: TreeRoot): List<EmfClassDescriptor> {
+    private fun getPathsToImport(rule: TreeRule): List<EmfClassDescriptor> {
         val nodes = context.findLiteralAssignmentsInRule(rule)
         return nodes.filterIsInstance<TreeRuleCall>()
                 .map { getDescriptorOfCalledRule(it) }
@@ -439,7 +456,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
     private fun getTypeNameOfCalledRule(node: TreeRuleCall): String {
-        return getDescriptorOfCalledRule(node)?.name ?: "String"
+        return getDescriptorOfCalledRule(node)?.className ?: "String"
     }
 
     private fun getDescriptorOfCalledRule(node: TreeRuleCall): EmfClassDescriptor? {
@@ -452,10 +469,10 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         return null
     }
 
-    private fun filterRelevantRules(): List<TreeParserRule> {
+    private fun filterRelevantParserRules(): List<TreeParserRule> {
         return context.rules
-                .filter { it !is TreeFragmentRule && !it.isDatatypeRule && it !is DuplicateRule }
-                .map { it as TreeParserRule }
+                .filterIsInstance<TreeParserRule>()
+                .filter { !it.isDatatypeRule }
     }
 
     private fun createCrossReferenceList(): List<BridgeCrossReference> {
@@ -475,15 +492,15 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
     private fun createCrossReferenceMapName(reference: BridgeCrossReference): String {
-        return "${reference.container.name.decapitalize()}To${reference.target.name}NameList"
+        return "${reference.container.className.decapitalize()}To${reference.target.className}NameList"
     }
 
     private fun getFactoryName(type: EmfClassDescriptor): String {
-        return "${type.path.removeSuffix(type.name)}${type.prefix.capitalize()}Factory.eINSTANCE"
+        return "${type.classPath.removeSuffix(type.className)}${type.packagePrefix.capitalize()}Factory.eINSTANCE"
     }
 
     private fun getPackageName(type: EmfClassDescriptor): String {
-        return "${type.path.removeSuffix(type.name)}${type.prefix.capitalize()}Package.eINSTANCE"
+        return "${type.packagePath}.${type.packagePrefix.capitalize()}Package.eINSTANCE"
     }
 
     data class BridgeCrossReference(val assignment: Assignment,

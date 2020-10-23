@@ -19,6 +19,25 @@ class NameGenerator {
         fun toGKitTypesName(text: String): String {
             return g.toIdentifier(text, null, Case.UPPER)!!
         }
+
+        @JvmStatic
+        fun toPropertyName(text: String): String {
+            return g.toKotlinProperty(text)
+        }
+    }
+
+    fun toKotlinProperty(text: String): String {
+        if (text.isEmpty()) return ""
+        val fixed = text.replace("[^:\\p{javaJavaIdentifierPart}]".toRegex(), "_")
+        val allCaps: Boolean = Case.UPPER.apply(fixed).equals(fixed)
+        val sb = StringBuilder()
+        if (!Character.isJavaIdentifierStart(fixed[0]) && sb.length == 0) sb.append("_")
+        val strings: Array<String> = NameUtil.nameToWords(fixed)
+        sb.append(Case.LOWER.apply(strings[0]))
+        for (i in 1 until strings.size) {
+            sb.append(Case.CAMEL.apply(strings[i]))
+        }
+        return sb.toString()
     }
 
     fun toIdentifier(text: String, format: NameFormat?, cas: Case): String? {

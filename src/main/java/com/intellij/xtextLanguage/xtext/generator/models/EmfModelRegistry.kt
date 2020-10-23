@@ -5,7 +5,6 @@ import com.intellij.xtextLanguage.xtext.EcorePackageRegistry
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.EmfClassDescriptor
 import com.intellij.xtextLanguage.xtext.psi.XtextFile
 import com.intellij.xtextLanguage.xtext.psi.XtextReferencedMetamodel
-import com.intellij.xtextLanguage.xtext.psi.XtextTypeRef
 import org.eclipse.emf.ecore.EPackage
 
 class EmfModelRegistry() {
@@ -23,36 +22,37 @@ class EmfModelRegistry() {
         }
     }
 
-    fun findOrCreateType(psiTypeRef: XtextTypeRef): EmfClassDescriptor? {
-        psiTypeRef.referenceAbstractMetamodelDeclaration?.let {
-            val modelName = it.text
-            val modelType = psiTypeRef.referenceEcoreEClassifier.text
-            val modelPackage = importedModels.get(modelName)
-            return EmfClassDescriptor(modelPackage!!.getEClassifier(modelType).instanceTypeName, modelPackage.nsPrefix)
-        }
-
-        importedModels.filter { it.key.isEmpty() }.values.forEach { ePackage ->
-            val result = ePackage.getEClassifier(psiTypeRef.referenceEcoreEClassifier.text)
-            result?.let {
-                return EmfClassDescriptor(it.instanceTypeName, ePackage.nsPrefix)
-            }
-        }
-
-
-        return null
-    }
+//    fun findOrCreateType(psiTypeRef: XtextTypeRef): EmfClassDescriptor? {
+//        psiTypeRef.referenceAbstractMetamodelDeclaration?.let {
+//            val modelName = it.text
+//            val modelType = psiTypeRef.referenceEcoreEClassifier.text
+//            val modelPackage = importedModels.get(modelName)
+//            return EmfClassDescriptor(modelPackage!!.getEClassifier(modelType).instanceTypeName, modelPackage.nsPrefix)
+//        }
+//
+//        importedModels.filter { it.key.isEmpty() }.values.forEach { ePackage ->
+//            val result = ePackage.getEClassifier(psiTypeRef.referenceEcoreEClassifier.text)
+//            result?.let {
+//                return EmfClassDescriptor(it.instanceTypeName, ePackage.nsPrefix)
+//            }
+//        }
+//
+//
+//        return null
+//    }
 
     fun findOrCreateType(typeName: String): EmfClassDescriptor? {
         if (typeName.contains("::")) {
             val modelName = typeName.split("::")[0]
             val modelType = typeName.split("::")[1]
             val modelPackage = importedModels.get(modelName)
-            return EmfClassDescriptor(modelPackage!!.getEClassifier(modelType).instanceTypeName, modelPackage.nsPrefix)
+
+            return EmfClassDescriptor(modelPackage!!.getEClassifier(modelType))
         } else {
             importedModels.filter { it.key.isEmpty() }.values.forEach { ePackage ->
                 val result = ePackage.getEClassifier(typeName)
                 if (result != null) {
-                    return EmfClassDescriptor(result.instanceTypeName, ePackage.nsPrefix)
+                    return EmfClassDescriptor(result)
                 }
             }
 

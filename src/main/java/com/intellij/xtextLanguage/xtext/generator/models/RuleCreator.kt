@@ -14,26 +14,146 @@ import com.intellij.xtextLanguage.xtext.psi.*
 import java.util.*
 import kotlin.test.assertNotNull
 
-class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
+class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
     private val visitor = XtextParserRuleVisitor(keywords, emfRegistry)
+    private val terminalRuleVisitor = XtextTerminalRuleVisitor(emfRegistry)
 
-    fun createFromXtextParserRule(xtextRule: XtextParserRule): List<TreeRoot> {
-        return visitor.createRule(xtextRule)
+
+    fun createEnumRule(psiRule: XtextEnumRule): TreeRule {
+        return visitor.createTreeFromXtextEnumRule(psiRule)
+    }
+
+    fun createTerminalRule(psiRule: XtextTerminalRule): TreeTerminalRule {
+        return terminalRuleVisitor.createTreeFromXtextTerminalRule(psiRule)
+    }
+
+    fun createParserRule(xtextRule: XtextParserRule): List<TreeRule> {
+        return visitor.createTreesFromXtextParserRule(xtextRule)
     }
 
 
-    private class XtextParserRuleVisitor(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) : XtextVisitor() {
-        private val keywords = keywords
-        private val emfRegistry = emfRegistry
+    private class XtextTerminalRuleVisitor(private val emfRegistry: EmfModelRegistry) : XtextVisitor() {
+        private val treeNodeStack = Stack<TreeNodeImpl>()
+        private var cardinality: Cardinality = Cardinality.NONE
+
+        private fun getRuleTypeDescriptor(rule: XtextTerminalRule): EmfClassDescriptor {
+            val returnTypeText = rule.typeRef?.text ?: rule.validID.text.eliminateCaret()
+            val ruleType = emfRegistry.findOrCreateType(returnTypeText)
+            if (ruleType == null) return EmfClassDescriptor.STRING
+            return ruleType
+        }
+
+        private fun clearAll() {
+            treeNodeStack.clear()
+            cardinality = Cardinality.NONE
+        }
+
+        fun createTreeFromXtextTerminalRule(rule: XtextTerminalRule): TreeTerminalRule {
+            clearAll()
+            val type = getRuleTypeDescriptor(rule)
+            val treeRoot = TreeTerminalRuleImpl(rule, type)
+            treeNodeStack.push(treeRoot)
+            visitTerminalRule(rule)
+            return treeRoot
+        }
+
+
+        private fun getCurrentCardinality(): Cardinality {
+            val res = cardinality
+            cardinality = Cardinality.NONE
+            return res
+        }
+
+
+        //========================================================
+        //           Visitor methods
+        //========================================================
+
+        override fun visitTerminalAlternatives(alternatives: XtextTerminalAlternatives) {
+            val manyGroups = alternatives.terminalGroupList.size > 1
+            if (manyGroups) {
+                val treeBranch = TreeTerminalBranch(treeNodeStack.peek())
+                treeNodeStack.peek().addChild(treeBranch)
+                treeNodeStack.push(treeBranch)
+            }
+            alternatives.terminalGroupList.forEach {
+                visitTerminalGroup(it)
+            }
+            if (manyGroups) treeNodeStack.pop()
+        }
+
+        override fun visitTerminalGroup(group: XtextTerminalGroup) {
+            val manyTokens = group.terminalTokenList.size > 1
+            if (manyTokens) {
+                val treeGroup = TreeTerminalGroup(treeNodeStack.peek(), Cardinality.NONE, true)
+                treeNodeStack.peek().addChild(treeGroup)
+                treeNodeStack.push(treeGroup)
+            }
+            group.terminalTokenList.forEach {
+                visitTerminalToken(it)
+            }
+            if (manyTokens) treeNodeStack.pop()
+        }
+
+        override fun visitTerminalToken(token: XtextTerminalToken) {
+            token.plusKeyword?.let {
+                cardinality = Cardinality.PLUS
+            }
+            token.quesMarkKeyword?.let {
+                cardinality = Cardinality.QUES
+            }
+            token.asteriskKeyword?.let {
+                cardinality = Cardinality.ASTERISK
+            }
+            visitTerminalTokenElement(token.terminalTokenElement)
+        }
+
+        override fun visitCharacterRange(characterRange: XtextCharacterRange) {
+            val terminalRange = TreeTerminalRange(characterRange, treeNodeStack.peek(), getCurrentCardinality())
+            treeNodeStack.peek().addChild(terminalRange)
+        }
+
+        override fun visitParenthesizedTerminalElement(o: XtextParenthesizedTerminalElement) {
+            val terminalGroup = TreeTerminalGroup(treeNodeStack.peek(), getCurrentCardinality(), true)
+            treeNodeStack.peek().addChild(terminalGroup)
+            treeNodeStack.push(terminalGroup)
+            visitTerminalAlternatives(o.terminalAlternatives)
+            treeNodeStack.pop()
+
+        }
+
+        override fun visitWildcard(wildcard: XtextWildcard) {
+            val terminalWildcard = TreeTerminalSimple(wildcard, treeNodeStack.peek(), getCurrentCardinality())
+            treeNodeStack.peek().addChild(terminalWildcard)
+        }
+
+        override fun visitUntilToken(untilToken: XtextUntilToken) {
+            val terminalUntilToken = TreeTerminalUntil(untilToken, treeNodeStack.peek(), Cardinality.NONE)
+            treeNodeStack.peek().addChild(terminalUntilToken)
+        }
+
+        override fun visitTerminalRuleCall(ruleCall: XtextTerminalRuleCall) {
+            val terminalRuleCall = TreeTerminalRuleCall(ruleCall, treeNodeStack.peek(), getCurrentCardinality())
+            treeNodeStack.peek().addChild(terminalRuleCall)
+        }
+
+        override fun visitNegatedToken(negatedToken: XtextNegatedToken) {
+            val terminalNegatedToken = TreeTerminalNegatedToken(negatedToken, treeNodeStack.peek(), Cardinality.NONE)
+            treeNodeStack.peek().addChild(terminalNegatedToken)
+        }
+
+    }
+
+
+    private class XtextParserRuleVisitor(private val keywords: List<Keyword>, private val emfRegistry: EmfModelRegistry) : XtextVisitor() {
         private var lastAction: String? = null
-        private var currentRuleName = ""
-        private var currentRoot: TreeRoot? = null
+        private var currentRule: TreeRule? = null
         private val treeNodeStack = Stack<TreeNodeImpl>()
         private val addedSuffixesInfos = Stack<SuffixInsertionInfo>()
         private var l = 0
         private var suffixCounter = 1
         private var newType = ""
-        private val suffixes = mutableListOf<TreeRoot>()
+        private val suffixes = mutableListOf<TreeRule>()
         private var cardinality: Cardinality = Cardinality.NONE
 
         private fun getRuleTypeDescriptor(rule: XtextParserRule): EmfClassDescriptor {
@@ -43,27 +163,44 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             return ruleType
         }
 
-        fun createRule(rule: XtextParserRule): List<TreeRoot> {
+        private fun getRuleTypeDescriptor(rule: XtextEnumRule): EmfClassDescriptor {
+            val returnTypeText = rule.typeRef?.text ?: rule.validID.text.eliminateCaret()
+            val ruleType = emfRegistry.findOrCreateType(returnTypeText)
+            if (ruleType == null) return EmfClassDescriptor.STRING
+            return ruleType
+        }
+
+
+        fun createTreeFromXtextEnumRule(rule: XtextEnumRule): TreeRule {
             clearAll()
-            val result = mutableListOf<TreeRoot>()
-            val treeRoot: TreeRoot =
+            val type = getRuleTypeDescriptor(rule)
+            val treeRoot = TreeEnumRuleImpl(rule, type)
+            currentRule = treeRoot
+            treeNodeStack.push(treeRoot)
+            visitEnumLiterals(rule.enumLiterals)
+            return treeRoot
+        }
+
+        fun createTreesFromXtextParserRule(rule: XtextParserRule): List<TreeRule> {
+            clearAll()
+            val result = mutableListOf<TreeRule>()
+            val treeRule: TreeRule =
                     rule.fragmentKeyword?.let {
                         TreeFragmentRuleImpl(rule)
                     } ?: kotlin.run {
                         val type = getRuleTypeDescriptor(rule)
                         TreeParserRuleImpl(rule, type)
                     }
-            currentRoot = treeRoot
-            treeNodeStack.push(treeRoot as TreeNodeImpl)
-            currentRuleName = rule.ruleNameAndParams.validID.text.replace("^", "").capitalize()
+            currentRule = treeRule
+            treeNodeStack.push(treeRule as TreeNodeImpl)
             visitAlternatives(rule.alternatives)
             if (newType.isNotEmpty()) {
-                assert(treeRoot is TreeParserRule)
+                assert(treeRule is TreeParserRule)
                 emfRegistry.findOrCreateType(newType)?.let {
-                    (treeRoot as TreeParserRuleImpl).setReturnType(it)
+                    (treeRule as TreeParserRuleImpl).setReturnType(it)
                 }
             }
-            result.add(treeRoot)
+            result.add(treeRule)
             result.addAll(suffixes)
             return result
         }
@@ -71,17 +208,18 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
         private fun clearAll() {
             treeNodeStack.clear()
             lastAction = null
-            currentRuleName = ""
             suffixCounter = 1
             l = 0
             newType = ""
             suffixes.clear()
-            currentRoot = null
+            currentRule = null
             cardinality = Cardinality.NONE
         }
 
         private fun createTreeKeyword(psiElement: PsiElement, assignmentString: String?): TreeKeywordImpl {
-            val psiElementText = psiElement.text.slice(1 until psiElement.text.length - 1)
+            val psiElementText = psiElement.text
+                    .removePrefix("\"").removePrefix("\'")
+                    .removeSuffix("\"").removeSuffix("\'")
             val keywordName = keywords.firstOrNull { it.keyword == psiElementText }?.name
             assertNotNull(keywordName)
             val assignment = assignmentString?.let { Assignment.fromString(it) }
@@ -131,29 +269,12 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             }
         }
 
-
-        override fun visitAbstractTokenWithCardinality(tokenWithCardinality: XtextAbstractTokenWithCardinality) {
-            setCardinality(tokenWithCardinality)
-
-            if (lastAction != null && !goodElement(tokenWithCardinality)) {
-                insertSuffix()
-            }
-
-            tokenWithCardinality.abstractTerminal?.let {
-                visitAbstractTerminal(it)
-            }
-            tokenWithCardinality.assignment?.let {
-                visitAssignment(it)
-            }
-        }
-
-
         private fun insertSuffix() {
-            val suffixName = "${currentRuleName}Suffix${suffixCounter++}"
-            val suffixRule = TreeParserRuleImpl(suffixName, (currentRoot as TreeParserRule).returnType, true)
+            val suffixName = "${currentRule!!.name}Suffix${suffixCounter++}"
+            val suffixRule = TreeParserRuleImpl(suffixName, (currentRule as TreeParserRule).returnType, true)
 
             val peek = treeNodeStack.peek()
-            if (peek is TreeRoot && peek.children.isEmpty()) {
+            if (peek is TreeRule && peek.children.isEmpty()) {
                 assert(lastAction!!.split(".").size < 2)
                 newType = lastAction!!.removePrefix("{").removeSuffix("}")
             } else if (peek is TreeGroup && peek.children.isEmpty()) {
@@ -175,6 +296,56 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             lastAction = null
         }
 
+
+        private fun createRewriteFromString(string: String): TreeRewrite? {
+            if (string.split(".").size < 2) return null
+            val className = string.split(".")[0].removePrefix("{")
+            val textFragmentForAssignment = string.split(".")[1].removeSuffix("current}")
+            return TreeRewrite(className, Assignment.fromString(textFragmentForAssignment))
+        }
+
+        private fun setCardinality(token: XtextAbstractTokenWithCardinality) {
+            token.asteriskKeyword?.let { cardinality = Cardinality.ASTERISK }
+            token.plusKeyword?.let { cardinality = Cardinality.PLUS }
+            token.quesMarkKeyword?.let { cardinality = Cardinality.QUES }
+        }
+
+        private fun getCurrentCardinality(): Cardinality {
+            val res = cardinality
+            cardinality = Cardinality.NONE
+            return res
+        }
+
+        private fun popSuffixIfNeeded() {
+            if (addedSuffixesInfos.isEmpty()) return
+            if (l == addedSuffixesInfos.peek().level) {
+                assert(treeNodeStack.peek() is TreeRule)
+                if (addedSuffixesInfos.peek().groupReplaced) {
+                    suffixes.add(treeNodeStack.peek() as TreeRule)
+                } else {
+                    suffixes.add(treeNodeStack.pop() as TreeRule)
+                }
+                addedSuffixesInfos.pop()
+            }
+        }
+
+        //===================================================
+        //                   Visitor methods
+
+        override fun visitAbstractTokenWithCardinality(tokenWithCardinality: XtextAbstractTokenWithCardinality) {
+            setCardinality(tokenWithCardinality)
+
+            if (lastAction != null && !goodElement(tokenWithCardinality)) {
+                insertSuffix()
+            }
+
+            tokenWithCardinality.abstractTerminal?.let {
+                visitAbstractTerminal(it)
+            }
+            tokenWithCardinality.assignment?.let {
+                visitAssignment(it)
+            }
+        }
 
 
         override fun visitAbstractTerminal(o: XtextAbstractTerminal) {
@@ -235,7 +406,7 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
         override fun visitConditionalBranch(o: XtextConditionalBranch) {
             o.unorderedGroup?.let { unorderedGroup ->
                 val tokensListSize = unorderedGroup.groupList.flatMap { it.abstractTokenList }.filter { it.abstractTokenWithCardinality != null }.size
-                if (treeNodeStack.peek() is TreeGroup || treeNodeStack.peek() is TreeRoot || tokensListSize < 2) {
+                if (treeNodeStack.peek() is TreeGroup || treeNodeStack.peek() is TreeRule || tokensListSize < 2) {
                     visitUnorderedGroup(unorderedGroup)
                 } else {
                     val treeGroup = TreeSyntheticGroup(treeNodeStack.peek(), getCurrentCardinality(), false)
@@ -268,7 +439,7 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             }
         }
 
-        fun visitAssignableTerminal(assignableTerminal: XtextAssignableTerminal, assignmentString: String) {
+        private fun visitAssignableTerminal(assignableTerminal: XtextAssignableTerminal, assignmentString: String) {
             assignableTerminal.keyword?.let {
                 val keywordNode = createTreeKeyword(it, assignmentString)
                 addTreeNode(keywordNode)
@@ -290,7 +461,7 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             assignableTerminal.crossReference?.let {
                 val referenceType = emfRegistry.findOrCreateType(it.typeRef.text)
                 assertNotNull(referenceType)
-                val referenceNode = TreeCrossReferenceImpl(it, currentRuleName, treeNodeStack.peek(), getCurrentCardinality(), referenceType, Assignment.fromString(assignmentString))
+                val referenceNode = TreeCrossReferenceImpl(it, currentRule!!.name, treeNodeStack.peek(), getCurrentCardinality(), referenceType, Assignment.fromString(assignmentString))
                 addTreeNode(referenceNode)
             }
         }
@@ -323,7 +494,7 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
         }
 
         override fun visitPredicatedKeyword(predicatedKeyword: XtextPredicatedKeyword) {
-            val keywordNode = createTreeKeyword(predicatedKeyword, null)
+            val keywordNode = createTreeKeyword(predicatedKeyword.string, null)
             addTreeNode(keywordNode)
         }
 
@@ -337,41 +508,29 @@ class ParserRuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) 
             addTreeNode(treeLeafRuleCall)
         }
 
-        override fun visitAction(o: XtextAction) {
-            lastAction = o.text
+        override fun visitAction(xtextAction: XtextAction) {
+            lastAction = xtextAction.text
         }
 
-        private fun createRewriteFromString(string: String): TreeRewrite? {
-            if (string.split(".").size < 2) return null
-            val className = string.split(".")[0].removePrefix("{")
-            val textFragmentForAssignment = string.split(".")[1].removeSuffix("current}")
-            return TreeRewrite(className, Assignment.fromString(textFragmentForAssignment))
-        }
 
-        private fun setCardinality(token: XtextAbstractTokenWithCardinality) {
-            token.asteriskKeyword?.let { cardinality = Cardinality.ASTERISK }
-            token.plusKeyword?.let { cardinality = Cardinality.PLUS }
-            token.quesMarkKeyword?.let { cardinality = Cardinality.QUES }
-        }
-
-        private fun getCurrentCardinality(): Cardinality {
-            val res = cardinality
-            cardinality = Cardinality.NONE
-            return res
-        }
-
-        private fun popSuffixIfNeeded() {
-            if (addedSuffixesInfos.isEmpty()) return
-            if (l == addedSuffixesInfos.peek().level) {
-                assert(treeNodeStack.peek() is TreeRoot)
-                if (addedSuffixesInfos.peek().groupReplaced) {
-                    suffixes.add(treeNodeStack.peek() as TreeRoot)
-                } else {
-                    suffixes.add(treeNodeStack.pop() as TreeRoot)
-                }
-                addedSuffixesInfos.pop()
+        override fun visitEnumLiterals(enumLiterals: XtextEnumLiterals) {
+            val branchAdded = enumLiterals.enumLiteralDeclarationList.size > 1
+            if (branchAdded) {
+                val treeBranch = TreeBranchImpl(treeNodeStack.peek())
+                addTreeNode(treeBranch)
             }
+            enumLiterals.enumLiteralDeclarationList.forEach {
+                visitEnumLiteralDeclaration(it)
+            }
+            if (branchAdded) treeNodeStack.pop()
         }
+
+        override fun visitEnumLiteralDeclaration(literalDeclaration: XtextEnumLiteralDeclaration) {
+            val psiKeyword = literalDeclaration.keyword ?: literalDeclaration.referenceEcoreEEnumLiteral
+            val keywordNode = createTreeKeyword(psiKeyword, null)
+            addTreeNode(keywordNode)
+        }
+
 
         private data class SuffixInsertionInfo(val level: Int, val groupReplaced: Boolean)
 

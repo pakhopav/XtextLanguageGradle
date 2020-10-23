@@ -2,7 +2,7 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 
 import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeParserRule
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRoot
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRule
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
@@ -15,20 +15,23 @@ class BnfGenerator(extension: String, val context: MetaContext) : AbstractGenera
         generateAttributes(out)
         out.print("}\n")
         generateRules(out)
-        generateEnumRules(out)
+//        generateEnumRules(out)
         out.close()
     }
 
     fun generateTerminalRules(out: PrintWriter) {
         out.print("    tokens = [\n")
-        context.terminalRules.forEach {
-            out.print(it.name.toUpperCase() + "=\"regexp:")
-            it.alternativeElements.forEach {
-                out.print(it.getBnfName())
-            }
-            out.print("\"\n")
-
+        context.terminalRs.forEach {
+            out.println("${it.name.toUpperCase()} = \"${it.name}\"")
         }
+//        context.terminalRules.forEach {
+//            out.print(it.name.toUpperCase() + "=\"regexp:")
+//            it.alternativeElements.forEach {
+//                out.print(it.getBnfName())
+//            }
+//            out.print("\"\n")
+//
+//        }
         generateKeywordTokens(out)
         out.print("    ]\n")
     }
@@ -59,26 +62,11 @@ class BnfGenerator(extension: String, val context: MetaContext) : AbstractGenera
     }
 
 
-    private fun generateEnumRules(out: PrintWriter) {
-        context.enumRules.forEach {
-            val rule = it
-            out.print("${it.name} ::= ")
-            it.alternativeElements.forEach {
-                out.print(it.getBnfName())
-                if (it != rule.alternativeElements.last()) {
-                    out.print(" | ")
-                }
-            }
-            out.print("\n")
-
-        }
-
-    }
 
     private fun generateRules(out: PrintWriter) {
         out.print("${extension.capitalize()}File ::= ${context.rules[0].name}\n")
         context.rules.forEach { rule ->
-            out.println(rule.getBnfString())
+            out.println(rule.getString())
             val bnfExtensions = mutableListOf<String>()
             if (rule is TreeParserRule) {
                 if (rule.isReferenced) {
@@ -108,9 +96,9 @@ class BnfGenerator(extension: String, val context: MetaContext) : AbstractGenera
     }
 
 
-    private fun generatePrivateDuplicate(rule: TreeRoot, out: PrintWriter) {
+    private fun generatePrivateDuplicate(rule: TreeRule, out: PrintWriter) {
         val newName = rule.name + "Private"
-        val body = rule.children.map { it.getBnfString() }.joinToString(separator = " ")
+        val body = rule.children.map { it.getString() }.joinToString(separator = " ")
         out.println("private $newName ::= $body\n")
     }
 }
