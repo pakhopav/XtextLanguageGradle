@@ -21,7 +21,7 @@ class BnfGenerator(extension: String, val context: MetaContext) : AbstractGenera
 
     fun generateTerminalRules(out: PrintWriter) {
         out.print("    tokens = [\n")
-        context.terminalRs.forEach {
+        context.terminalRules.forEach {
             out.println("${it.name.toUpperCase()} = \"${it.name}\"")
         }
 //        context.terminalRules.forEach {

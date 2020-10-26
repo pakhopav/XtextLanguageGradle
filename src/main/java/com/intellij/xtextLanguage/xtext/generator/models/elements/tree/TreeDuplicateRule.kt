@@ -1,5 +1,5 @@
 package com.intellij.xtextLanguage.xtext.generator.models.elements.tree
 
-interface DuplicateRule : TreeRule {
+interface TreeDuplicateRule : TreeRule {
     val originRuleName: String
 }

@@ -85,7 +85,7 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
         override fun visitTerminalGroup(group: XtextTerminalGroup) {
             val manyTokens = group.terminalTokenList.size > 1
             if (manyTokens) {
-                val treeGroup = TreeTerminalGroup(treeNodeStack.peek(), Cardinality.NONE, true)
+                val treeGroup = TreeTerminalGroup(treeNodeStack.peek(), Cardinality.NONE, false)
                 treeNodeStack.peek().addChild(treeGroup)
                 treeNodeStack.push(treeGroup)
             }
@@ -265,7 +265,10 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
                 node.setRewrite(it)
             } ?: kotlin.run {
                 val simpleActionText = actionText.removePrefix("{").removeSuffix("}")
-                node.setSimpleAction(simpleActionText)
+                val action = emfRegistry.findOrCreateType(simpleActionText)
+                action?.let {
+                    node.setSimpleAction(it)
+                }
             }
         }
 
@@ -299,9 +302,11 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
 
         private fun createRewriteFromString(string: String): TreeRewrite? {
             if (string.split(".").size < 2) return null
-            val className = string.split(".")[0].removePrefix("{")
+            val typeText = string.split(".")[0].removePrefix("{")
+            val typeDescriptor = emfRegistry.findOrCreateType(typeText)
+            assertNotNull(typeDescriptor)
             val textFragmentForAssignment = string.split(".")[1].removeSuffix("current}")
-            return TreeRewrite(className, Assignment.fromString(textFragmentForAssignment))
+            return TreeRewrite(typeDescriptor, Assignment.fromString(textFragmentForAssignment))
         }
 
         private fun setCardinality(token: XtextAbstractTokenWithCardinality) {

@@ -7,9 +7,6 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.EmfClassDe
 import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.*
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode.Companion.filterNodesInSubtree
-import org.eclipse.emf.ecore.EDataType
-import org.eclipse.emf.ecore.EcoreFactory
-import org.eclipse.emf.ecore.EcorePackage
 import java.io.FileOutputStream
 import java.io.PrintWriter
 import kotlin.test.assertNotNull
@@ -28,16 +25,6 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
     private fun generateEmfCreator() {
-
-        val d2 = EcorePackage.eINSTANCE.getEClassifier("EInt")
-        d2 as EDataType
-        val i = EcoreFactory.eINSTANCE.createFromString(d2, "5")
-//        val d = SmallJavaPackage.eINSTANCE.sjAccessLevel
-//        val access = SmallJavaFactory.eINSTANCE.createFromString(d, "private")
-//        val fild = SmallJavaFactory.eINSTANCE.createSJMember()
-//        fild.access = access as SJAccessLevel
-
-
         val file = createFile("${capitalizedExtension}EmfCreator.kt", myGenDir + "/emf")
         val out = PrintWriter(FileOutputStream(file))
         generateEmfCreatorImports(out)
@@ -82,24 +69,33 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
 
     private fun generateGetBridgeRuleForPsiElementMethod(out: PrintWriter) {
         out.println("    override fun getBridgeRuleForPsiElement(psiElement: PsiElement): EmfBridgeRule? {")
-        relevantRules.forEach {
-            val rulePsiElementTypeName = NameGenerator.toGKitTypesName(it.name)
-            out.println("""
-                |        if(psiElement.node.elementType == ${capitalizedExtension}Types.$rulePsiElementTypeName){
-                |            return ${it.name.toUpperCase()}
-                |        } 
-            """.trimMargin("|"))
-        }
-        context.rules.filterIsInstance<DuplicateRule>().groupBy { it.originRuleName }.forEach {
-            val conditionString = it.value
-                    .map { "${capitalizedExtension}${it.name}" }
-                    .joinToString(prefix = " psiElement is ", separator = " || psiElement is")
+        relevantRules.forEach { rule ->
+            val rulePsiElementTypeName = NameGenerator.toGKitTypesName(rule.name)
+            var conditionString = "psiElement.node.elementType == ${capitalizedExtension}Types.$rulePsiElementTypeName"
+
+            val duplicates = context.rules.filterIsInstance<TreeDuplicateRule>().filter { it.originRuleName == rule.name }
+            if (duplicates.isNotEmpty()) {
+                val conditionStringExpention = duplicates
+                        .map { "${capitalizedExtension}Types.${NameGenerator.toGKitTypesName(it.name)}" }
+                        .joinToString(prefix = " || psiElement.node.elementType == ", separator = " || psiElement.node.elementType == ")
+                conditionString += conditionStringExpention
+            }
             out.println("""
                 |        if($conditionString){
-                |            return ${it.key.toUpperCase()}
+                |            return ${rule.name.toUpperCase()}
                 |        } 
             """.trimMargin("|"))
         }
+//        context.rules.filterIsInstance<TreeDuplicateRule>().groupBy { it.originRuleName }.forEach {
+//            val conditionString = it.value
+//                    .map { "${capitalizedExtension}${it.name}" }
+//                    .joinToString(prefix = " psiElement is ", separator = " || psiElement is")
+//            out.println("""
+//                |        if($conditionString){
+//                |            return ${it.key.toUpperCase()}
+//                |        }
+//            """.trimMargin("|"))
+//        }
 
         out.println("        return null\n    }")
     }
@@ -322,7 +318,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         var elseWord = ""
         val nodesWithRewrite = rule.filterNodesInSubtree { it is TreeLeaf && it.rewrite != null }.map { it as TreeLeaf }
         nodesWithRewrite.forEach { node ->
-            val newObjectType = context.getClassDescriptionByName(node.rewrite!!.newObjectClassName)
+            val newObjectType = node.rewrite!!.newObjectType
             assertNotNull(newObjectType)
             val psiElementType = node.getPsiElementTypeName()
             out.println("""
@@ -382,11 +378,10 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         out.println("""
             |    override fun findAction(pointer: PsiElement): EObject? {
         """.trimMargin("|"))
-        val nodesWithSimpleAction = rule.filterNodesInSubtree { it is TreeLeaf && it.simpleActionText != null }.map { it as TreeLeaf }
+        val nodesWithSimpleAction = rule.filterNodesInSubtree { it is TreeLeaf && it.simpleAction != null }.map { it as TreeLeaf }
         var elseWord = ""
         nodesWithSimpleAction.forEach { node ->
-            val newObjectType = context.getClassDescriptionByName(node.simpleActionText!!)
-            assertNotNull(newObjectType)
+            val newObjectType = node.simpleAction!!
             val psiElementType = node.getPsiElementTypeName()
             out.println("""
             |        ${elseWord}if (pointer.node.elementType == ${capitalizedExtension}Types.${psiElementType}){
@@ -447,32 +442,12 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         out.close()
     }
 
-    private fun getPathsToImport(rule: TreeRule): List<EmfClassDescriptor> {
-        val nodes = context.findLiteralAssignmentsInRule(rule)
-        return nodes.filterIsInstance<TreeRuleCall>()
-                .map { getDescriptorOfCalledRule(it) }
-                .filter { it != EmfClassDescriptor.STRING }
-                .filterNotNull().distinct()
-    }
 
-    private fun getTypeNameOfCalledRule(node: TreeRuleCall): String {
-        return getDescriptorOfCalledRule(node)?.className ?: "String"
-    }
-
-    private fun getDescriptorOfCalledRule(node: TreeRuleCall): EmfClassDescriptor? {
-        context.getParserRuleByName(node.getBnfName())?.let {
-            return it.returnType
-        }
-        context.terminalRules.firstOrNull { it.name == node.getBnfName() }?.let {
-            return if (it.returnTypeText == "String") null else context.getClassDescriptionByName(it.returnTypeText)
-        }
-        return null
-    }
 
     private fun filterRelevantParserRules(): List<TreeParserRule> {
         return context.rules
                 .filterIsInstance<TreeParserRule>()
-                .filter { !it.isDatatypeRule }
+                .filter { !it.isDatatypeRule && it !is TreeDuplicateRule }
     }
 
     private fun createCrossReferenceList(): List<BridgeCrossReference> {
@@ -496,7 +471,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
     private fun getFactoryName(type: EmfClassDescriptor): String {
-        return "${type.classPath.removeSuffix(type.className)}${type.packagePrefix.capitalize()}Factory.eINSTANCE"
+        return "${type.packagePath}.${type.packagePrefix.capitalize()}Factory.eINSTANCE"
     }
 
     private fun getPackageName(type: EmfClassDescriptor): String {
