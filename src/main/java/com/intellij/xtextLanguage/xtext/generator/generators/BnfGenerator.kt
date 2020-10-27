@@ -37,7 +37,7 @@ class BnfGenerator(extension: String, val context: MetaContext) : AbstractGenera
     }
 
     private fun generateKeywordTokens(out: PrintWriter) {
-        context.keywordModel.keywords.forEach { out.print("      ${it.name} = \'${it.keyword}\'\n") }
+        context.keywords.forEach { out.print("      ${it.name} = \'${it.keyword}\'\n") }
     }
 
     private fun generateAttributes(out: PrintWriter) {

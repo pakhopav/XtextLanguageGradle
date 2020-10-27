@@ -37,7 +37,7 @@ class FlexFileGenerator(extension: String, val context: MetaContext) : AbstractG
             if (!context.terminalRules.any { it.name == "WS" }) out.print("WS=[ \\t\\n\\x0B\\f\\r]+\n")
         }
         out.print("%%\n<YYINITIAL> {\n")
-        context.keywordModel.keywords.forEach { out.print("\"${it.keyword}\" {return ${it.name.toUpperCase()};}\n") }
+        context.keywords.forEach { out.print("\"${it.keyword}\" {return ${it.name.toUpperCase()};}\n") }
         context.terminalRules.forEach {
             if (it.name.equals("WS")) {
                 out.print("{WS} {return WHITE_SPACE;}\n")

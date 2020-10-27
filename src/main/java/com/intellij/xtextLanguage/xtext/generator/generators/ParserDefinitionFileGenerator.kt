@@ -30,12 +30,9 @@ class ParserDefinitionFileGenerator(extension: String, val context: MetaContext)
             |    public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
             |    public static final TokenSet KEYWORDS = TokenSet.create(
             """.trimMargin("|"))
+        val keywordsFiltered = context.keywords.filter { it.highlighted }
 
-        context.keywordModel.keywordsForParserDefinitionFile.forEach {
-            out.print("            ${extension.capitalize()}Types.${it.name}")
-            if (it != context.keywordModel.keywordsForParserDefinitionFile.last()) out.print(",\n")
-
-        }
+        out.print(keywordsFiltered.map { "${extension.capitalize()}Types.${it.name}" }.joinToString(prefix = "            ", separator = ",\n            "))
         out.print(");\n")
         if (context.terminalRules.any { it.name == "ML_COMMENT" } && context.terminalRules.any { it.name == "SL_COMMENT" }) {
             out.print("    public static final TokenSet COMMENTS = TokenSet.create(${extension.capitalize()}Types.SL_COMMENT, ${extension.capitalize()}Types.ML_COMMENT);")

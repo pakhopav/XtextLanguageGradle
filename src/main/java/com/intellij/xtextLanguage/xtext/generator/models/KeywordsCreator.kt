@@ -1,13 +1,11 @@
 package com.intellij.xtextLanguage.xtext.generator.models
 
+import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.xtextLanguage.xtext.generator.models.elements.Keyword
 import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
-import com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule
-import com.intellij.xtextLanguage.xtext.psi.XtextEnumLiteralDeclaration
-import com.intellij.xtextLanguage.xtext.psi.XtextKeyword
-import com.intellij.xtextLanguage.xtext.psi.XtextPredicatedKeyword
+import com.intellij.xtextLanguage.xtext.psi.*
 
-class XtextKeywordModel(abstractRules: List<XtextAbstractRule>) {
+class KeywordsCreator() {
 
     companion object {
         val KEYWORDS = mapOf(
@@ -44,28 +42,24 @@ class XtextKeywordModel(abstractRules: List<XtextAbstractRule>) {
     }
 
 
-    val keywords: List<Keyword>
-    val keywordsForParserDefinitionFile: List<Keyword>
-
     var i = 1
 
-    init {
-        val list = mutableListOf<String>()
+    fun createKeywords(xtextFiles: List<XtextFile>): List<Keyword> {
+        val abstractRules = mutableListOf<XtextAbstractRule>()
+        xtextFiles.forEach {
+            abstractRules.addAll(PsiTreeUtil.findChildrenOfType(it, XtextAbstractRule::class.java))
+        }
+        val keywordStrings = mutableListOf<String>()
         abstractRules.forEach {
-            list.addAll(KeywordsFinder.getKeywordsOfAbstractRule(it))
+            keywordStrings.addAll(KeywordsFinder.getKeywordsOfAbstractRule(it))
         }
         val listOfKeywords = mutableListOf<Keyword>()
-        val listOfKeywordsForParserDefinition = mutableListOf<Keyword>()
-
-        list.distinct().map { it.slice(1 until it.length - 1) }.forEach {
+        keywordStrings.distinct().map { it.slice(1 until it.length - 1) }.forEach {
             listOfKeywords.add(Keyword(it, createKeywordName(it, listOfKeywords)))
             if (it.matches(Regex("[a-zA-Z]+"))) {
-                listOfKeywordsForParserDefinition.add(Keyword(it, it.toUpperCase() + "_KEYWORD"))
             }
         }
-
-        keywords = listOfKeywords
-        keywordsForParserDefinitionFile = listOfKeywordsForParserDefinition
+        return listOfKeywords
     }
 
     private fun createKeywordName(text: String, keywords: List<Keyword>): String {
