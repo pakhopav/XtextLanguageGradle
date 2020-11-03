@@ -1,5 +1,4 @@
 package com.intellij.smalljavaLanguage.smalljava.emf
-
 import com.intellij.psi.PsiElement
 import com.intellij.xtextLanguage.xtext.emf.EmfBridgeRule
 import com.intellij.xtextLanguage.xtext.emf.LiteralAssignment

@@ -35,7 +35,6 @@ public class SmalljavaParserDefinition implements ParserDefinition {
             SmalljavaTypes.SUPER_KEYWORD,
             SmalljavaTypes.NULL_KEYWORD,
             SmalljavaTypes.NEW_KEYWORD);
-
     public static final TokenSet COMMENTS = TokenSet.create(SmalljavaTypes.SL_COMMENT, SmalljavaTypes.ML_COMMENT);
     public static final IFileElementType FILE = new IFileElementType(SmalljavaLanguage.INSTANCE);
 
@@ -53,6 +52,7 @@ public class SmalljavaParserDefinition implements ParserDefinition {
     public TokenSet getCommentTokens() {
         return COMMENTS;
     }
+
 
     @NotNull
     public TokenSet getStringLiteralElements() {

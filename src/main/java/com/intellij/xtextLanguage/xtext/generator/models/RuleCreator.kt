@@ -9,7 +9,6 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.EmfClassDe
 import com.intellij.xtextLanguage.xtext.generator.models.elements.emf.TreeRewrite
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.*
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.impl.*
-import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 import java.util.*
 import kotlin.test.assertNotNull

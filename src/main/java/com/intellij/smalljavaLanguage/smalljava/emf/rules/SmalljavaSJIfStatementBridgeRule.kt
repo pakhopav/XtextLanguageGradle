@@ -1,5 +1,4 @@
 package com.intellij.smalljavaLanguage.smalljava.emf
-
 import com.intellij.psi.PsiElement
 import com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaSJExpression
 import com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaSJIfBlock
@@ -14,7 +13,6 @@ class SmalljavaSJIfStatementBridgeRule : EmfBridgeRule {
     override fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment? {
         return null
     }
-
     override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {
         if (pointer is SmalljavaSJExpression) {
             return object : ObjectAssignment {

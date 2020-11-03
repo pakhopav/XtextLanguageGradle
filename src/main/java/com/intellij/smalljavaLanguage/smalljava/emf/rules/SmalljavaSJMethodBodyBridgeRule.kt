@@ -1,5 +1,4 @@
 package com.intellij.smalljavaLanguage.smalljava.emf
-
 import com.intellij.psi.PsiElement
 import com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaSJStatement
 import com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaTypes
@@ -10,7 +9,6 @@ class SmalljavaSJMethodBodyBridgeRule : EmfBridgeRule {
     override fun findLiteralAssignment(pointer: PsiElement): LiteralAssignment? {
         return null
     }
-
     override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {
         if (pointer is SmalljavaSJStatement) {
             return object : ObjectAssignment {

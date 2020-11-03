@@ -1,5 +1,4 @@
 package com.intellij.smalljavaLanguage.smalljava.emf
-
 import com.intellij.psi.PsiElement
 import com.intellij.smalljavaLanguage.smalljava.emf.scope.SmalljavaScope
 import com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaREFERENCESJClassQualifiedName
@@ -102,7 +101,6 @@ class SmalljavaEmfCreator : EmfCreator() {
         }
         return null
     }
-
     override fun registerObject(obj: EObject?, descriptions: MutableCollection<ObjectDescription>) {
         obj?.let {
             if (obj is SJProgram) {
@@ -126,7 +124,6 @@ class SmalljavaEmfCreator : EmfCreator() {
             } else return
         }
     }
-
     override fun completeRawModel() {
         sJClassToSJClassNameList.forEach {
             val container = it.first
@@ -193,11 +190,9 @@ class SmalljavaEmfCreator : EmfCreator() {
             }
         }
     }
-
     override fun isCrossReference(psiElement: PsiElement): Boolean {
         return psiElement is SmalljavaREFERENCESJClassQualifiedName || psiElement is SmalljavaREFERENCESJClassQualifiedName || psiElement is SmalljavaREFERENCESJClassQualifiedName || psiElement is SmalljavaREFERENCESJClassQualifiedName || psiElement is SmalljavaREFERENCESJClassQualifiedName || psiElement is SmalljavaREFERENCESJMemberID || psiElement is SmalljavaREFERENCESJSymbolID || psiElement is SmalljavaREFERENCESJClassQualifiedName
     }
-
     override fun createCrossReference(psiElement: PsiElement, container: EObject) {
         if (container is SJClass && psiElement is SmalljavaREFERENCESJClassQualifiedName)
             sJClassToSJClassNameList.add(Pair(container, psiElement.text))

@@ -2,7 +2,6 @@ package com.intellij.xtextLanguage.xtext.generator.models
 
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.xtextLanguage.xtext.generator.models.elements.Keyword
-import com.intellij.xtextLanguage.xtext.generator.visitors.XtextVisitor
 import com.intellij.xtextLanguage.xtext.psi.*
 
 class KeywordsCreator() {

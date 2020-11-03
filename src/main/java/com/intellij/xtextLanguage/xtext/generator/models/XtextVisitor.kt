@@ -1,4 +1,4 @@
-package com.intellij.xtextLanguage.xtext.generator.visitors
+package com.intellij.xtextLanguage.xtext.generator.models
 import com.intellij.xtextLanguage.xtext.psi.*
 
 open class XtextVisitor {

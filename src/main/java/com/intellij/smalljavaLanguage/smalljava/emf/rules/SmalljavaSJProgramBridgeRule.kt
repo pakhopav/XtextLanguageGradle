@@ -1,5 +1,4 @@
 package com.intellij.smalljavaLanguage.smalljava.emf
-
 import com.intellij.psi.PsiElement
 import com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaSJClass
 import com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaSJImport
@@ -24,7 +23,6 @@ class SmalljavaSJProgramBridgeRule : EmfBridgeRule {
         }
         return null
     }
-
     override fun findObjectAssignment(pointer: PsiElement): ObjectAssignment? {
         if (pointer is SmalljavaSJImport) {
             return object : ObjectAssignment {

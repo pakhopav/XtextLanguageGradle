@@ -23,7 +23,7 @@ ID =\^?(([a-z]|[A-Z]|_))(([a-z]|[A-Z]|_|[0-9]))*
 INT =([0-9])+
 STRING =(\"((\\.|[^\\\"]))*\"|'((\\.|[^\\']))*')
 ML_COMMENT =\/\*([^"*"]*("*"+[^"*""/"])?)*("*"+"/")?\*\/
-SL_COMMENT =\/\/([^\n\r])*(\r?\n)?
+SL_COMMENT =\/\/[^\n\r](\r?\n)?
 WS =((" "|\t|\r|\n))+
 ANY_OTHER =.
 %%
@@ -31,7 +31,7 @@ ANY_OTHER =.
 "package" {return PACKAGE_KEYWORD;}
 ";" {return SEMICOLON_KEYWORD;}
 "import" {return IMPORT_KEYWORD;}
-".*" {return KEYWORD_2;}
+".*" {return KEYWORD_1;}
 "." {return DOT_KEYWORD;}
 "class" {return CLASS_KEYWORD;}
 "extends" {return EXTENDS_KEYWORD;}

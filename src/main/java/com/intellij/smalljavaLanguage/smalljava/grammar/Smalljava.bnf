@@ -10,7 +10,7 @@ ANY_OTHER = "ANY_OTHER"
       PACKAGE_KEYWORD = 'package'
       SEMICOLON_KEYWORD = ';'
       IMPORT_KEYWORD = 'import'
-      KEYWORD_2 = '.*'
+      KEYWORD_1 = '.*'
       DOT_KEYWORD = '.'
       CLASS_KEYWORD = 'class'
       EXTENDS_KEYWORD = 'extends'
@@ -58,7 +58,7 @@ QualifiedNameWithWildcard ::= QualifiedName '.*'?
 
 QualifiedName ::= ID ('.' ID)* 
 
-SJClass ::= 'class' ID ('extends' REFERENCE_SJClass_QualifiedName)? '{' SJMember* '}'
+SJClass ::= 'class' ID ('extends' REFERENCE_SJClass_QualifiedName)? '{' SJMember* '}' 
 {
 mixin="com.intellij.smalljavaLanguage.smalljava.psi.impl.SmalljavaNamedElementImpl"
 implements="com.intellij.psi.PsiNameIdentifierOwner"
