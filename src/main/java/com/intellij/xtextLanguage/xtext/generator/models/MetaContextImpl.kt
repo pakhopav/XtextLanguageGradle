@@ -39,10 +39,6 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
     }
 
 
-    override fun getParserRuleByName(name: String): TreeParserRule? {
-        return _rules.filterIsInstance<TreeParserRule>().firstOrNull { it.name == name }
-    }
-
     override fun getRuleByName(name: String): TreeRule {
         _rules.firstOrNull { it.name == name }?.let { return it }
         terminalRules.firstOrNull { it.name == name }?.let { return it }

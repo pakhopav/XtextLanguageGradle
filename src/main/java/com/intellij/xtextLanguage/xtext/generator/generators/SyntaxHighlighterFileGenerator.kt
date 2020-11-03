@@ -8,7 +8,7 @@ class SyntaxHighlighterFileGenerator(extension: String, val context: MetaContext
     fun generateSyntaxHighlighterFile() {
         val file = createFile(extension.capitalize() + "SyntaxHighlighter.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.println("""
             |package $packageDir;
             |import com.intellij.lexer.Lexer;
             |import com.intellij.openapi.editor.*;
@@ -49,7 +49,7 @@ class SyntaxHighlighterFileGenerator(extension: String, val context: MetaContext
             |        if (${extension.capitalize()}ParserDefinition.KEYWORDS.contains(tokenType)) {
             |            return KEY_KEYS;""".trimMargin("|"))
         if (context.terminalRules.any { it.name == "STRING" }) {
-            out.print("""
+            out.println("""
             |        } else if (tokenType.equals(${extension.capitalize()}Types.STRING)) {
             |            return VALUE_KEYS;
         """.trimMargin("|"))

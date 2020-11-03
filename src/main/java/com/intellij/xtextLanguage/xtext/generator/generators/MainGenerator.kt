@@ -78,7 +78,7 @@ open class MainGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
     private fun generateTokenTypeFile() {
-        val generator = TokenTupeFileGenerator(extension)
+        val generator = TokenTypeFileGenerator(extension)
         generator.generateTokenTypeFile()
     }
 

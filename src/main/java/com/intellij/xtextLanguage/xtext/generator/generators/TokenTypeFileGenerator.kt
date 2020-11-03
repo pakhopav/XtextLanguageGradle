@@ -3,7 +3,7 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class TokenTupeFileGenerator(extension: String) : AbstractGenerator(extension) {
+class TokenTypeFileGenerator(extension: String) : AbstractGenerator(extension) {
     fun generateTokenTypeFile() {
         val file = createFile(extension.capitalize() + "TokenType.java", myGenDir + "/psi")
         val out = PrintWriter(FileOutputStream(file))

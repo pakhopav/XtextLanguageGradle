@@ -20,12 +20,9 @@ class CompletionContributorFileGenerator(extension: String) : AbstractGenerator(
             
             |public class ${extension.capitalize()}CompletionContributor extends CompletionContributor {
             |public ${extension.capitalize()}CompletionContributor() {
-            
-            |extend(CompletionType.BASIC, psiElement().withLanguage(${extension.capitalize()}Language.INSTANCE)
-            |,
-            |new KeywordCompletionProvider<${extension.capitalize()}File, ${extension.capitalize()}TokenType>(${extension.capitalize()}Language.INSTANCE, ${extension.capitalize()}FileType.INSTANCE, ${extension.capitalize()}TokenType.class));
-            
-            |}
+            |    extend(CompletionType.BASIC, psiElement().withLanguage(${extension.capitalize()}Language.INSTANCE),
+            |        new KeywordCompletionProvider<${extension.capitalize()}File, ${extension.capitalize()}TokenType>(${extension.capitalize()}Language.INSTANCE, ${extension.capitalize()}FileType.INSTANCE, ${extension.capitalize()}TokenType.class));
+            |    }
             |}
 
 

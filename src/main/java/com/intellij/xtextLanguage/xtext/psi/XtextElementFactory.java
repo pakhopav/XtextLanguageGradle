@@ -7,14 +7,14 @@ import com.intellij.openapi.application.ReadAction;
 import com.intellij.psi.PsiElement;
 import com.intellij.psi.tree.IElementType;
 import com.intellij.psi.util.PsiTreeUtil;
+import com.intellij.xtextLanguage.xtext.XtextLexerAdapter;
 import com.intellij.xtextLanguage.xtext.XtextParserDefinition;
-import com.intellij.xtextLanguage.xtext.grammar.XtextLexer;
 import com.intellij.xtextLanguage.xtext.parser.XtextParser;
 
 public abstract class XtextElementFactory {
     public static <T> T parseFromString(String text, IElementType type, Class<T> expectedClass) {
         PsiBuilderFactory factory = PsiBuilderFactory.getInstance();
-        PsiBuilder psiBuilder = factory.createBuilder(new XtextParserDefinition(), new XtextLexer(), text);
+        PsiBuilder psiBuilder = factory.createBuilder(new XtextParserDefinition(), new XtextLexerAdapter(), text);
         XtextParser parser = new XtextParser();
         parser.parseLight(type, psiBuilder);
         ASTNode astNode = ReadAction.compute(psiBuilder::getTreeBuilt);

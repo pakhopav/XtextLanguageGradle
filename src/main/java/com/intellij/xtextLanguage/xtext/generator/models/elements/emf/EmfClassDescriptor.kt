@@ -13,4 +13,12 @@ data class EmfClassDescriptor(val classifier: EClassifier) {
     companion object {
         val STRING = EmfClassDescriptor(EcorePackage.eINSTANCE.eString)
     }
+
+    fun getFactoryInstanceString(): String {
+        return "${packagePath}.${packagePrefix.capitalize()}Factory.eINSTANCE"
+    }
+
+    fun getPackageInstanceString(): String {
+        return "${packagePath}.${packagePrefix.capitalize()}Package.eINSTANCE"
+    }
 }

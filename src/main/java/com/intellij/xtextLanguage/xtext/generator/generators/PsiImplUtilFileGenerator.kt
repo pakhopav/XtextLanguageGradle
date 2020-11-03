@@ -69,7 +69,7 @@ class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : Ab
             val rulesCalledWithoutAssignment = rule
                     .filterNodesInSubtree { it is TreeRuleCall && it.assignment == null }
                     .map { it as TreeRuleCall }
-                    .map { context.getParserRuleByName(it.getBnfName()) }
+                    .map { context.getRuleByName(it.getBnfName()) }
                     .filterIsInstance<TreeParserRule>()
             rulesCalledWithoutAssignment.filter { it.superRuleName == rule.name }.forEach {
                 val calledRuleName = NameGenerator.toGKitClassName(it.name)

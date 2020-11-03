@@ -156,19 +156,6 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
         private val suffixes = mutableListOf<TreeRule>()
         private var cardinality: Cardinality = Cardinality.NONE
 
-        private fun getRuleTypeDescriptor(rule: XtextParserRule): EmfClassDescriptor {
-            val returnTypeText = rule.typeRef?.text ?: rule.ruleNameAndParams.validID.text.eliminateCaret()
-            val ruleType = emfRegistry.findOrCreateType(returnTypeText)
-            if (ruleType == null) return EmfClassDescriptor.STRING
-            return ruleType
-        }
-
-        private fun getRuleTypeDescriptor(rule: XtextEnumRule): EmfClassDescriptor {
-            val returnTypeText = rule.typeRef?.text ?: rule.validID.text.eliminateCaret()
-            val ruleType = emfRegistry.findOrCreateType(returnTypeText)
-            if (ruleType == null) return EmfClassDescriptor.STRING
-            return ruleType
-        }
 
 
         fun createTreeFromXtextEnumRule(rule: XtextEnumRule): TreeRule {
@@ -214,6 +201,20 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
             suffixes.clear()
             currentRule = null
             cardinality = Cardinality.NONE
+        }
+
+        private fun getRuleTypeDescriptor(rule: XtextParserRule): EmfClassDescriptor {
+            val returnTypeText = rule.typeRef?.text ?: rule.ruleNameAndParams.validID.text.eliminateCaret()
+            val ruleType = emfRegistry.findOrCreateType(returnTypeText)
+            if (ruleType == null) return EmfClassDescriptor.STRING
+            return ruleType
+        }
+
+        private fun getRuleTypeDescriptor(rule: XtextEnumRule): EmfClassDescriptor {
+            val returnTypeText = rule.typeRef?.text ?: rule.validID.text.eliminateCaret()
+            val ruleType = emfRegistry.findOrCreateType(returnTypeText)
+            if (ruleType == null) return EmfClassDescriptor.STRING
+            return ruleType
         }
 
         private fun createTreeKeyword(psiElement: PsiElement, assignmentString: String?): TreeKeywordImpl {
