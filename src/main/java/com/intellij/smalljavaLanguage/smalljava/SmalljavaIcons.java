@@ -1,9 +1,9 @@
-package com.intellij.statLanguage.stat;
+package com.intellij.smalljavaLanguage.smalljava;
 
 import com.intellij.openapi.util.IconLoader;
 
 import javax.swing.*;
 
-public class StatIcons {
+public class SmalljavaIcons {
     public static final Icon FILE = IconLoader.getIcon("/icons/simpleIcon.png");
 }

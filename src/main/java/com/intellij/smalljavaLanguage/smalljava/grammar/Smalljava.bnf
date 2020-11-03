@@ -1,0 +1,136 @@
+{
+    tokens = [
+ID = "ID"
+INT = "INT"
+STRING = "STRING"
+ML_COMMENT = "ML_COMMENT"
+SL_COMMENT = "SL_COMMENT"
+WS = "WS"
+ANY_OTHER = "ANY_OTHER"
+      PACKAGE_KEYWORD = 'package'
+      SEMICOLON_KEYWORD = ';'
+      IMPORT_KEYWORD = 'import'
+      KEYWORD_2 = '.*'
+      DOT_KEYWORD = '.'
+      CLASS_KEYWORD = 'class'
+      EXTENDS_KEYWORD = 'extends'
+      L_BRACE_KEYWORD = '{'
+      R_BRACE_KEYWORD = '}'
+      L_BRACKET_KEYWORD = '('
+      COMMA_KEYWORD = ','
+      R_BRACKET_KEYWORD = ')'
+      PRIVATE_KEYWORD = 'private'
+      PUBLIC_KEYWORD = 'public'
+      PROTECTED_KEYWORD = 'protected'
+      RETURN_KEYWORD = 'return'
+      EQUALS_KEYWORD = '='
+      IF_KEYWORD = 'if'
+      ELSE_KEYWORD = 'else'
+      TRUE_KEYWORD = 'true'
+      FALSE_KEYWORD = 'false'
+      THIS_KEYWORD = 'this'
+      SUPER_KEYWORD = 'super'
+      NULL_KEYWORD = 'null'
+      NEW_KEYWORD = 'new'
+    ]
+    parserClass="com.intellij.smalljavaLanguage.smalljava.parser.SmalljavaParser"
+        
+    extends="com.intellij.smalljavaLanguage.smalljava.psi.impl.SmalljavaPsiCompositeElementImpl"
+    psiClassPrefix="Smalljava"
+    psiImplClassSuffix="Impl"
+    psiPackage="com.intellij.smalljavaLanguage.smalljava.psi"
+    psiImplPackage="com.intellij.smalljavaLanguage.smalljava.impl"
+    elementTypeHolderClass="com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaTypes"
+    elementTypeClass="com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaElementType"
+    tokenTypeClass="com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaTokenType"
+    parserUtilClass= "com.intellij.languageUtil.parserUtilBase.GeneratedParserUtilBaseCopy"
+    psiImplUtilClass="com.intellij.smalljavaLanguage.smalljava.psi.impl.SmalljavaPsiImplUtil"
+    generateTokenAccessors=true
+    generateTokens=true
+    extraRoot(".*")= true
+}
+SmalljavaFile ::= SJProgram
+SJProgram ::= ('package' QualifiedName ';')? SJImport* SJClass* 
+
+SJImport ::= 'import' QualifiedNameWithWildcard ';' 
+
+QualifiedNameWithWildcard ::= QualifiedName '.*'? 
+
+QualifiedName ::= ID ('.' ID)* 
+
+SJClass ::= 'class' ID ('extends' REFERENCE_SJClass_QualifiedName)? '{' SJMember* '}'
+{
+mixin="com.intellij.smalljavaLanguage.smalljava.psi.impl.SmalljavaNamedElementImpl"
+implements="com.intellij.psi.PsiNameIdentifierOwner"
+methods=[ getName setName getNameIdentifier ]
+}
+
+SJMember ::= SJField | SJMethod 
+{
+mixin="com.intellij.smalljavaLanguage.smalljava.psi.impl.SmalljavaNamedElementImpl"
+implements="com.intellij.psi.PsiNameIdentifierOwner"
+methods=[ getName setName getNameIdentifier ]
+}
+
+SJField ::= SJAccessLevel? REFERENCE_SJClass_QualifiedName ID ';' 
+{
+extends=SJMember
+}
+
+SJMethod ::= SJAccessLevel? REFERENCE_SJClass_QualifiedName ID '(' (SJParameter (',' SJParameter)*)? ')' SJMethodBody 
+{
+extends=SJMember
+}
+
+SJParameter ::= REFERENCE_SJClass_QualifiedName ID 
+{
+extends=SJSymbol
+}
+
+SJMethodBody ::= '{' SJStatement* '}' 
+
+SJStatement ::= SJVariableDeclaration | SJReturn | SJExpression ';' | SJIfStatement 
+
+SJReturn ::= 'return' SJExpression ';' 
+
+SJVariableDeclaration ::= REFERENCE_SJClass_QualifiedName ID '=' SJExpression ';' 
+{
+extends=SJSymbol
+}
+
+SJIfStatement ::= 'if' '(' SJExpression ')' SJIfBlock ('else' SJIfBlock1)? 
+
+SJIfBlock ::= SJIfBlockPrivate 
+
+SJIfBlock1 ::= SJIfBlockPrivate 
+{
+extends=SJIfBlock
+}
+
+private SJIfBlockPrivate ::= SJStatement | '{' SJStatement+ '}' 
+
+SJBlock ::= SJMethodBody | SJIfBlock 
+
+SJSymbol ::= SJVariableDeclaration | SJParameter 
+{
+mixin="com.intellij.smalljavaLanguage.smalljava.psi.impl.SmalljavaNamedElementImpl"
+implements="com.intellij.psi.PsiNameIdentifierOwner"
+methods=[ getName setName getNameIdentifier ]
+}
+
+SJExpression ::= SJAssignment 
+
+SJAssignment ::= SJSelectionExpression ('=' SJExpression)? 
+
+SJSelectionExpression ::= SJTerminalExpression ('.' REFERENCE_SJMember_ID ('(' (SJExpression (',' SJExpression)*)? ')')?)* 
+
+SJTerminalExpression ::= STRING | INT | ('true' | 'false') | 'this' | 'super' | 'null' | REFERENCE_SJSymbol_ID | 'new' REFERENCE_SJClass_QualifiedName '(' ')' | '(' SJExpression ')' 
+
+SJAccessLevel ::= 'private' | 'public' | 'protected' 
+
+REFERENCE_SJClass_QualifiedName ::= QualifiedName 
+
+REFERENCE_SJMember_ID ::= ID 
+
+REFERENCE_SJSymbol_ID ::= ID 
+

@@ -1,4 +1,4 @@
-package com.intellij.statLanguage.stat;
+package com.intellij.smalljavaLanguage.smalljava;
 
 import com.intellij.lang.ASTNode;
 import com.intellij.lang.ParserDefinition;
@@ -11,27 +11,38 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.TokenType;
 import com.intellij.psi.tree.IFileElementType;
 import com.intellij.psi.tree.TokenSet;
-import com.intellij.statLanguage.stat.parser.StatParser;
-import com.intellij.statLanguage.stat.psi.StatFile;
-import com.intellij.statLanguage.stat.psi.StatTypes;
+import com.intellij.smalljavaLanguage.smalljava.parser.SmalljavaParser;
+import com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaFile;
+import com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaTypes;
 import org.jetbrains.annotations.NotNull;
 
-public class StatParserDefinition implements ParserDefinition {
+public class SmalljavaParserDefinition implements ParserDefinition {
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
     public static final TokenSet KEYWORDS = TokenSet.create(
-            StatTypes.EVENTS_KEYWORD,
-            StatTypes.END_KEYWORD,
-            StatTypes.RESETEVENTS_KEYWORD,
-            StatTypes.COMMANDS_KEYWORD,
-            StatTypes.STATE_KEYWORD,
-            StatTypes.ACTIONS_KEYWORD);
-    public static final TokenSet COMMENTS = TokenSet.create(StatTypes.SL_COMMENT, StatTypes.ML_COMMENT);
-    public static final IFileElementType FILE = new IFileElementType(StatLanguage.INSTANCE);
-            
+            SmalljavaTypes.PACKAGE_KEYWORD,
+            SmalljavaTypes.IMPORT_KEYWORD,
+            SmalljavaTypes.CLASS_KEYWORD,
+            SmalljavaTypes.EXTENDS_KEYWORD,
+            SmalljavaTypes.PRIVATE_KEYWORD,
+            SmalljavaTypes.PUBLIC_KEYWORD,
+            SmalljavaTypes.PROTECTED_KEYWORD,
+            SmalljavaTypes.RETURN_KEYWORD,
+            SmalljavaTypes.IF_KEYWORD,
+            SmalljavaTypes.ELSE_KEYWORD,
+            SmalljavaTypes.TRUE_KEYWORD,
+            SmalljavaTypes.FALSE_KEYWORD,
+            SmalljavaTypes.THIS_KEYWORD,
+            SmalljavaTypes.SUPER_KEYWORD,
+            SmalljavaTypes.NULL_KEYWORD,
+            SmalljavaTypes.NEW_KEYWORD);
+
+    public static final TokenSet COMMENTS = TokenSet.create(SmalljavaTypes.SL_COMMENT, SmalljavaTypes.ML_COMMENT);
+    public static final IFileElementType FILE = new IFileElementType(SmalljavaLanguage.INSTANCE);
+
     @NotNull
     @Override
     public Lexer createLexer(Project project) {
-        return new StatLexerAdapter();
+        return new SmalljavaLexerAdapter();
     }
 
     @NotNull
@@ -43,7 +54,6 @@ public class StatParserDefinition implements ParserDefinition {
         return COMMENTS;
     }
 
-
     @NotNull
     public TokenSet getStringLiteralElements() {
         return TokenSet.EMPTY;
@@ -51,7 +61,7 @@ public class StatParserDefinition implements ParserDefinition {
 
     @NotNull
     public PsiParser createParser(final Project project) {
-        return new StatParser();
+        return new SmalljavaParser();
     }
 
     @Override
@@ -60,7 +70,7 @@ public class StatParserDefinition implements ParserDefinition {
     }
 
     public PsiFile createFile(FileViewProvider viewProvider) {
-        return new StatFile(viewProvider);
+        return new SmalljavaFile(viewProvider);
     }
 
     public SpaceRequirements spaceExistenceTypeBetweenTokens(ASTNode left, ASTNode right) {
@@ -69,6 +79,6 @@ public class StatParserDefinition implements ParserDefinition {
 
     @NotNull
     public PsiElement createElement(ASTNode node) {
-        return StatTypes.Factory.createElement(node);
+        return SmalljavaTypes.Factory.createElement(node);
     }
 }

@@ -1,0 +1,12 @@
+<extensions defaultExtensionNs="com.intellij">
+    <fileTypeFactory implementation="com.intellij.smalljavaLanguage.smalljava.SmalljavaFileTypeFactory"/>
+    <lang.parserDefinition language="Smalljava"
+                           implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="Smalljava"
+                                   implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaSyntaxHighlighterFactory"/>
+    <completion.contributor language="Smalljava"
+                            implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaCompletionContributor"/>
+    <psi.referenceContributor language="Smalljava"
+                              implementation="com.intellij.smalljavaLanguage.smalljava.SmalljavaReferenceContributor"/>
+
+</extensions>
