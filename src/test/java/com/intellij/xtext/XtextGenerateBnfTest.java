@@ -71,17 +71,18 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
 //        }
 //    }
 //
-//    public void testXtextCopy() {
-//        List<XtextFile> allXtextFiles = findAllFiles();
-//        XtextMainModel model = new XtextMainModel(allXtextFiles);
-//        MainGenerator generator = new MainGenerator("xtextt", model);
-//        try {
-//            generator.generate();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
+    public void testXtextCopy() {
+        List<XtextFile> allXtextFiles = findAllFiles();
+        MetaContext context = new MetaContextImpl(allXtextFiles);
+        MainGenerator generator = new MainGenerator("xtextt", context);
+        try {
+            generator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //
 //    public void testExpressions() {
 //        List<XtextFile> allXtextFiles = findAllFiles();
 //        XtextMainModel model = new XtextMainModel(allXtextFiles);
@@ -93,6 +94,28 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
 //        }
 //    }
 //
+    public void testSmallJava() {
+        List<XtextFile> allXtextFiles = findAllFiles();
+        MetaContext context = new MetaContextImpl(allXtextFiles);
+        MainGenerator generator = new MainGenerator("smalljava", context);
+        try {
+            generator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    public void testSmallJavaCopy() {
+        List<XtextFile> allXtextFiles = findAllFiles();
+        MetaContext context = new MetaContextImpl(allXtextFiles);
+        MainGenerator generator = new MainGenerator("smalljava2", context);
+        try {
+            generator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
     public void testEntityLan() {
         List<XtextFile> allXtextFiles = findAllFiles();
         MetaContext context = new MetaContextImpl(allXtextFiles);

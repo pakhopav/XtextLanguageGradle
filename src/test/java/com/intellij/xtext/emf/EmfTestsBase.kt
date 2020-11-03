@@ -1,16 +1,17 @@
 package com.intellij.xtext.emf
 
 //import com.intellij.calcLanguage.calc.emf.CalcEmfBridge
-//import com.intellij.statLanguage.stat.emf.StatEmfBridge
-//import com.intellij.statLanguage.stat.psi.StatFile
 //import com.intellij.xtexttLanguage.xtextt.emf.XtexttEmfBridge
 //import com.intellij.xtexttLanguage.xtextt.psi.XtexttFile
+//import com.intellij.calc2Language.calc2.emf.Calc2EmfBridge
+//import com.intellij.calc2Language.calc2.psi.Calc2File
+//import com.intellij.smalljavaLanguage.smalljava.emf.SmalljavaEmfBridge
+//import com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaFile
 import arithmetics.ArithmeticsPackage
-import arithmetics.Module
-import com.intellij.calc2Language.calc2.emf.Calc2EmfBridge
-import com.intellij.calc2Language.calc2.psi.Calc2File
 import com.intellij.entityLanguage.entity.emf.EntityEmfBridge
 import com.intellij.entityLanguage.entity.psi.EntityFile
+import com.intellij.statLanguage.stat.emf.StatEmfBridge
+import com.intellij.statLanguage.stat.psi.StatFile
 import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import com.intellij.xtext.AllTests
 import junit.framework.TestCase
@@ -22,6 +23,8 @@ import org.eclipse.emf.ecore.xmi.impl.XMIResourceFactoryImpl
 import org.xtext.example.entity.entity.Domainmodel
 import org.xtext.example.entity.entity.EntityPackage
 import org.xtext.example.xtext.xtext.XtextPackage
+import smallJava.SmallJavaPackage
+import statemachine.Statemachine
 import statemachine.StatemachinePackage
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -73,26 +76,27 @@ open class EmfTestsBase(val myDataFolder: String) : BasePlatformTestCase() {
 //        return null
 //    }
 
-    fun getCalc2EmfModel(): Module? {
-        val fileName = getCurrentInputFileName("calc2")
-        fileName?.let {
-            val file = myFixture.configureByFile(it) as Calc2File
-            val bridge = Calc2EmfBridge()
-            return bridge.createEmfModel(file) as Module
-        }
-        return null
-    }
-//
-//    fun getStatEmfModel(): Statemachine? {
-//        val fileName = getCurrentInputFileName("stat")
+    //    fun getCalc2EmfModel(): Module? {
+//        val fileName = getCurrentInputFileName("calc2")
 //        fileName?.let {
-//            val file = myFixture.configureByFile(it) as StatFile
-//            val bridge = StatEmfBridge()
-//            return bridge.createEmfModel(file) as Statemachine
+//            val file = myFixture.configureByFile(it) as Calc2File
+//            val bridge = Calc2EmfBridge()
+//            return bridge.createEmfModel(file) as Module
 //        }
 //        return null
 //    }
-//    fun getXtextEmfModel(): Grammar? {
+//
+    fun getStatEmfModel(): Statemachine? {
+        val fileName = getCurrentInputFileName("stat")
+        fileName?.let {
+            val file = myFixture.configureByFile(it) as StatFile
+            val bridge = StatEmfBridge()
+            return bridge.createEmfModel(file) as Statemachine
+        }
+        return null
+    }
+
+    //    fun getXtextEmfModel(): Grammar? {
 //        val fileName = getCurrentInputFileName("xtextt")
 //        fileName?.let {
 //            val file = myFixture.configureByFile(it) as XtexttFile
@@ -101,6 +105,30 @@ open class EmfTestsBase(val myDataFolder: String) : BasePlatformTestCase() {
 //        }
 //        return null
 //    }
+//    fun getSmalljavaEmfModel(): SJProgram? {
+//        val fileName = getCurrentInputFileName("smalljava")
+//        fileName?.let {
+//            val file = myFixture.configureByFile(it) as SmalljavaFile
+//            val bridge = SmalljavaEmfBridge()
+//            return bridge.createEmfModel(file) as SJProgram
+//        }
+//        return null
+//    }
+    fun persistSmalljavaEmfModel(model: EObject) {
+        val testFileName = getCurrentInputFileName("smalljava")
+        SmallJavaPackage.eINSTANCE.eClass()
+        val reg = Resource.Factory.Registry.INSTANCE
+        val m = reg.getExtensionToFactoryMap()
+        m.put("smalljava", XMIResourceFactoryImpl())
+        val resSet = ResourceSetImpl()
+
+        val resource = resSet.createResource(
+                URI.createFileURI(
+                        "$basePath/$testFileName"))
+
+        resource.getContents().add(model);
+        resource.save(null);
+    }
 
     fun persistEntityEmfModel(model: EObject) {
         val testFileName = getCurrentInputFileName("entity")

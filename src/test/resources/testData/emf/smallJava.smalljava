@@ -1,0 +1,76 @@
+package PACKAGE_NAME;
+
+			import i.m.port1;
+			import impor.t2;
+
+			class String {
+
+			}
+
+			class Integer{
+
+			}
+
+			class Boolean{
+
+			}
+
+			class Animal{}
+
+			class Person extends Animal {
+				private String name ;
+				public Integer age;
+				public Boolean isMale;
+
+				public Person costructor(String name, Integer age, Boolean isMale){
+					this.name = name;
+					this.age = age;
+					this.isMale = isMale;
+					return this;
+				}
+
+				public Integer getAge(){
+					return 10;
+				}
+
+			}
+
+			class C2{
+				public Integer random(){
+					Random r = new Random();
+					Integer random = r.getRandomInt();
+					Person pers1 = new Person();
+					if(this.fff(pers1.getAge())){
+						return 100;
+					}else{
+						return 200;
+					}
+
+				}
+
+				private Boolean fff(Integer int){
+					if(int){
+						return true;
+					}else return false;
+
+				}
+
+			}
+
+
+			class Random{
+				private Integer myInt;
+
+				public Integer getRandomInt(){
+					Integer r = 100;
+					if(this.getRandomBool()) {
+						r =  150;
+					}
+					return r;
+				}
+
+				private Boolean getRandomBool(){
+					return true;
+				}
+
+			}
