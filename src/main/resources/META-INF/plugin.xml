@@ -48,15 +48,15 @@
 
     <!--    <completion.contributor language="expr"-->
     <!--                            implementationClass="com.intellij.exprLanguage.expr.exprCompletionContributor"/>-->
-    <fileTypeFactory implementation="com.intellij.entityLanguage.entity.EntityFileTypeFactory"/>
-    <lang.parserDefinition language="Entity"
-                           implementationClass="com.intellij.entityLanguage.entity.EntityParserDefinition"/>
-    <lang.syntaxHighlighterFactory language="Entity"
-                                   implementationClass="com.intellij.entityLanguage.entity.EntitySyntaxHighlighterFactory"/>
-    <completion.contributor language="Entity"
-                            implementationClass="com.intellij.entityLanguage.entity.EntityCompletionContributor"/>
-    <psi.referenceContributor language="Entity"
-                              implementation="com.intellij.entityLanguage.entity.EntityReferenceContributor"/>
+    <!--    <fileTypeFactory implementation="com.intellij.entityLanguage.entity.EntityFileTypeFactory"/>-->
+    <!--    <lang.parserDefinition language="Entity"-->
+    <!--                           implementationClass="com.intellij.entityLanguage.entity.EntityParserDefinition"/>-->
+    <!--    <lang.syntaxHighlighterFactory language="Entity"-->
+    <!--                                   implementationClass="com.intellij.entityLanguage.entity.EntitySyntaxHighlighterFactory"/>-->
+    <!--    <completion.contributor language="Entity"-->
+    <!--                            implementationClass="com.intellij.entityLanguage.entity.EntityCompletionContributor"/>-->
+    <!--    <psi.referenceContributor language="Entity"-->
+    <!--                              implementation="com.intellij.entityLanguage.entity.EntityReferenceContributor"/>-->
 
 
     <!--    <fileTypeFactory implementation="com.intellij.calcLanguage.calc.calcFileTypeFactory"/>-->
@@ -65,14 +65,15 @@
     <!--    <completion.contributor language="calc" implementationClass="com.intellij.calcLanguage.calc.calcCompletionContributor"/>-->
     <!--    <psi.referenceContributor language="calc" implementation="com.intellij.calcLanguage.calc.calcReferenceContributor"/>-->
 
-    <fileTypeFactory implementation="com.intellij.calcLanguage.calc.CalcFileTypeFactory"/>
-    <lang.parserDefinition language="Calc" implementationClass="com.intellij.calcLanguage.calc.CalcParserDefinition"/>
-    <lang.syntaxHighlighterFactory language="Calc"
-                                   implementationClass="com.intellij.calcLanguage.calc.CalcSyntaxHighlighterFactory"/>
-    <completion.contributor language="Calc"
-                            implementationClass="com.intellij.calcLanguage.calc.CalcCompletionContributor"/>
-    <psi.referenceContributor language="Calc" implementation="com.intellij.calcLanguage.calc.CalcReferenceContributor"/>
-
+    <!--    <fileTypeFactory implementation="com.intellij.calcLanguage.calc.CalcFileTypeFactory"/>-->
+    <!--    <lang.parserDefinition language="Calc" implementationClass="com.intellij.calcLanguage.calc.CalcParserDefinition"/>-->
+    <!--    <lang.syntaxHighlighterFactory language="Calc"-->
+    <!--                                   implementationClass="com.intellij.calcLanguage.calc.CalcSyntaxHighlighterFactory"/>-->
+    <!--    <completion.contributor language="Calc"-->
+    <!--                            implementationClass="com.intellij.calcLanguage.calc.CalcCompletionContributor"/>-->
+    <!--    <psi.referenceContributor language="Calc" implementation="com.intellij.calcLanguage.calc.CalcReferenceContributor"/>-->
+    <applicationService serviceInterface="com.intellij.xtextLanguage.xtext.EcorePackageRegistry"
+                        serviceImplementation="com.intellij.xtextLanguage.xtext.EcorePackageRegistry$ListBasedRegistry"/>
   </extensions>
 
 
