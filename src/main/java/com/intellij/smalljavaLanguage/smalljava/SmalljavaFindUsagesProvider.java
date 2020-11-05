@@ -4,7 +4,6 @@ import com.intellij.lang.HelpID;
 import com.intellij.lang.cacheBuilder.WordsScanner;
 import com.intellij.lang.findUsages.FindUsagesProvider;
 import com.intellij.psi.PsiElement;
-import com.intellij.psi.PsiNamedElement;
 import com.intellij.smalljavaLanguage.smalljava.psi.SmalljavaSJClass;
 import com.sun.istack.NotNull;
 import com.sun.istack.Nullable;
@@ -19,7 +18,7 @@ public class SmalljavaFindUsagesProvider implements FindUsagesProvider {
 
     @Override
     public boolean canFindUsagesFor(@NotNull PsiElement psiElement) {
-        return psiElement instanceof PsiNamedElement;
+        return psiElement instanceof SmalljavaSJClass;
     }
 
     @Nullable

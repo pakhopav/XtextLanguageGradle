@@ -32,7 +32,7 @@ open class MainGenerator(extension: String, val context: MetaContext) : Abstract
         generateUtilFile()
         generateXmlExtentions()
         generateBridgeFiles()
-
+        generateElementFactory()
     }
 
 
@@ -165,6 +165,11 @@ open class MainGenerator(extension: String, val context: MetaContext) : Abstract
     private fun generateBridgeFiles() {
         val generator = EmfBridgeGenerator(extension, context)
         generator.generateAll()
+    }
+
+    private fun generateElementFactory() {
+        val generator = ElementFactoryGenerator(extension, context)
+        generator.generateElementFactoryFile()
     }
 
 }

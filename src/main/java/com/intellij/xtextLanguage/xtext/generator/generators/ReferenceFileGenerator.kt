@@ -32,7 +32,7 @@ class ReferenceFileGenerator(extension: String) : AbstractGenerator(extension) {
             |    @NotNull
             |    @Override
             |    public ResolveResult[] multiResolve(boolean incompleteCode) {
-            |        return MultiResolve(incompleteCode, tClasses);
+            |        return multiResolve(incompleteCode, tClasses);
             |    }
             
             |    @Nullable
@@ -45,40 +45,27 @@ class ReferenceFileGenerator(extension: String) : AbstractGenerator(extension) {
             |    @NotNull
             |    @Override
             |    public Object[] getVariants() {
-            |    return ${extension.capitalize()}GetVariants(tClasses);
+            |    return getVariants(tClasses);
             |    }
-            
-            |    public  ResolveResult[] MultiResolve(boolean incompleteCode, final List<Class<? extends PsiNameIdentifierOwner>> classes) {
+            |    public ResolveResult[] multiResolve(boolean incompleteCode, final List<Class<? extends PsiNameIdentifierOwner>> classes) {
             |        PsiFile file = myElement.getContainingFile();
-            |        List<? extends PsiNameIdentifierOwner> elements = new ArrayList<>();
-            |        classes.forEach(it -> {
-            |            elements.addAll((ArrayList)${extension.capitalize()}Util.findElementsInCurrentFile(file, it, key));
-            |        });
-            |        List<ResolveResult> results = new ArrayList<>();
-            |        elements.forEach(it ->{
-            |            results.add(new PsiElementResolveResult(it));
-            |        });
-            
-            |        return results.toArray(new ResolveResult[results.size()]);
+            |        ResolveResult[] results = classes.stream()
+            |                .flatMap(it -> ${extensionCapitalized}Util.findElementsInCurrentFile(file, it, key).stream())
+            |                .map(PsiElementResolveResult::new).toArray(ResolveResult[]::new);
+            |        return results;
             |    }
-            
-            |    public Object[] ${extension.capitalize()}GetVariants( List<Class<? extends PsiNameIdentifierOwner>> classes) {
-            |    PsiFile file = myElement.getContainingFile();
-            |    List<? extends PsiNameIdentifierOwner> elements = new ArrayList<>();
-            |    classes.forEach(it ->{
-            |        elements.addAll((ArrayList)${extension.capitalize()}Util.findElementsInCurrentFile(file, it));
-            |    });
-            |    List<LookupElement> variants = new ArrayList<LookupElement>();
-            |    elements.forEach(it ->{
-            |        if (it.getName() != null && it.getName().length() > 0) {
-            |            variants.add(LookupElementBuilder.create(it).
-            |                 withIcon(${extension.capitalize()}Icons.FILE).
-            |                 withTypeText(it.getContainingFile().getName())
-            |                 );
-            |        }
-            |    });
-            
-            |    return variants.toArray();
+        
+        
+            |    public Object[] getVariants(List<Class<? extends PsiNameIdentifierOwner>> classes) {
+            |        PsiFile file = myElement.getContainingFile();
+            |        Object[] variants = classes.stream()
+            |                .flatMap(it -> ${extensionCapitalized}Util.findElementsInCurrentFile(file, it).stream())
+            |                .filter(it -> (it.getName() != null && it.getName().length() > 0))
+            |                .map(it -> LookupElementBuilder.create(it).
+            |                           withIcon(${extensionCapitalized}Icons.FILE).
+            |                           withTypeText(it.getContainingFile().getName())).toArray(Object[]::new);
+        
+            |        return variants;
             |    }
             |}
         """.trimMargin("|"))

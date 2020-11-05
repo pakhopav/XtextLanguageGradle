@@ -18,6 +18,14 @@ class NamedElementFileGenerator(extension: String) : AbstractGenerator(extension
             |    public ${extension.capitalize()}NamedElementImpl(@NotNull ASTNode node) {
             |        super(node);
             |    }
+            |    
+            |    @Override
+            |    public int getTextOffset() {
+            |        if(this.getNameIdentifier() != null){
+            |            return this.getNameIdentifier().getNode().getStartOffset();
+            |        }
+            |        return super.getTextOffset();
+            |    }
             |}
         """.trimMargin("|"))
         out.close()

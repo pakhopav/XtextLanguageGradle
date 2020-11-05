@@ -1,5 +1,6 @@
 package com.intellij.smalljavaLanguage.smalljava.psi.impl;
 
+import com.intellij.lang.ASTNode;
 import com.intellij.psi.PsiElement;
 import com.intellij.smalljavaLanguage.smalljava.psi.*;
 
@@ -7,7 +8,14 @@ import java.util.Optional;
 
 public class SmalljavaPsiImplUtil {
     public static PsiElement setName(SmalljavaSJClass element, String newName) {
-        //TODO
+        ASTNode keyNode = element.getNode().findChildByType(SmalljavaTypes.ID);
+        if (keyNode != null) {
+            PsiElement newPsiElement = SmalljavaElementFactory.Companion.createLeafFromString(newName, SmalljavaTypes.ID);
+            if (newPsiElement != null) {
+                ASTNode newKeyNode = newPsiElement.getNode();
+                element.getNode().replaceChild(keyNode, newKeyNode);
+            }
+        }
         return element;
     }
 

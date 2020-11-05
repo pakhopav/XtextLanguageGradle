@@ -58,20 +58,31 @@
     <!--    <psi.referenceContributor language="Entity"-->
     <!--                              implementation="com.intellij.entityLanguage.entity.EntityReferenceContributor"/>-->
 
+    <fileTypeFactory implementation="com.intellij.smalljavaLanguage.smalljava.SmalljavaFileTypeFactory"/>
+    <lang.parserDefinition language="Smalljava"
+                           implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="Smalljava"
+                                   implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaSyntaxHighlighterFactory"/>
+    <completion.contributor language="Smalljava"
+                            implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaCompletionContributor"/>
+    <psi.referenceContributor language="Smalljava"
+                              implementation="com.intellij.smalljavaLanguage.smalljava.SmalljavaReferenceContributor"/>
+    <!--    <lang.findUsagesProvider language="Smalljava"-->
+    <!--                             implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaFindUsagesProvider"/>-->
 
-    <!--    <fileTypeFactory implementation="com.intellij.calcLanguage.calc.calcFileTypeFactory"/>-->
-    <!--    <lang.parserDefinition language="calc" implementationClass="com.intellij.calcLanguage.calc.calcParserDefinition"/>-->
-    <!--    <lang.syntaxHighlighterFactory language="calc" implementationClass="com.intellij.calcLanguage.calc.calcSyntaxHighlighterFactory"/>-->
-    <!--    <completion.contributor language="calc" implementationClass="com.intellij.calcLanguage.calc.calcCompletionContributor"/>-->
-    <!--    <psi.referenceContributor language="calc" implementation="com.intellij.calcLanguage.calc.calcReferenceContributor"/>-->
+    <fileTypeFactory implementation="com.intellij.calc2Language.calc2.Calc2FileTypeFactory"/>
+    <lang.parserDefinition language="Calc2"
+                           implementationClass="com.intellij.calc2Language.calc2.Calc2ParserDefinition"/>
+    <lang.syntaxHighlighterFactory language="Calc2"
+                                   implementationClass="com.intellij.calc2Language.calc2.Calc2SyntaxHighlighterFactory"/>
+    <completion.contributor language="Calc2"
+                            implementationClass="com.intellij.calc2Language.calc2.Calc2CompletionContributor"/>
+    <psi.referenceContributor language="Calc2"
+                              implementation="com.intellij.calc2Language.calc2.Calc2ReferenceContributor"/>
+    <lang.refactoringSupport language="Calc2"
+                             implementationClass="com.intellij.calc2Language.calc2.Calc2RefactoringSupportProvider"/>
 
-    <!--    <fileTypeFactory implementation="com.intellij.calcLanguage.calc.CalcFileTypeFactory"/>-->
-    <!--    <lang.parserDefinition language="Calc" implementationClass="com.intellij.calcLanguage.calc.CalcParserDefinition"/>-->
-    <!--    <lang.syntaxHighlighterFactory language="Calc"-->
-    <!--                                   implementationClass="com.intellij.calcLanguage.calc.CalcSyntaxHighlighterFactory"/>-->
-    <!--    <completion.contributor language="Calc"-->
-    <!--                            implementationClass="com.intellij.calcLanguage.calc.CalcCompletionContributor"/>-->
-    <!--    <psi.referenceContributor language="Calc" implementation="com.intellij.calcLanguage.calc.CalcReferenceContributor"/>-->
+
     <applicationService serviceInterface="com.intellij.xtextLanguage.xtext.EcorePackageRegistry"
                         serviceImplementation="com.intellij.xtextLanguage.xtext.EcorePackageRegistry$ListBasedRegistry"/>
   </extensions>
