@@ -32,7 +32,14 @@ public class SmalljavaPsiImplUtil {
         return null;
     }
     public static PsiElement setName(SmalljavaSJMember element, String newName) {
-        //TODO
+        ASTNode keyNode = element.getNode().findChildByType(SmalljavaTypes.ID);
+        if (keyNode != null) {
+            PsiElement newPsiElement = SmalljavaElementFactory.Companion.createLeafFromString(newName, SmalljavaTypes.ID);
+            if (newPsiElement != null) {
+                ASTNode newKeyNode = newPsiElement.getNode();
+                element.getNode().replaceChild(keyNode, newKeyNode);
+            }
+        }
         return element;
     }
 

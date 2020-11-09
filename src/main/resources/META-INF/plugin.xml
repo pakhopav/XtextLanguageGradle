@@ -39,25 +39,6 @@
                               implementationClass="com.intellij.xtextLanguage.xtext.XtextCompletionContributor"/>
 
 
-    <!--    <fileTypeFactory implementation="com.intellij.exprLanguage.expr.exprFileTypeFactory" />-->
-    <!--    <lang.parserDefinition language="expr" implementationClass="com.intellij.exprLanguage.expr.exprParserDefinition"/>-->
-
-    <!--    <lang.syntaxHighlighterFactory language="expr" implementationClass="com.intellij.exprLanguage.expr.exprSyntaxHighlighterFactory"/>-->
-    <!--    <psi.referenceContributor language="expr"-->
-    <!--                              implementation="com.intellij.exprLanguage.expr.exprReferenceContributor"/>-->
-
-    <!--    <completion.contributor language="expr"-->
-    <!--                            implementationClass="com.intellij.exprLanguage.expr.exprCompletionContributor"/>-->
-    <!--    <fileTypeFactory implementation="com.intellij.entityLanguage.entity.EntityFileTypeFactory"/>-->
-    <!--    <lang.parserDefinition language="Entity"-->
-    <!--                           implementationClass="com.intellij.entityLanguage.entity.EntityParserDefinition"/>-->
-    <!--    <lang.syntaxHighlighterFactory language="Entity"-->
-    <!--                                   implementationClass="com.intellij.entityLanguage.entity.EntitySyntaxHighlighterFactory"/>-->
-    <!--    <completion.contributor language="Entity"-->
-    <!--                            implementationClass="com.intellij.entityLanguage.entity.EntityCompletionContributor"/>-->
-    <!--    <psi.referenceContributor language="Entity"-->
-    <!--                              implementation="com.intellij.entityLanguage.entity.EntityReferenceContributor"/>-->
-
     <fileTypeFactory implementation="com.intellij.smalljavaLanguage.smalljava.SmalljavaFileTypeFactory"/>
     <lang.parserDefinition language="Smalljava"
                            implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaParserDefinition"/>
@@ -67,20 +48,11 @@
                             implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaCompletionContributor"/>
     <psi.referenceContributor language="Smalljava"
                               implementation="com.intellij.smalljavaLanguage.smalljava.SmalljavaReferenceContributor"/>
-    <!--    <lang.findUsagesProvider language="Smalljava"-->
-    <!--                             implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaFindUsagesProvider"/>-->
-
-    <fileTypeFactory implementation="com.intellij.calc2Language.calc2.Calc2FileTypeFactory"/>
-    <lang.parserDefinition language="Calc2"
-                           implementationClass="com.intellij.calc2Language.calc2.Calc2ParserDefinition"/>
-    <lang.syntaxHighlighterFactory language="Calc2"
-                                   implementationClass="com.intellij.calc2Language.calc2.Calc2SyntaxHighlighterFactory"/>
-    <completion.contributor language="Calc2"
-                            implementationClass="com.intellij.calc2Language.calc2.Calc2CompletionContributor"/>
-    <psi.referenceContributor language="Calc2"
-                              implementation="com.intellij.calc2Language.calc2.Calc2ReferenceContributor"/>
-    <lang.refactoringSupport language="Calc2"
-                             implementationClass="com.intellij.calc2Language.calc2.Calc2RefactoringSupportProvider"/>
+    <lang.elementManipulator
+            forClass="com.intellij.smalljavaLanguage.smalljava.impl.SmalljavaREFERENCESJClassQualifiedNameImpl"
+            implementationClass="com.intellij.smalljavaLanguage.smalljava.ReferenceSJClassManipulator"/>
+    <lang.elementManipulator forClass="com.intellij.smalljavaLanguage.smalljava.impl.SmalljavaREFERENCESJMemberIDImpl"
+                             implementationClass="com.intellij.smalljavaLanguage.smalljava.ReferenceSJMemberManipulator"/>
 
 
     <applicationService serviceInterface="com.intellij.xtextLanguage.xtext.EcorePackageRegistry"
