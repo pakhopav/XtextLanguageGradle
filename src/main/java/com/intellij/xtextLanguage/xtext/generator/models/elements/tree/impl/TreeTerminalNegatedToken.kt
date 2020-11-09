@@ -4,10 +4,9 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.Cardinality
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode
 import com.intellij.xtextLanguage.xtext.psi.XtextNegatedToken
 import com.intellij.xtextLanguage.xtext.psi.XtextParenthesizedTerminalElement
+import kotlin.test.assertTrue
 
 class TreeTerminalNegatedToken(psiElement: XtextNegatedToken, parent: TreeNode, cardinality: Cardinality) : TreeNodeImpl(parent, cardinality) {
-
-
     init {
         psiElement.terminalTokenElement.characterRange?.let {
             val terminalRange = TreeTerminalRange(it, this, Cardinality.NONE)
@@ -49,4 +48,13 @@ class TreeTerminalNegatedToken(psiElement: XtextNegatedToken, parent: TreeNode, 
         }
         return true
     }
+}
+
+fun TreeTerminalNegatedToken.toRegex(): Regex {
+    var tokenString = this.toString()
+    if (!tokenString.endsWith("]")) {
+        tokenString = tokenString.slice(0..tokenString.length - 2)
+        assertTrue(tokenString.endsWith("]"))
+    }
+    return tokenString.toRegex()
 }

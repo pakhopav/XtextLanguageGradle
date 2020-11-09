@@ -122,7 +122,7 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
         }
 
         override fun visitWildcard(wildcard: XtextWildcard) {
-            val terminalWildcard = TreeTerminalSimple(wildcard, treeNodeStack.peek(), getCurrentCardinality())
+            val terminalWildcard = TreeTerminalWildcard(wildcard, treeNodeStack.peek(), getCurrentCardinality())
             treeNodeStack.peek().addChild(terminalWildcard)
         }
 
@@ -137,7 +137,7 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
         }
 
         override fun visitNegatedToken(negatedToken: XtextNegatedToken) {
-            val terminalNegatedToken = TreeTerminalNegatedToken(negatedToken, treeNodeStack.peek(), Cardinality.NONE)
+            val terminalNegatedToken = TreeTerminalNegatedToken(negatedToken, treeNodeStack.peek(), getCurrentCardinality())
             treeNodeStack.peek().addChild(terminalNegatedToken)
         }
 

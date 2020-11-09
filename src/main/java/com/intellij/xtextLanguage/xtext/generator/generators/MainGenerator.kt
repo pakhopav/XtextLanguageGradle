@@ -32,7 +32,7 @@ open class MainGenerator(extension: String, val context: MetaContext) : Abstract
         generateUtilFile()
         generateXmlExtentions()
         generateBridgeFiles()
-        generateElementFactory()
+//        generateElementFactory()
     }
 
 
