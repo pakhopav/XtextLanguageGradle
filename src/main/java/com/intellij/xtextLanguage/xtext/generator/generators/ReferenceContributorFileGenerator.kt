@@ -2,7 +2,7 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 
 import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeCrossReference
-import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode.Companion.filterNodesInSubtree
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode.Companion.filterNodesIsInstance
 import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeParserRule
 import java.io.FileOutputStream
 import java.io.PrintWriter
@@ -30,7 +30,7 @@ class ReferenceContributorFileGenerator(extension: String, val context: MetaCont
             |    @Override
             |    public void registerReferenceProviders(@NotNull PsiReferenceRegistrar registrar) {
         """.trimMargin("|"))
-        val referenceNodes = relevantRules.flatMap { it.filterNodesInSubtree { it is TreeCrossReference } }.map { it as TreeCrossReference }
+        val referenceNodes = relevantRules.flatMap { it.filterNodesIsInstance(TreeCrossReference::class.java) }
         referenceNodes.distinctBy { it.getBnfName() }.forEach { crossReferenceNode ->
             val targetRuleNames = relevantRules.filter { it.returnType == crossReferenceNode.targetType }.map { it.name }
             if (targetRuleNames.isEmpty()) return@forEach

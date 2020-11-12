@@ -20,7 +20,11 @@ class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : Ab
             |import com.intellij.psi.*;
             |import $packageDir.psi.*;
             |import com.intellij.psi.util.PsiTreeUtil;
-            
+            |import com.intellij.psi.impl.source.tree.Factory;
+            |import com.intellij.psi.impl.source.tree.LeafElement;
+            |import com.intellij.psi.impl.source.tree.SharedImplUtil;
+            |import com.intellij.util.CharTable;
+            |import com.intellij.lang.ASTNode;
             |import java.util.Optional;
             
             |public class ${extension.capitalize()}PsiImplUtil {
@@ -29,7 +33,13 @@ class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : Ab
             val ruleName = it.name
             out.println("""
                         |    public static PsiElement setName($extensionCapitalized$ruleName element, String newName) {
-                        |        //TODO
+                        |        ASTNode elementNode = element.getNode();
+                        |        ASTNode oldValueElement = elementNode.findChildByType(${extensionCapitalized}Types.ID);
+                        |        if(oldValueElement != null){
+                        |            CharTable charTableByTree = SharedImplUtil.findCharTableByTree(element.getNode());
+                        |            LeafElement newValueElement = Factory.createSingleLeafElement(${extensionCapitalized}Types.ID, newName, charTableByTree, element.getManager());
+                        |            elementNode.replaceChild(oldValueElement, newValueElement);
+                        |        }
                         |        return element;
                         |    }
                         

@@ -33,6 +33,10 @@ open class MainGenerator(extension: String, val context: MetaContext) : Abstract
         generateXmlExtentions()
         generateBridgeFiles()
 //        generateElementFactory()
+        generateManipulators()
+        generateRefactoringSupportProvider()
+        generateWordScanner()
+        generateUsagesProvider()
     }
 
 
@@ -98,7 +102,7 @@ open class MainGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
     private fun generateXmlExtentions() {
-        val generator = XmlExtentionsGenerator(extension)
+        val generator = XmlExtentionsGenerator(extension, context)
         generator.generateXmlExtentions()
     }
 
@@ -172,6 +176,26 @@ open class MainGenerator(extension: String, val context: MetaContext) : Abstract
         generator.generateElementFactoryFile()
     }
 
+    private fun generateManipulators() {
+        val generator = ManipulatorsGenerator(extension, context)
+        generator.generateAll()
+    }
+
+    private fun generateRefactoringSupportProvider() {
+        val generator = RefactoringSupportProviderGenerator(extension, context)
+        generator.generateRefactoringSupportProvider()
+
+    }
+
+    private fun generateWordScanner() {
+        val generator = WordScannerGenerator(extension)
+        generator.generateWordScanner()
+    }
+
+    private fun generateUsagesProvider() {
+        val generator = FindUsagesProviderGenerator(extension, context)
+        generator.generateUsagesProvider()
+    }
 }
 
 

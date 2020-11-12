@@ -25,17 +25,13 @@ class UtilFileGenerator(extension: String) : AbstractGenerator(extension) {
             |        ArrayList<T> result = new ArrayList<>();
             |        ${extension.capitalize()}File ${extension.decapitalize()}File = (${extension.capitalize()}File) file;
             |        if (${extension.decapitalize()}File != null) {
-            |
-            |           List<T> elements = new ArrayList (PsiTreeUtil.findChildrenOfType(${extension.decapitalize()}File, tClass));
-            |
+            |            List<T> elements = new ArrayList (PsiTreeUtil.findChildrenOfType(${extension.decapitalize()}File, tClass));
             |            for (T property : elements) {
             |                if (Id.equals(property.getName())) {
             |                    result.add(property);
             |                }
             |            }
-            |
             |        }
-            |
             |        return result ;
             |    }
             |
@@ -45,9 +41,7 @@ class UtilFileGenerator(extension: String) : AbstractGenerator(extension) {
             |        if (${extension.decapitalize()}File != null) {
             |            List<T> elements = new ArrayList(PsiTreeUtil.findChildrenOfType(${extension.decapitalize()}File, tClass));
             |                result.addAll(elements);
-            |            
-            |       }
-            |
+            |        }
             |        return result;
             |    }
             |}

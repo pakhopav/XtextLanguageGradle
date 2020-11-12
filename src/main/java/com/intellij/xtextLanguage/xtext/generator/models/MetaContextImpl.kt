@@ -42,7 +42,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
     override fun getRuleByName(name: String): TreeRule {
         _rules.firstOrNull { it.name == name }?.let { return it }
         terminalRules.firstOrNull { it.name == name }?.let { return it }
-        throw Exception("Rule ${name} not found")
+        throw Exception("Rule $name not found")
     }
 
     override fun findLiteralAssignmentsInRule(rule: TreeRule): List<TreeLeaf> {

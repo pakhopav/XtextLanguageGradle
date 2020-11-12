@@ -6,7 +6,7 @@ import java.io.FileOutputStream
 import java.io.PrintWriter
 
 class RefactoringSupportProviderGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
-    fun generateSyntaxHighlighterFactoryFile() {
+    fun generateRefactoringSupportProvider() {
         val file = createFile("${extensionCapitalized}RefactoringSupportProvider.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         val referencedRules = context.rules.filterIsInstance<TreeParserRule>()
