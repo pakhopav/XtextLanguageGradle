@@ -25,7 +25,12 @@ repositories {
     mavenCentral()
 }
 
+runIde {
+    jbrVersion = '11_0_2b159'
+}
+
 dependencies {
+
     testCompile group: 'junit', name: 'junit', version: '4.12'
     compile files('libs/org.eclipse.emf.common_2.16.0.v20190528-0845.jar')
     compile files("libs/org.eclipse.emf.ecore.change_2.14.0.v20190528-0725.jar")
@@ -42,7 +47,7 @@ dependencies {
 
 // See https://github.com/JetBrains/gradle-intellij-plugin/
 intellij {
-    version '2019.2'
+    version '2020.2'
     
 }
 
