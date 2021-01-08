@@ -37,6 +37,10 @@ open class MainGenerator(extension: String, val context: MetaContext) : Abstract
         generateRefactoringSupportProvider()
         generateWordScanner()
         generateUsagesProvider()
+        generateCachedValueProvider()
+        generateInspection()
+        generateReferencesInspection()
+        generateValidator()
     }
 
 
@@ -102,8 +106,8 @@ open class MainGenerator(extension: String, val context: MetaContext) : Abstract
     }
 
     private fun generateXmlExtentions() {
-        val generator = XmlExtentionsGenerator(extension, context)
-        generator.generateXmlExtentions()
+        val generator = XmlExtensionsGenerator(extension, context)
+        generator.generateXmlExtensions()
     }
 
     private fun generateLexerAdapterFile() {
@@ -195,6 +199,26 @@ open class MainGenerator(extension: String, val context: MetaContext) : Abstract
     private fun generateUsagesProvider() {
         val generator = FindUsagesProviderGenerator(extension, context)
         generator.generateUsagesProvider()
+    }
+
+    private fun generateCachedValueProvider() {
+        val generator = CachedValueProviderGenerator(extension)
+        generator.generateCachedValueProvider()
+    }
+
+    private fun generateInspection() {
+        val generator = InspectionGenerator(extension)
+        generator.generateInspection()
+    }
+
+    private fun generateReferencesInspection() {
+        val generator = ReferencesInspectionGenerator(extension)
+        generator.generateReferencesInspection()
+    }
+
+    private fun generateValidator() {
+        val generator = ValidatorGenerator(extension)
+        generator.generateValidator()
     }
 }
 

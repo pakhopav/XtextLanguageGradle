@@ -19,14 +19,17 @@ class BridgeRuleFileGenerator(extension: String, val context: MetaContext) : Abs
     fun generateEmfBridgeRuleFile(treeRule: TreeParserRule) {
         val file = createFile("$extensionCapitalized${treeRule.name}BridgeRule.kt", myGenDir + "/emf/rules")
         val out = PrintWriter(FileOutputStream(file))
-        out.println("package $packageDir.emf")
+        out.println("package $packageDir.emf.rules")
 
-        out.println("""
+        out.println(
+            """
             |import com.intellij.${extension}Language.$extension.psi.*
             |import com.intellij.psi.PsiElement
             |import com.intellij.xtextLanguage.xtext.emf.*
             |import org.eclipse.emf.ecore.EObject
             |import org.eclipse.emf.ecore.EDataType
+            |import org.eclipse.emf.ecore.EStructuralFeature
+            |import kotlin.test.assertNotNull
             |
             |class ${extensionCapitalized}${treeRule.name}BridgeRule : EmfBridgeRule {
         """.trimMargin("|"))
@@ -48,14 +51,17 @@ class BridgeRuleFileGenerator(extension: String, val context: MetaContext) : Abs
             val assignableType = if (node is TreeRuleCall) context.getRuleByName(node.getBnfName()).returnType else EmfClassDescriptor.STRING
             val psiElementTypeName = node.getPsiElementTypeName()
             assertNotNull(psiElementTypeName)
+
+
             out.print("""
                 |        ${elseWord}if (
             """.trimMargin("|"))
             out.println("pointer.node.elementType == ${extensionCapitalized}Types.$psiElementTypeName) {")
             out.println("""
                 |            return object : LiteralAssignment {
-                |                override fun assign(obj: EObject, literal: PsiElement) {
+                |                override fun assign(obj: EObject, literal: PsiElement): EStructuralFeature {
                 |                    val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "${node.assignment!!.featureName}" }
+                |                    assertNotNull(feature)
                 |                    val ePackage = ${assignableType.getPackageInstanceString()}
                 |                    val classifier = ePackage.getEClassifier("${assignableType.className}") as EDataType
                 |                    val value = ePackage.eFactoryInstance.createFromString(classifier, literal.text)
@@ -77,6 +83,7 @@ class BridgeRuleFileGenerator(extension: String, val context: MetaContext) : Abs
                 }
             }
             out.println("""
+                |                    return feature
                 |                }
                 |            }
                 |        }
@@ -95,7 +102,6 @@ class BridgeRuleFileGenerator(extension: String, val context: MetaContext) : Abs
         var elseWord = ""
         val objectAssignments = context.findObjectAssignmentsInRule(rule)
         objectAssignments.forEach { node ->
-            val psiElementTypeName = node.getPsiElementTypeName()
             val psiElementClassName = "$extensionCapitalized${NameGenerator.toGKitClassName(node.getBnfName())}"
             out.print("""
                 |        ${elseWord}if (

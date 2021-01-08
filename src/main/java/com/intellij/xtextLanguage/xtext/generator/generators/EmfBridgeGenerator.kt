@@ -39,6 +39,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         generateEmfCreatorImports(out)
         out.println("class ${capitalizedExtension}EmfCreator : EmfCreator() {")
         generateEmfCreatorFields(out)
+        generateCreateBridgeMethod(out)
         generateGetBridgeRuleForPsiElementMethod(out)
         generateRegisterObjectMethod(out)
         generateCompleteRawModelMethod(out)
@@ -48,9 +49,30 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
         out.close()
     }
 
+
+    private fun generateCreateBridgeMethod(out: PrintWriter) {
+        val rootRuleName = context.rules.first().name
+        out.println(
+            """
+            |    override fun createBridge(psiFile: PsiFile): BridgeResult? {
+            |        val rootElement = PsiTreeUtil.findChildOfType(psiFile, $extensionCapitalized$rootRuleName::class.java)
+            |        assertNotNull(rootElement)
+            |        val emfRoot = createModel(rootElement)
+            |        emfRoot?.let {
+            |            return BridgeResult(emfRoot, bridgeMap)
+            |        }
+            |        return null
+            |    }
+            """.trimMargin("|")
+        )
+    }
+
     private fun generateEmfCreatorImports(out: PrintWriter) {
-        out.println("""
+        out.println(
+            """
             package com.intellij.${extension}Language.${extension}.emf
+            
+            import com.intellij.${extension}Language.${extension}.emf.rules.*
             import com.intellij.${extension}Language.${extension}.psi.*
             import com.intellij.${extension}Language.${extension}.emf.scope.${capitalizedExtension}Scope
             import com.intellij.psi.PsiElement
@@ -59,6 +81,9 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext) : Abstract
             import org.eclipse.emf.ecore.EClass
             import org.eclipse.emf.ecore.EObject
             import org.eclipse.emf.common.util.EList
+            import com.intellij.psi.PsiFile
+            import com.intellij.psi.util.PsiTreeUtil
+            import kotlin.test.assertNotNull
             """.trimIndent())
         relevantRules.map { it.returnType }.distinct().forEach {
             out.println("import ${it.classPath}")

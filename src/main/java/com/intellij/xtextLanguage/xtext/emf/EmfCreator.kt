@@ -97,7 +97,9 @@ abstract class EmfCreator {
             }
         }
         if (current != null) {
-            bridgeMap.put(element, current!!)
+            if (!bridgeMap.values.contains(current!!)) {
+                bridgeMap.put(element, current!!)
+            }
         }
         return current
     }

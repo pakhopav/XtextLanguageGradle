@@ -17,7 +17,24 @@ abstract class AbstractValidator {
         val associatedPsi = getAssociatedPsiElement(feature)
         val problemsHolder = context!!.problemsHolder
         val textRange: TextRange? = null
-        val error = problemsHolder.getManager().createProblemDescriptor(associatedPsi, textRange, message, ProblemHighlightType.WARNING, context!!.isOnFly);
+        val error = problemsHolder.getManager().createProblemDescriptor(
+            associatedPsi,
+            textRange,
+            message,
+            ProblemHighlightType.WARNING,
+            context!!.isOnFly
+        );
+        problemsHolder.registerProblem(error)
+    }
+
+
+    protected fun error(message: String, feature: EStructuralFeature) {
+        assertNotNull(context)
+        val associatedPsi = getAssociatedPsiElement(feature)
+        val problemsHolder = context!!.problemsHolder
+        val textRange: TextRange? = null
+        val error = problemsHolder.getManager()
+            .createProblemDescriptor(associatedPsi, textRange, message, ProblemHighlightType.ERROR, context!!.isOnFly);
         problemsHolder.registerProblem(error)
     }
 
@@ -28,8 +45,9 @@ abstract class AbstractValidator {
     }
 
 
-    class ValidatorContext(val problemsHolder: ProblemsHolder,
-                           val isOnFly: Boolean,
+    class ValidatorContext(
+        val problemsHolder: ProblemsHolder,
+        val isOnFly: Boolean,
                            val bridgeContext: BridgeResult,
                            val current: EObject)
 }

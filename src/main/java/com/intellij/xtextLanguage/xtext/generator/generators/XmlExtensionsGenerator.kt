@@ -8,11 +8,12 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeParse
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class XmlExtentionsGenerator(extention: String, val context: MetaContext) : AbstractGenerator(extention) {
-    fun generateXmlExtentions() {
+class XmlExtensionsGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+    fun generateXmlExtensions() {
         val file = createFile(extensionCapitalized + "extensions.txt", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
-        out.println("""
+        out.println(
+            """
             <fileTypeFactory implementation="${packageDir}.${extensionCapitalized}FileTypeFactory"/>
             <lang.parserDefinition language="$extensionCapitalized" implementationClass="${packageDir}.${extensionCapitalized}ParserDefinition"/>
             <lang.syntaxHighlighterFactory language="$extensionCapitalized" implementationClass="${packageDir}.${extensionCapitalized}SyntaxHighlighterFactory"/>
@@ -20,16 +21,27 @@ class XmlExtentionsGenerator(extention: String, val context: MetaContext) : Abst
             <psi.referenceContributor language="$extensionCapitalized" implementation="${packageDir}.${extensionCapitalized}ReferenceContributor"/>
             <lang.refactoringSupport language="$extensionCapitalized" implementationClass="${packageDir}.${extensionCapitalized}RefactoringSupportProvider"/>
             <lang.findUsagesProvider language="$extensionCapitalized" implementationClass="${packageDir}.${extensionCapitalized}FindUsagesProvider"/>
-        """.trimIndent())
-        val crossReferences = context.rules.filterIsInstance<TreeParserRule>().flatMap { it.filterNodesIsInstance(TreeCrossReference::class.java) }.distinctBy { it.getBnfName() }
+        """.trimIndent()
+        )
+        val crossReferences = context.rules.filterIsInstance<TreeParserRule>()
+            .flatMap { it.filterNodesIsInstance(TreeCrossReference::class.java) }.distinctBy { it.getBnfName() }
         crossReferences.forEach {
             val referenceName = NameGenerator.toGKitClassName(it.getBnfName())
-            out.println("""
+            out.println(
+                """
                 <lang.elementManipulator forClass="${packageDir}.impl.${extensionCapitalized}${referenceName}Impl"
                              implementationClass="${packageDir}.psi.${extensionCapitalized}${referenceName}Manipulator"/>
-            """.trimIndent())
+            """.trimIndent()
+            )
         }
+        out.println(
+            """
+            <localInspection groupName="$extensionCapitalized" language="$extensionCapitalized" shortName="$extensionCapitalized" displayName="$extensionCapitalized inspection" enabledByDefault="true"
+            implementationClass="${packageDir}.inspection.${extensionCapitalized}Inspection"/>
+            <localInspection groupName="$extensionCapitalized" language="$extensionCapitalized" shortName="$extensionCapitalized" displayName="$extensionCapitalized reference inspection" enabledByDefault="true"
+            level="ERROR" implementationClass="${packageDir}.inspection.${extensionCapitalized}ReferencesInspection"/>    
+        """.trimIndent()
+        )
         out.close()
-
     }
 }
