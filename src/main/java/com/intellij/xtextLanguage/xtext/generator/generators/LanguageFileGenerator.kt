@@ -3,13 +3,14 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class LanguageFileGenerator(extension: String) : AbstractGenerator(extension) {
+class LanguageFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
 
 
     fun generateLanguageFile() {
         val file = createFile(extension.capitalize() + "Language.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.print(
+            """
             |package $packageDir;
 
             |import com.intellij.lang.Language;

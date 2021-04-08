@@ -10,11 +10,13 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRuleC
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class PsiImplUtilFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class PsiImplUtilFileGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
     fun geneneratePsiImplUtilFile() {
         val file = createFile(extension.capitalize() + "PsiImplUtil.java", myGenDir + "/psi/impl")
         val out = PrintWriter(FileOutputStream(file))
-        out.println("""
+        out.println(
+            """
              |package $packageDir.psi.impl;
                         
             |import com.intellij.psi.*;

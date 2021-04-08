@@ -6,13 +6,15 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGene
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class ElementFactoryGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class ElementFactoryGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
     val relevantRules = context.rules
 
     fun generateElementFactoryFile() {
         val file = createFile("${extensionCapitalized}ElementFactory.java", myGenDir + "/psi")
         val out = PrintWriter(FileOutputStream(file))
-        out.println("""
+        out.println(
+            """
         |package com.intellij.${extension}Language.${extension}.psi;
         |
         |import com.intellij.${extension}Language.${extension}.${extensionCapitalized}Language;

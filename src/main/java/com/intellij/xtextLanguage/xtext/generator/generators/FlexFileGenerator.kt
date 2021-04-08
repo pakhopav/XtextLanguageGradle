@@ -4,11 +4,13 @@ import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class FlexFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class FlexFileGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
     fun generateFlexFile() {
         val file = createFile(extension.capitalize() + ".flex", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.print(
+            """
             |package $packageDir;
             
             |import com.intellij.lexer.FlexLexer;

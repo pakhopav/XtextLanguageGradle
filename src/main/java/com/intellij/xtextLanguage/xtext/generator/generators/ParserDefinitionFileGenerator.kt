@@ -4,11 +4,13 @@ import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class ParserDefinitionFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class ParserDefinitionFileGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
     fun generateParserDefinitionFile() {
         val file = createFile(extension.capitalize() + "ParserDefinition.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
-        out.println("""
+        out.println(
+            """
             |package $packageDir;
             |import com.intellij.lang.ASTNode;
             |import com.intellij.lang.ParserDefinition;

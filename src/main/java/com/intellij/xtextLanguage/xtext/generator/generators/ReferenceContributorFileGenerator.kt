@@ -7,12 +7,14 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeParse
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class ReferenceContributorFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class ReferenceContributorFileGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
     private val relevantRules = context.rules.filterIsInstance<TreeParserRule>()
     fun generateReferenceContributorFile() {
         val file = createFile(extension.capitalize() + "ReferenceContributor.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.print(
+            """
             |package $packageDir;
             
             |import com.intellij.openapi.util.TextRange;

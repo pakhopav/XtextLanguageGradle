@@ -3,11 +3,12 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class CompositeElementFileGenerator(extension: String) : AbstractGenerator(extension) {
+class CompositeElementFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateCompositeElementFile() {
         val file = createFile(extension.capitalize() + "PsiCompositeElementImpl.java", myGenDir + "/psi/impl")
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.print(
+            """
             |package $packageDir.psi.impl;
             |import com.intellij.extapi.psi.ASTWrapperPsiElement;
             |import com.intellij.lang.ASTNode;

@@ -3,11 +3,12 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class WordScannerGenerator(extension: String) : AbstractGenerator(extension) {
+class WordScannerGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateWordScanner() {
         val file = createFile(extensionCapitalized + "WordScanner.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.print(
+            """
             |package $packageDir;
             |
             |import com.intellij.lang.cacheBuilder.DefaultWordsScanner;

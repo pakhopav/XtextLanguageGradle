@@ -8,7 +8,8 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeParse
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class XmlExtensionsGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class XmlExtensionsGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
     fun generateXmlExtensions() {
         val file = createFile(extensionCapitalized + "extensions.txt", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))

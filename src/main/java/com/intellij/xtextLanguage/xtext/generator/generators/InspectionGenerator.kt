@@ -3,7 +3,7 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class InspectionGenerator(extension: String) : AbstractGenerator(extension) {
+class InspectionGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateInspection() {
         val file = createFile(extension.capitalize() + "Inspection.java", myGenDir + "/inspection")
         val out = PrintWriter(FileOutputStream(file))

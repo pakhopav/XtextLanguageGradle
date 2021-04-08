@@ -3,11 +3,12 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class CompletionContributorFileGenerator(extension: String) : AbstractGenerator(extension) {
+class CompletionContributorFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateCompletionContributorFile() {
         val file = createFile(extension.capitalize() + "CompletionContributor.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.print(
+            """
             |package $packageDir;
             |import com.intellij.codeInsight.completion.CompletionContributor;
             |import com.intellij.codeInsight.completion.CompletionType;

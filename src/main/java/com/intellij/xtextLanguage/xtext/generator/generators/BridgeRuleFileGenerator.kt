@@ -13,7 +13,8 @@ import java.io.FileOutputStream
 import java.io.PrintWriter
 import kotlin.test.assertNotNull
 
-class BridgeRuleFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class BridgeRuleFileGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
 
 
     fun generateEmfBridgeRuleFile(treeRule: TreeParserRule) {

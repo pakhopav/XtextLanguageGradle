@@ -3,7 +3,7 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class ValidatorGenerator(extension: String) : AbstractGenerator(extension) {
+class ValidatorGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateValidator() {
         val file = createFile(extension.capitalize() + "Validator.java", myGenDir + "/inspection")
         val out = PrintWriter(FileOutputStream(file))

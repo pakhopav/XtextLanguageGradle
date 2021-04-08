@@ -6,12 +6,14 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeParse
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class FindUsagesProviderGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class FindUsagesProviderGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
     private val referencedRules = context.rules.filterIsInstance<TreeParserRule>().filter { it.isReferenced }
     fun generateUsagesProvider() {
         val file = createFile(extensionCapitalized + "FindUsagesProvider.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
-        out.println("""
+        out.println(
+            """
             |package com.intellij.${extension}Language.${extension};
             |
             |import com.intellij.lang.HelpID;

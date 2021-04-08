@@ -4,11 +4,13 @@ import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class SyntaxHighlighterFileGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class SyntaxHighlighterFileGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
     fun generateSyntaxHighlighterFile() {
         val file = createFile(extension.capitalize() + "SyntaxHighlighter.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
-        out.println("""
+        out.println(
+            """
             |package $packageDir;
             |import com.intellij.lexer.Lexer;
             |import com.intellij.openapi.editor.*;

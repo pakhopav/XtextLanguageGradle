@@ -3,11 +3,12 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class ReferenceFileGenerator(extension: String) : AbstractGenerator(extension) {
+class ReferenceFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateReferenceFile() {
         val file = createFile(extension.capitalize() + "Reference.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.print(
+            """
             |package $packageDir;
             |import com.intellij.codeInsight.lookup.LookupElement;
             |import com.intellij.codeInsight.lookup.LookupElementBuilder;

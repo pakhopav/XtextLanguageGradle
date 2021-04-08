@@ -3,7 +3,7 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class CachedValueProviderGenerator(extension: String) : AbstractGenerator(extension) {
+class CachedValueProviderGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateCachedValueProvider() {
         val file = createFile(extension.capitalize() + "CachedValueProvider.kt", myGenDir + "/inspection")
         val out = PrintWriter(FileOutputStream(file))

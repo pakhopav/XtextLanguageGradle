@@ -13,11 +13,12 @@ import java.io.FileOutputStream
 import java.io.PrintWriter
 import kotlin.test.assertNotNull
 
-class EmfBridgeGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
     private val capitalizedExtension = extension.capitalize()
     private val relevantRules = filterRelevantParserRules()
     private val crossReferences = createCrossReferenceList()
-    private val bridgeRuleGenerator = BridgeRuleFileGenerator(extension, context)
+    private val bridgeRuleGenerator = BridgeRuleFileGenerator(extension, context, rootPath)
 
     fun generateAll() {
         generateBridgeRuleFiles()

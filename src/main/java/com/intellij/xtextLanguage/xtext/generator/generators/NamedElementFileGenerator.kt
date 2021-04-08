@@ -3,11 +3,12 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class NamedElementFileGenerator(extension: String) : AbstractGenerator(extension) {
+class NamedElementFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun genenerateNamedElementFile() {
         val file = createFile(extension.capitalize() + "NamedElementImpl.java", myGenDir + "/psi/impl")
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.print(
+            """
             |package $packageDir.psi.impl;
             
             |import com.intellij.lang.ASTNode;

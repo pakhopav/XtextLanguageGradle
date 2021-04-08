@@ -16,7 +16,7 @@
   <!--  </change-notes>-->
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/build_number_ranges.html for description -->
-<!--  <idea-version since-build="145.0"/>-->
+  <!--  <idea-version since-build="145.0"/>-->
 
   <!-- please see http://www.jetbrains.org/intellij/sdk/docs/basics/getting_started/plugin_compatibility.html
        on how to target different products -->
@@ -24,37 +24,26 @@
   <depends>com.intellij.modules.lang</depends>
   -->
 
+  <depends>com.intellij.modules.java</depends>
+
   <extensions defaultExtensionNs="com.intellij">
 
-    <fileTypeFactory implementation="com.intellij.xtextLanguage.xtext.XtextFileTypeFactory" />
-    <lang.parserDefinition language="Xtext" implementationClass="com.intellij.xtextLanguage.xtext.XtextParserDefinition"/>
+    <fileTypeFactory implementation="com.intellij.xtextLanguage.xtext.XtextFileTypeFactory"/>
+    <lang.parserDefinition language="Xtext"
+                           implementationClass="com.intellij.xtextLanguage.xtext.XtextParserDefinition"/>
 
-    <lang.syntaxHighlighterFactory language="Xtext" implementationClass="com.intellij.xtextLanguage.xtext.XtextSyntaxHighlighterFactory"/>
-      <psi.referenceContributor language="Xtext"
-                                implementation="com.intellij.xtextLanguage.xtext.XtextReferenceContributor"/>
-      <braceMatcher filetype="Xtext" implementationClass="com.intellij.xtextLanguage.xtext.XtextBraceMatcher"/>
+    <lang.syntaxHighlighterFactory language="Xtext"
+                                   implementationClass="com.intellij.xtextLanguage.xtext.XtextSyntaxHighlighterFactory"/>
+    <psi.referenceContributor language="Xtext"
+                              implementation="com.intellij.xtextLanguage.xtext.XtextReferenceContributor"/>
+    <braceMatcher filetype="Xtext" implementationClass="com.intellij.xtextLanguage.xtext.XtextBraceMatcher"/>
       <lang.braceMatcher language="Xtext"
                          implementationClass="com.intellij.xtextLanguage.xtext.XtextPairedBraceMatcher"/>
       <completion.contributor language="Xtext"
                               implementationClass="com.intellij.xtextLanguage.xtext.XtextCompletionContributor"/>
 
 
-    <fileTypeFactory implementation="com.intellij.smalljavaLanguage.smalljava.SmalljavaFileTypeFactory"/>
-    <lang.parserDefinition language="Smalljava"
-                           implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaParserDefinition"/>
-    <lang.syntaxHighlighterFactory language="Smalljava"
-                                   implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaSyntaxHighlighterFactory"/>
-    <completion.contributor language="Smalljava"
-                            implementationClass="com.intellij.smalljavaLanguage.smalljava.SmalljavaCompletionContributor"/>
-    <psi.referenceContributor language="Smalljava"
-                              implementation="com.intellij.smalljavaLanguage.smalljava.SmalljavaReferenceContributor"/>
-    <lang.elementManipulator
-            forClass="com.intellij.smalljavaLanguage.smalljava.impl.SmalljavaREFERENCESJClassQualifiedNameImpl"
-            implementationClass="com.intellij.smalljavaLanguage.smalljava.ReferenceSJClassManipulator"/>
-    <lang.elementManipulator forClass="com.intellij.smalljavaLanguage.smalljava.impl.SmalljavaREFERENCESJMemberIDImpl"
-                             implementationClass="com.intellij.smalljavaLanguage.smalljava.ReferenceSJMemberManipulator"/>
-
-
+    <moduleType id="XTEXT_MODULE" implementationClass="com.intellij.module.XtextModuleType"/>
     <applicationService serviceInterface="com.intellij.xtextLanguage.xtext.EcorePackageRegistry"
                         serviceImplementation="com.intellij.xtextLanguage.xtext.EcorePackageRegistry$ListBasedRegistry"/>
   </extensions>

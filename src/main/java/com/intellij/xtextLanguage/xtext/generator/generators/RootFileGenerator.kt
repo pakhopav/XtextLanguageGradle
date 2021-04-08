@@ -3,11 +3,12 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class RootFileGenerator(extension: String) : AbstractGenerator(extension) {
+class RootFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateRootFileFile() {
         val file = createFile(extension.capitalize() + "File.java", myGenDir + "/psi")
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.print(
+            """
             |package $packageDir.psi;
             |import com.intellij.extapi.psi.PsiFileBase;
             |import com.intellij.openapi.fileTypes.FileType;

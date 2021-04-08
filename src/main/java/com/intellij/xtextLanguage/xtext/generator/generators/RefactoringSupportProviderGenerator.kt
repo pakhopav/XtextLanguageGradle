@@ -5,16 +5,21 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeParse
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class RefactoringSupportProviderGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class RefactoringSupportProviderGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
     fun generateRefactoringSupportProvider() {
         val file = createFile("${extensionCapitalized}RefactoringSupportProvider.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         val referencedRules = context.rules.filterIsInstance<TreeParserRule>()
-                .filter { it.isReferenced }
+            .filter { it.isReferenced }
         val returnString = referencedRules.map { "$extensionCapitalized${it.name}" }
-                .joinToString(prefix = "elementToRename instanceof ", separator = " ||\n                elementToRename instanceof ")
+            .joinToString(
+                prefix = "elementToRename instanceof ",
+                separator = " ||\n                elementToRename instanceof "
+            )
 
-        out.print("""
+        out.print(
+            """
         |package com.intellij.${extension}Language.${extension};
         |
         |import com.intellij.${extension}Language.${extension}.psi.*;

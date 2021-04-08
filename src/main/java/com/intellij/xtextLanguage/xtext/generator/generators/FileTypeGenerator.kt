@@ -3,11 +3,12 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class FileTypeGenerator(extension: String) : AbstractGenerator(extension) {
+class FileTypeGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateFileTypeFile() {
         val file = createFile(extension.capitalize() + "FileType.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.print(
+            """
             |package $packageDir;
 
             |import com.intellij.openapi.fileTypes.LanguageFileType;

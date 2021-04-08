@@ -8,10 +8,12 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeParse
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class ManipulatorsGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class ManipulatorsGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
     fun generateAll() {
         val parserRules = context.rules.filterIsInstance<TreeParserRule>()
-        val crossReferences = parserRules.flatMap { it.filterNodesIsInstance(TreeCrossReference::class.java) }.distinctBy { it.getBnfName() }
+        val crossReferences = parserRules.flatMap { it.filterNodesIsInstance(TreeCrossReference::class.java) }
+            .distinctBy { it.getBnfName() }
         crossReferences.forEach {
             generateManipulator(it)
         }

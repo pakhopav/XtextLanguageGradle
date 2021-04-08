@@ -3,11 +3,12 @@ package com.intellij.xtextLanguage.xtext.generator.generators
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class LexerFileGenerator(extension: String) : AbstractGenerator(extension) {
+class LexerFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateLexerFile() {
         val file = createFile(extension.capitalize() + "Lexer.java", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
+        out.print(
+            """
             |package $packageDir.grammar;
             
             |import com.intellij.lexer.FlexAdapter;

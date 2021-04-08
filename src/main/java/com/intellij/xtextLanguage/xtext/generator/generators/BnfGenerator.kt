@@ -6,7 +6,8 @@ import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeRule
 import java.io.FileOutputStream
 import java.io.PrintWriter
 
-class BnfGenerator(extension: String, val context: MetaContext) : AbstractGenerator(extension) {
+class BnfGenerator(extension: String, val context: MetaContext, rootPath: String) :
+    AbstractGenerator(extension, rootPath) {
     fun generateBnf() {
         val file = MainGenerator.createFile(extension.capitalize() + ".bnf", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
