@@ -25,6 +25,7 @@
   -->
 
   <depends>com.intellij.modules.java</depends>
+  <depends>org.jetbrains.plugins.gradle</depends>
 
   <extensions defaultExtensionNs="com.intellij">
 
@@ -43,7 +44,7 @@
                               implementationClass="com.intellij.xtextLanguage.xtext.XtextCompletionContributor"/>
 
 
-    <moduleType id="XTEXT_MODULE" implementationClass="com.intellij.module.XtextModuleType"/>
+      <moduleType id="XTEXT_MODULE" implementationClass="com.intellij.module.XtextModuleType"/>
     <applicationService serviceInterface="com.intellij.xtextLanguage.xtext.EcorePackageRegistry"
                         serviceImplementation="com.intellij.xtextLanguage.xtext.EcorePackageRegistry$ListBasedRegistry"/>
   </extensions>
