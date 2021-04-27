@@ -14,14 +14,14 @@ class FindUsagesProviderGenerator(extension: String, val context: MetaContext, r
         val out = PrintWriter(FileOutputStream(file))
         out.println(
             """
-            |package com.intellij.${extension}Language.${extension};
+            |package $packageDir;
             |
             |import com.intellij.lang.HelpID;
             |import com.intellij.lang.cacheBuilder.WordsScanner;
             |import com.intellij.lang.findUsages.FindUsagesProvider;
             |import com.intellij.psi.PsiElement;
             |import com.intellij.psi.PsiNamedElement;
-            |import com.intellij.${extension}Language.${extension}.psi.*;
+            |import $packageDir.psi.*;
             |import com.sun.istack.NotNull;
             |import com.sun.istack.Nullable;
             |

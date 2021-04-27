@@ -24,7 +24,7 @@ class ManipulatorsGenerator(extension: String, val context: MetaContext, rootPat
         val file = createFile("$extensionCapitalized${referenceName}Manipulator.java", myGenDir + "/psi")
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
-            |package com.intellij.${extension}Language.${extension}.psi;
+            |package $packageDir.psi;
             |
             |import com.intellij.lang.ASTNode;
             |import com.intellij.openapi.util.TextRange;
@@ -37,7 +37,7 @@ class ManipulatorsGenerator(extension: String, val context: MetaContext, rootPat
             |import com.intellij.util.IncorrectOperationException;
             |import org.jetbrains.annotations.NotNull;
             |import org.jetbrains.annotations.Nullable;
-            |import com.intellij.${extension}Language.${extension}.impl.$extensionCapitalized${referenceName}Impl;
+            |import $packageDir.impl.$extensionCapitalized${referenceName}Impl;
             |
             |public class $extensionCapitalized${referenceName}Manipulator extends AbstractElementManipulator<$extensionCapitalized${referenceName}Impl> {
             |    @Nullable

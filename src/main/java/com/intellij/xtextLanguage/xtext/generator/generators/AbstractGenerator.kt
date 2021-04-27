@@ -6,7 +6,7 @@ import java.io.IOException
 abstract class AbstractGenerator(val extension: String, rootPath: String = "src/main/java/com/intellij/") {
     internal val extensionCapitalized = extension.capitalize()
     internal val myGenDir = "$rootPath${extension.toLowerCase()}Language/${extension.toLowerCase()}"
-    internal val packageDir = "${extension.toLowerCase()}Language.${extension.toLowerCase()}"
+    internal val packageDir = "${getGroupIdPart(rootPath)}${extension.toLowerCase()}Language.${extension.toLowerCase()}"
 
 
     fun createFile(fileName: String, filePath: String): File {
@@ -19,5 +19,11 @@ abstract class AbstractGenerator(val extension: String, rootPath: String = "src/
             e.printStackTrace()
         }
         return file
+    }
+
+    protected fun getGroupIdPart(rootPath: String): String {
+        val separator = File.separator
+        val groupPart = rootPath.substringAfter("java$separator").replace(separator, ".")
+        return if (groupPart.length > 1) groupPart else ""
     }
 }

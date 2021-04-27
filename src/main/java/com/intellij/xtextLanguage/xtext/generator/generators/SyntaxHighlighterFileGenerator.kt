@@ -12,6 +12,7 @@ class SyntaxHighlighterFileGenerator(extension: String, val context: MetaContext
         out.println(
             """
             |package $packageDir;
+            |
             |import com.intellij.lexer.Lexer;
             |import com.intellij.openapi.editor.*;
             |import com.intellij.openapi.editor.colors.TextAttributesKey;
@@ -19,11 +20,9 @@ class SyntaxHighlighterFileGenerator(extension: String, val context: MetaContext
             |import com.intellij.psi.tree.IElementType;
             |import $packageDir.psi.${extension.capitalize()}Types;
             |import org.jetbrains.annotations.NotNull;
-            
             |import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
-            
+            |
             |public class ${extension.capitalize()}SyntaxHighlighter extends SyntaxHighlighterBase {
-            
             |    public static final TextAttributesKey KEYWORD =
             |        createTextAttributesKey("${extension.toUpperCase()}_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
             |    public static final TextAttributesKey VALUE =

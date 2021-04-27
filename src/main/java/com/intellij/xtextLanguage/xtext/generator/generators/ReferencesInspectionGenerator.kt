@@ -17,7 +17,7 @@ class ReferencesInspectionGenerator(extension: String, rootPath: String) : Abstr
             import com.intellij.codeInspection.ProblemsHolder;
             import com.intellij.openapi.util.TextRange;
             import com.intellij.psi.*;
-            import com.intellij.${extension}Language.${extension}.psi.${extensionCapitalized}File;
+            import $packageDir.psi.${extensionCapitalized}File;
             import com.intellij.xtextLanguage.xtext.inspections.InspectorBase;
             import org.jetbrains.annotations.NotNull;
 

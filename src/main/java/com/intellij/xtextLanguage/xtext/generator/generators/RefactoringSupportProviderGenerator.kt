@@ -20,9 +20,9 @@ class RefactoringSupportProviderGenerator(extension: String, val context: MetaCo
 
         out.print(
             """
-        |package com.intellij.${extension}Language.${extension};
+        |package $packageDir;
         |
-        |import com.intellij.${extension}Language.${extension}.psi.*;
+        |import $packageDir.psi.*;
         |import com.intellij.lang.refactoring.RefactoringSupportProvider;
         |import com.intellij.psi.PsiElement;
         |import org.jetbrains.annotations.NotNull;

@@ -15,12 +15,12 @@ class ElementFactoryGenerator(extension: String, val context: MetaContext, rootP
         val out = PrintWriter(FileOutputStream(file))
         out.println(
             """
-        |package com.intellij.${extension}Language.${extension}.psi;
+        |package $packageDir.psi;
         |
-        |import com.intellij.${extension}Language.${extension}.${extensionCapitalized}Language;
-        |import com.intellij.${extension}Language.${extension}.${extensionCapitalized}LexerAdapter;
-        |import com.intellij.${extension}Language.${extension}.${extensionCapitalized}ParserDefinition;
-        |import com.intellij.${extension}Language.${extension}.parser.${extensionCapitalized}Parser;
+        |import $packageDir.${extensionCapitalized}Language;
+        |import $packageDir.${extensionCapitalized}LexerAdapter;
+        |import $packageDir.${extensionCapitalized}ParserDefinition;
+        |import $packageDir.parser.${extensionCapitalized}Parser;
         |import com.intellij.lang.ASTNode;
         |import com.intellij.lang.Language;
         |import com.intellij.lang.PsiBuilder;

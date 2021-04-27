@@ -13,7 +13,7 @@ class WordScannerGenerator(extension: String, rootPath: String) : AbstractGenera
             |
             |import com.intellij.lang.cacheBuilder.DefaultWordsScanner;
             |import com.intellij.psi.tree.TokenSet;
-            |import com.intellij.${extension}Language.${extension}.psi.${extensionCapitalized}Types;
+            |import $packageDir.psi.${extensionCapitalized}Types;
             |
 
             |public class ${extensionCapitalized}WordScanner extends DefaultWordsScanner {

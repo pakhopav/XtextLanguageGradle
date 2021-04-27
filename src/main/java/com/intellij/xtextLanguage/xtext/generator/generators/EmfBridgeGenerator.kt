@@ -71,11 +71,11 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
     private fun generateEmfCreatorImports(out: PrintWriter) {
         out.println(
             """
-            package com.intellij.${extension}Language.${extension}.emf
+            package ${packageDir}.emf
             
-            import com.intellij.${extension}Language.${extension}.emf.rules.*
-            import com.intellij.${extension}Language.${extension}.psi.*
-            import com.intellij.${extension}Language.${extension}.emf.scope.${capitalizedExtension}Scope
+            import $packageDir.emf.rules.*
+            import $packageDir.psi.*
+            import $packageDir.emf.scope.${capitalizedExtension}Scope
             import com.intellij.psi.PsiElement
             import com.intellij.xtextLanguage.xtext.emf.*
             import com.intellij.xtextLanguage.xtext.emf.impl.ObjectDescriptionImpl
@@ -213,8 +213,9 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
     private fun generateScopeFile() {
         val file = createFile("${capitalizedExtension}Scope.kt", myGenDir + "/emf/scope")
         val out = PrintWriter(FileOutputStream(file))
-        out.print("""
-            |package com.intellij.${extension}Language.${extension}.emf.scope
+        out.print(
+            """
+            |package ${packageDir}.emf.scope
             |
             |import com.intellij.xtextLanguage.xtext.emf.ObjectDescription
             |import com.intellij.xtextLanguage.xtext.emf.impl.ScopeImpl
@@ -229,11 +230,12 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
         val file = createFile("${capitalizedExtension}EmfBridge.kt", myGenDir + "/emf")
         val out = PrintWriter(FileOutputStream(file))
         val rootRuleName = context.rules.first().name
-        out.print("""
-            |package com.intellij.${extension}Language.${extension}.emf
+        out.print(
+            """
+            |package $packageDir.emf
             |
-            |import com.intellij.${extension}Language.${extension}.psi.${capitalizedExtension}File
-            |import com.intellij.${extension}Language.${extension}.psi.${capitalizedExtension}${rootRuleName}
+            |import $packageDir.psi.${capitalizedExtension}File
+            |import $packageDir.psi.${capitalizedExtension}${rootRuleName}
             |import com.intellij.psi.PsiFile
             |import com.intellij.psi.util.PsiTreeUtil
             |import com.intellij.xtextLanguage.xtext.emf.EmfBridge
