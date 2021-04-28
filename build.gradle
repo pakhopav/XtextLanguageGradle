@@ -2,6 +2,7 @@ plugins {
     id 'java'
     id 'org.jetbrains.intellij' version '0.4.10'
     id 'org.jetbrains.kotlin.jvm' version '1.3.50'
+    id "org.jetbrains.grammarkit" version "2021.1.2" apply true
 }
 
 def genRoot = file("src/main/gen")
@@ -10,10 +11,7 @@ sourceSets {
         java.srcDirs project.files("src/main/java", genRoot)
     }
     test {
-        // both source roots below are not included into IDEA distribution,
-        // so we have to copy them as sources, but only in the gradle version
         java.srcDirs "src/test/java"
-
     }
 }
 group 'com.intellij'
@@ -43,11 +41,12 @@ dependencies {
     compile files("libs/SimpleEmf.jar")
     compile files("libs/SmallJavaEmf.jar")
     compile files("libs/org.xtext.domainmodel.model.jar", "libs/org.xtext.xtext.model.jar")
+//    compile files( "libs/grammar-kit-2021.1.2-SNAPSHOT.jar")
 }
 
 intellij {
     version '2020.3'
-    plugins = ['java', 'maven', 'gradle']
+    plugins = ['java', 'maven', 'gradle', 'gradle-java', 'Groovy','org.jetbrains.idea.grammar:2020.3.1']
 }
 
 patchPluginXml {
@@ -65,3 +64,4 @@ compileTestKotlin {
         jvmTarget = "1.8"
     }
 }
+
