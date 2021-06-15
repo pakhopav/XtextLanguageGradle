@@ -28,6 +28,7 @@ class ImportedJarsTable() : JPanel(BorderLayout()) {
     private val myEntryTable: JBTable
     private val myTableModel: ImportedJarsTableModel
     private val helper = XtextModuleBuilderHelper()
+    private val errorMessageComponent = JLabel()
 
     init {
         val emptyBorder = EmptyBorder(0, 0, 0, 0)
@@ -76,10 +77,13 @@ class ImportedJarsTable() : JPanel(BorderLayout()) {
                                 val jarName = helper.getEcoreModelUri(jarFile)
                                 if (currentModelInfo.uri == jarName) {
                                     currentModelInfo.file = jarFile
+                                    setErrorMessage(" ")
                                     tfwbb.foreground = Color.BLACK
+                                } else {
+                                    setErrorMessage("wrong ecore model name")
                                 }
                             } catch (e: Exception) {
-
+                                setErrorMessage("wrong file chosen")
                             }
 
                         }
@@ -115,6 +119,10 @@ class ImportedJarsTable() : JPanel(BorderLayout()) {
         add(scrollPane, BorderLayout.CENTER)
         add(JLabel(tableName), BorderLayout.NORTH)
         border = emptyBorder
+
+        errorMessageComponent.foreground = Color.RED
+        errorMessageComponent.text = " "
+        add(errorMessageComponent, BorderLayout.SOUTH)
     }
 
     fun addElement(element: EcoreModelJarInfo) {
@@ -127,6 +135,10 @@ class ImportedJarsTable() : JPanel(BorderLayout()) {
 
     fun getElements(): List<EcoreModelJarInfo> {
         return myTableModel.items
+    }
+
+    fun setErrorMessage(string: String) {
+        errorMessageComponent.text = string
     }
 
     private fun findImportedModels(grammarFile: XtextFile) {

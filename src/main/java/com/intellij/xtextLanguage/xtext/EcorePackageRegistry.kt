@@ -16,6 +16,8 @@ interface EcorePackageRegistry {
 
     fun contains(nsUri: String) = getPackage(nsUri) != null
 
+    fun registerPackage(ePackage: EPackage)
+
     companion object {
         @JvmStatic
         val instance: EcorePackageRegistry = ServiceManager.getService(EcorePackageRegistry::class.java)
@@ -29,6 +31,10 @@ interface EcorePackageRegistry {
             }
             return null
         }
+
+        override fun registerPackage(ePackage: EPackage) {
+
+        }
     }
 
     class ListBasedRegistry : EcorePackageRegistry {
@@ -37,10 +43,10 @@ interface EcorePackageRegistry {
 
         init {
             packages.add(EcorePackage.eINSTANCE)
+            packages.add(XtextPackage.eINSTANCE)
             packages.add(ArithmeticsPackage.eINSTANCE)
             packages.add(StatemachinePackage.eINSTANCE)
             packages.add(EntityPackage.eINSTANCE)
-            packages.add(XtextPackage.eINSTANCE)
             packages.add(SimplePackage.eINSTANCE)
             packages.add(SmallJavaPackage.eINSTANCE)
         }
@@ -50,7 +56,7 @@ interface EcorePackageRegistry {
         }
 
 
-        fun registerPackage(ePackage: EPackage) {
+        override fun registerPackage(ePackage: EPackage) {
             packages.add(ePackage)
         }
     }

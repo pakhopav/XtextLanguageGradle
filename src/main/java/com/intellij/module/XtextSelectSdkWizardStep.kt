@@ -55,7 +55,11 @@ class XtextSelectSdkWizardStep(val context: WizardContext?, val builder: XtextMo
 
         val providers = ArrayList<FrameworkSupportInModuleProvider>()
         providers.addAll(GradleFrameworkSupportProvider.EP_NAME.extensions)
-        myFrameworksPanel!!.setProviders(providers, emptySet(), setOf("java", "gradle-intellij-plugin"))
+        myFrameworksPanel!!.setProviders(
+            providers,
+            emptySet(),
+            setOf("java", "gradle-intellij-plugin")
+        )// ,"KOTLIN" doesnt add support for tests
         Disposer.register(this, myFrameworksPanel)
         myFrameworksPanelPlaceholder.add(myFrameworksPanel.getMainPanel())
         val configurationUpdater: ModuleConfigurationUpdater = object : ModuleConfigurationUpdater() {

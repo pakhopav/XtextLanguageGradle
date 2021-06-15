@@ -1,16 +1,20 @@
 package com.intellij.module
 
 import com.intellij.ide.projectWizard.ProjectSettingsStep
+import com.intellij.ide.util.AppPropertiesComponentImpl
+import com.intellij.ide.util.PropertiesComponent
 import com.intellij.ide.util.projectWizard.ModuleBuilderListener
 import com.intellij.ide.util.projectWizard.ModuleWizardStep
 import com.intellij.ide.util.projectWizard.WizardContext
 import com.intellij.openapi.Disposable
 import com.intellij.openapi.application.ApplicationManager
 import com.intellij.openapi.command.WriteCommandAction
+import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.options.ConfigurationException
-import com.intellij.openapi.project.ProjectManager
+import com.intellij.openapi.progress.EmptyProgressIndicator
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.roots.OrderRootType
 import com.intellij.openapi.roots.impl.libraries.ApplicationLibraryTable
@@ -18,28 +22,32 @@ import com.intellij.openapi.roots.ui.configuration.ModulesProvider
 import com.intellij.openapi.util.Comparing
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.util.Pair
-import com.intellij.openapi.util.io.FileUtil
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.PsiManager
+import com.intellij.psi.XmlElementFactory
 import com.intellij.psi.codeStyle.CodeStyleManager
 import com.intellij.psi.util.PsiTreeUtil
+import com.intellij.psi.xml.XmlTag
 import com.intellij.util.download.DownloadableFileDescription
 import com.intellij.util.download.DownloadableFileService
+import com.intellij.util.indexing.UnindexedFilesUpdater
 import com.intellij.xtextLanguage.xtext.EcorePackageRegistry
 import com.intellij.xtextLanguage.xtext.XtextIcons
 import com.intellij.xtextLanguage.xtext.generator.generators.MainGenerator
+import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import com.intellij.xtextLanguage.xtext.generator.models.MetaContextImpl
+import com.intellij.xtextLanguage.xtext.generator.models.elements.names.NameGenerator
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeCrossReference
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeNode.Companion.filterNodesIsInstance
+import com.intellij.xtextLanguage.xtext.generator.models.elements.tree.TreeParserRule
 import com.intellij.xtextLanguage.xtext.psi.XtextFile
 import org.intellij.grammar.actions.BnfRunJFlexAction
 import org.intellij.grammar.actions.GenerateAction
 import org.jetbrains.plugins.gradle.service.project.wizard.AbstractGradleModuleBuilder
 import org.jetbrains.plugins.gradle.service.project.wizard.GradleStructureWizardStep
-import org.jetbrains.plugins.groovy.lang.psi.GroovyPsiElementFactory
-import org.jetbrains.plugins.groovy.lang.psi.api.statements.blocks.GrClosableBlock
-import org.jetbrains.plugins.groovy.lang.psi.api.statements.expressions.path.GrMethodCallExpression
 import java.io.File
 import java.nio.file.Files
 import java.nio.file.Paths
@@ -52,6 +60,7 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
     var langName = ""
     var langExtension = ""
     var grammarFile: XtextFile? = null
+    var context: MetaContext? = null
 
     private val helper = XtextModuleBuilderHelper()
 
@@ -84,6 +93,10 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
         return 50
     }
 
+    override fun setupModule(module: Module?) {
+        PropertiesComponent.getInstance().setValue("LATEST_GRADLE_VERSION_KEY", "0.7.3");
+        super.setupModule(module)
+    }
 
     @Throws(ConfigurationException::class)
     override fun setupRootModel(rootModel: ModifiableRootModel) {
@@ -98,18 +111,55 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
 ////            if (sourceRoot != null) contentEntry.addSourceFolder(sourceRoot, false, "")
 ////        }
 //
-
+        configureGradleBuildScript(rootModel)
         grammarFile?.let {
             registerEpackages()
-            addLibraries(rootModel)
             val usedGrammarFiles = usedGrammars.map { it.file!! }.toMutableList()
             usedGrammarFiles.add(it)
-            val context = MetaContextImpl(usedGrammarFiles)
-            val generator = MainGenerator(langExtension, context, sourcePath + "/")
+            context = MetaContextImpl(usedGrammarFiles)
+            assertNotNull(context)
+            val generator = MainGenerator(langExtension, context as MetaContext, sourcePath + "/")
             generator.generate()
         }
-
         addPluginJars()
+    }
+
+    fun configureGradleBuildScript(rootModel: ModifiableRootModel) {
+        getBuildScriptData(rootModel.module)?.let {
+            val kotlinPluginVersion = PropertiesComponent.getInstance().getValue("installed.kotlin.plugin.version")
+            val kotlinJvmPluginVersion = kotlinPluginVersion?.split("-")?.get(1) ?: "1.4.10"
+
+            val pluginJarPaths =
+                "'libs/Xtext.jar', 'libs/org.eclipse.emf.common_2.16.0.v20190528-0845.jar', 'libs/org.eclipse.emf.ecore.change_2.14.0.v20190528-0725.jar', 'libs/org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar', 'libs/org.eclipse.emf.ecore_2.18.0.v20190528-0845.jar', 'libs/org.xtext.xtext.model.jar'"
+
+            val importedModelsPaths = importedModels.filter { it.file != null }.map { it.path }
+                .joinToString(separator = "\", \"", prefix = "\"", postfix = "\"")
+
+            it.addPluginDefinitionInPluginsGroup("id 'org.jetbrains.kotlin.jvm' version '$kotlinJvmPluginVersion'")
+                .addDependencyNotation("compile files($pluginJarPaths)")
+                .addDependencyNotation("compile files($importedModelsPaths)")
+                .addOther(
+                    """
+                    |compileKotlin {
+                    |    kotlinOptions {
+                    |        jvmTarget = "1.8"
+                    |    }
+                    |}""".trimMargin("|")
+                )
+
+                .addOther(
+                    """
+                    |sourceSets {
+                    |    main {
+                    |        java.srcDirs project.files("src/main/java", "gen")
+                    |    }
+                    |    test {
+                    |        java.srcDirs "src/test/java"
+                    |    }
+                    |}""".trimMargin("|")
+                )
+                .addOther("sourceCompatibility = 1.8")
+        }
     }
 
 
@@ -166,92 +216,13 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
         }
     }
 
-    protected fun addLibraries(rootModel: ModifiableRootModel) {
-        val libTable = rootModel.moduleLibraryTable
-        importedModels.forEach {
-            val library = libTable.createLibrary()
-            val modifiableModel = library.modifiableModel
-            modifiableModel.addRoot(VfsUtil.getUrlForLibraryRoot(File(it.path)), OrderRootType.SOURCES)
-            modifiableModel.addRoot(VfsUtil.getUrlForLibraryRoot(File(it.path)), OrderRootType.CLASSES)
-            modifiableModel.commit()
-        }
-    }
-
-    protected fun getUsedGrs(rootModel: ModifiableRootModel): List<XtextFile> {
-//        val currProject = ProjectManager.getInstance().openProjects[0]
-        val currProject = rootModel.project
-        val usedGrs = ArrayList<XtextFile>()
-        val terminalsPath =
-            "/Users/pavel/work/xtextGradle/XtextLanguageGradle/src/test/resources/testData/generation/generateBnf/Terminals.xtext"
-        val terminalsVirtualFile =
-            LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemIndependentName(terminalsPath))
-        var terminals: XtextFile? = null
-        terminalsVirtualFile?.let {
-            terminals = PsiManager.getInstance(currProject).findFile(it) as XtextFile
-        }
-        val entityPath =
-            "/Users/pavel/work/xtextGradle/XtextLanguageGradle/src/test/resources/testData/generation/generateBnf/entityLan.xtext"
-        val entityVirtualFile = LocalFileSystem.getInstance()
-            .refreshAndFindFileByPath(FileUtil.toSystemIndependentName(entityPath))
-        var entity: XtextFile? = null
-        entityVirtualFile?.let {
-            entity = PsiManager.getInstance(currProject).findFile(it) as XtextFile
-        }
-
-        entity?.let { usedGrs.add(it) }
-        terminals?.let { usedGrs.add(it) }
-
-        return usedGrs
-    }
 
     class XtextModuleBuilderListener(val builder: XtextModuleBuilder) : ModuleBuilderListener {
 
         override fun moduleCreated(module: Module) {
             val project = module.project
-            val buildFilePath = "${builder.contentEntryPath}${File.separator}build.gradle"
-            val virtualBuildFile =
-                LocalFileSystem.getInstance().refreshAndFindFileByPath(FileUtil.toSystemIndependentName(buildFilePath))
-            val buildFile =
-                PsiManager.getInstance(ProjectManager.getInstance().defaultProject).findFile(virtualBuildFile!!)
-            val dependenciesBlock = PsiTreeUtil.getChildrenOfType(buildFile, GrMethodCallExpression::class.java)
-                .filter { it.node.firstChildNode.text == "dependencies" }.firstOrNull()
-            assertNotNull(dependenciesBlock)
-            val factory = GroovyPsiElementFactory.getInstance(project)
-            WriteCommandAction.writeCommandAction(project, buildFile).compute<Unit, Throwable> {
-                val dependenciesClosableBlock =
-                    PsiTreeUtil.findChildOfType(dependenciesBlock, GrClosableBlock::class.java)!!
-                val paths = builder.importedModels.filter { it.file != null }.map { it.path }
-                    .joinToString(separator = "\", \"", prefix = "\"", postfix = "\"")
-                var statement = factory.createStatementFromText("compile files($paths)\n", null)
-                val closingBracket = dependenciesClosableBlock.node.lastChildNode.psi
-                dependenciesClosableBlock.addBefore(statement, closingBracket)
-                val pluginJarPaths = "\"libs/Xtext.jar\"," +
-                        " \"libs/org.eclipse.emf.common_2.16.0.v20190528-0845.jar\"," +
-                        " \"libs/org.eclipse.emf.ecore.change_2.14.0.v20190528-0725.jar\"," +
-                        " \"libs/org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar\"," +
-                        " \"libs/org.eclipse.emf.ecore_2.18.0.v20190528-0845.jar\"," +
-                        " \"libs/org.xtext.xtext.model.jar\""
-                statement = factory.createStatementFromText("   compile files($pluginJarPaths)\n", null)
-                dependenciesClosableBlock.addBefore(statement, closingBracket)
-                val t1text = "sourceSets {\n" +
-                        "    main {\n" +
-                        "        java.srcDirs project.files(\"src/main/java\", \"gen\")\n" +
-                        "    }\n" +
-                        "    test {\n" +
-                        "        java.srcDirs \"src/test/java\"\n" +
-                        "    }\n" +
-                        "}"
-                val srcSetBlock = factory.createExpressionFromText(t1text)
-                val parent = dependenciesBlock.parent
-                parent?.addBefore(srcSetBlock, dependenciesBlock)
-
-                val reformer = CodeStyleManager.getInstance(project)
-                reformer.reformat(parent)
-                val documentManager = PsiDocumentManager.getInstance(project)
-                val doc = documentManager.getDocument(buildFile!!)
-                doc?.let { documentManager.commitDocument(it) }
-
-                updatePluginXml()
+            WriteCommandAction.writeCommandAction(project).compute<Unit, Throwable> {
+                updatePluginXml(project)
                 generateParser(module)
                 generateLexer(module)
             }
@@ -259,20 +230,53 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
         }
 
 
-        protected fun updatePluginXml() {
-            val contentEntry = builder.contentEntryPath
-            val pluginXmlFile =
-                LocalFileSystem.getInstance().refreshAndFindFileByPath("$contentEntry/resources/META-INF/plugin.xml")
-            print("")
+        protected fun updatePluginXml(project: Project) {
+            val pluginXmlFilePath = "${builder.contentEntryPath}/src/main/resources/META-INF/plugin.xml"
+            val virtualFile =
+                LocalFileSystem.getInstance().refreshAndFindFileByPath(pluginXmlFilePath)
+            assertNotNull(virtualFile)
+            val file = PsiManager.getInstance(project).findFile(virtualFile)
+            val factory = XmlElementFactory.getInstance(project)
+            val context = builder.context
+            val extension = builder.langExtension.toLowerCase()
+            val extensionCapitalized = extension.capitalize()
+            val packageDir = "${extension}Language.$extension"
+            val tags = mutableListOf<XmlTag>()
+            tags.add(factory.createTagFromText("<fileTypeFactory implementation=\"${packageDir}.${extensionCapitalized}FileTypeFactory\"/>"))
+            tags.add(factory.createTagFromText("<lang.parserDefinition language=\"$extensionCapitalized\" implementationClass=\"${packageDir}.${extensionCapitalized}ParserDefinition\"/>"))
+            tags.add(factory.createTagFromText("<lang.syntaxHighlighterFactory language=\"$extensionCapitalized\" implementationClass=\"${packageDir}.${extensionCapitalized}SyntaxHighlighterFactory\"/>"))
+            tags.add(factory.createTagFromText("<completion.contributor language=\"$extensionCapitalized\" implementationClass=\"${packageDir}.${extensionCapitalized}CompletionContributor\"/>"))
+            tags.add(factory.createTagFromText("<psi.referenceContributor language=\"$extensionCapitalized\" implementation=\"${packageDir}.${extensionCapitalized}ReferenceContributor\"/>"))
+            tags.add(factory.createTagFromText("<lang.refactoringSupport language=\"$extensionCapitalized\" implementationClass=\"${packageDir}.${extensionCapitalized}RefactoringSupportProvider\"/>"))
+            tags.add(factory.createTagFromText("<lang.findUsagesProvider language=\"$extensionCapitalized\" implementationClass=\"${packageDir}.${extensionCapitalized}FindUsagesProvider\"/>"))
+            tags.add(factory.createTagFromText("<localInspection groupName=\"$extensionCapitalized\" language=\"$extensionCapitalized\" shortName=\"$extensionCapitalized\" displayName=\"$extensionCapitalized inspection\" enabledByDefault=\"true\" implementationClass=\"${packageDir}.inspection.${extensionCapitalized}Inspection\"/>"))
+            tags.add(factory.createTagFromText("<localInspection groupName=\"$extensionCapitalized\" language=\"$extensionCapitalized\" shortName=\"$extensionCapitalized\" displayName=\"$extensionCapitalized reference inspection\" enabledByDefault=\"true\" level=\"ERROR\" implementationClass=\"${packageDir}.inspection.${extensionCapitalized}ReferencesInspection\"/>"))
+            val crossReferences = context?.rules?.filterIsInstance<TreeParserRule>()
+                ?.flatMap { it.filterNodesIsInstance(TreeCrossReference::class.java) }?.distinctBy { it.getBnfName() }
+            crossReferences?.forEach {
+                val referenceName = NameGenerator.toGKitClassName(it.getBnfName())
+                tags.add(factory.createTagFromText("<lang.elementManipulator forClass=\"${packageDir}.impl.${extensionCapitalized}${referenceName}Impl\" implementationClass=\"${packageDir}.psi.${extensionCapitalized}${referenceName}Manipulator\"/>"))
+            }
+            val extensionsTag =
+                PsiTreeUtil.findChildrenOfType(file, XmlTag::class.java).filter { it.name == "extensions" }
+                    .firstOrNull()
+            assertNotNull(extensionsTag)
+            tags.forEach { extensionsTag.add(it) }
+            val reformer = CodeStyleManager.getInstance(project)
+            reformer.reformat(extensionsTag)
         }
 
         protected fun generateParser(module: Module) {
+            UnindexedFilesUpdater(module.project).performInDumbMode(EmptyProgressIndicator())
+            val s = AppPropertiesComponentImpl.getInstance()
             val project = module.project
             val extension = builder.langExtension.toLowerCase()
             val bnfGrammarFilePath =
                 "${builder.contentEntryPath}/src/main/java/${extension}Language/${extension}/grammar/${extension.capitalize()}.bnf"
             val bnfGrammarFile = LocalFileSystem.getInstance().findFileByPath(bnfGrammarFilePath)
             bnfGrammarFile?.let {
+                PsiDocumentManager.getInstance(project).commitAllDocuments()
+                FileDocumentManager.getInstance().saveAllDocuments()
                 val list = mutableListOf<VirtualFile>(it)
                 GenerateAction.doGenerate(project, list)
             }
@@ -292,7 +296,7 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
                 )
             )
             val libraryName = "JFlex & idea-flex.skeleton"
-
+            val props = AppPropertiesComponentImpl()
             val service = DownloadableFileService.getInstance()
             val descriptions: MutableList<DownloadableFileDescription?> = mutableListOf()
 
@@ -352,7 +356,5 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
                 }
             }.run()
         }
-
-
     }
 }

@@ -33,6 +33,7 @@ class UsedGrammarsTable(val jarsTable: ImportedJarsTable) : JPanel(BorderLayout(
     private val myEntryTable: JBTable
     private val myTableModel: UsedGrammarsTableModel
     private val helper = XtextModuleBuilderHelper()
+    private val errorMessageComponent = JLabel()
 
     init {
         val emptyBorder = EmptyBorder(0, 0, 0, 0)
@@ -79,10 +80,17 @@ class UsedGrammarsTable(val jarsTable: ImportedJarsTable) : JPanel(BorderLayout(
                                 if (xtextFileName != null && xtextFileName.equals(currentGrammarInfo.grammarName)) {
                                     currentGrammarInfo.file = xtextFile
                                     findUsedGrammars(xtextFile)
+                                    setErrorMessage(" ")
                                     super.onFileChosen(chosenFile)
+                                } else {
+                                    if (xtextFileName == null) {
+                                        setErrorMessage("grammar name cannot be found")
+                                    } else {
+                                        setErrorMessage("wrong grammar name")
+                                    }
                                 }
                             } catch (e: ClassCastException) {
-
+                                setErrorMessage("wrong file format")
                             }
 
 
@@ -119,6 +127,15 @@ class UsedGrammarsTable(val jarsTable: ImportedJarsTable) : JPanel(BorderLayout(
         add(scrollPane, BorderLayout.CENTER)
         add(JLabel(tableName), BorderLayout.NORTH)
         border = emptyBorder
+
+        errorMessageComponent.foreground = Color.RED
+        errorMessageComponent.text = " "
+        add(errorMessageComponent, BorderLayout.SOUTH)
+
+    }
+
+    fun setErrorMessage(string: String) {
+        errorMessageComponent.text = string
     }
 
     fun addElement(element: XtextGrammarFileInfo) {
