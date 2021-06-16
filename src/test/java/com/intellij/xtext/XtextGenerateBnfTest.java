@@ -9,6 +9,7 @@ import com.intellij.xtextLanguage.xtext.generator.models.MetaContext;
 import com.intellij.xtextLanguage.xtext.generator.models.MetaContextImpl;
 import com.intellij.xtextLanguage.xtext.psi.XtextFile;
 
+import java.io.File;
 import java.io.IOException;
 import java.util.List;
 
@@ -19,6 +20,9 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
     }
 
     public void testFindXtextFile() {
+
+        File f = new File("src/main/resources/grammars/Terminals.xtext");
+        Boolean b = f.canRead();
         PsiFile file = getXtextFile();
         assertTrue(file != null);
     }
@@ -83,17 +87,18 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
     }
 
     //
-//    public void testExpressions() {
-//        List<XtextFile> allXtextFiles = findAllFiles();
-//        XtextMainModel model = new XtextMainModel(allXtextFiles);
-//        MainGenerator generator = new MainGenerator("expr", model);
-//        try {
-//            generator.generate();
-//        } catch (IOException e) {
-//            e.printStackTrace();
-//        }
-//    }
-//
+    public void testExpressions() {
+        List<XtextFile> allXtextFiles = findAllFiles();
+        MetaContext context = new MetaContextImpl(allXtextFiles);
+        MainGenerator generator = new MainGenerator("expr", context);
+        try {
+            generator.generate();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+    }
+
+    //
     public void testSmallJava() {
         List<XtextFile> allXtextFiles = findAllFiles();
         MetaContext context = new MetaContextImpl(allXtextFiles);
@@ -142,7 +147,7 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
     public void testArithmetics() {
         List<XtextFile> allXtextFiles = findAllFiles();
         MetaContext context = new MetaContextImpl(allXtextFiles);
-        MainGenerator generator = new MainGenerator("calc2", context);
+        MainGenerator generator = new MainGenerator("calc", context);
         try {
             generator.generate();
         } catch (IOException e) {

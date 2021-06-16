@@ -1,8 +1,8 @@
 package com.intellij.xtext.emf
 
-import com.intellij.psi.impl.source.tree.LeafPsiElement
-import com.intellij.statLanguage.stat.psi.StatTypes
-import org.eclipse.emf.ecore.EObject
+//import com.intellij.statLanguage.stat.psi.StatTypes
+import com.intellij.openapi.vfs.LocalFileSystem
+import java.io.File
 
 class EmfTests : EmfTestsBase("/emf") {
 
@@ -42,12 +42,12 @@ class EmfTests : EmfTestsBase("/emf") {
 //
 //    }
 //
-    fun testEntityAll() {
-        val myRes = getEntityEmfModel()
-        myRes?.let { persistEntityEmfModel(it) }
-        assertEqualXmi("entityAllExpected.entity", "entity")
-
-    }
+//    fun testEntityAll() {
+//        val myRes = getEntityEmfModel()
+//        myRes?.let { persistEntityEmfModel(it) }
+//        assertEqualXmi("entityAllExpected.entity", "entity")
+//
+//    }
 
     //========================== Arithmetics
 
@@ -82,16 +82,20 @@ class EmfTests : EmfTestsBase("/emf") {
 //    }
 //    //========================== Statemachine
 //
-    fun testStatSimple() {
-        val leaf = LeafPsiElement(StatTypes.ID, "ASD")
-        val myRes = getStatEmfModel()
-        myRes?.let { persistStatEmfModel(it as EObject) }
-        assertEqualXmi("statSimpleExpected.stat", "stat")
-    }
+//    fun testStatSimple() {
+//        val leaf = LeafPsiElement(StatTypes.ID, "ASD")
+//        val myRes = getStatEmfModel()
+//        myRes?.let { persistStatEmfModel(it as EObject) }
+//        assertEqualXmi("statSimpleExpected.stat", "stat")
+//    }
 
 
     //=============================== Small Java
 
+    fun testsss() {
+        val f = LocalFileSystem.getInstance().findFileByIoFile(File("src/main/resources/grammars/Terminals.xtext"))
+        println("sda")
+    }
 
 //    fun testSmallJava() {
 //        val myRes = getSmalljavaEmfModel()

@@ -1,5 +1,4 @@
-grammar org.example.domainmodel.Domainmodel with
-                                      Terminals
+grammar org.xtext.example.entity.Entity with Terminals
 
 import "http://www.xtext.org/example/entity/Entity"
 
