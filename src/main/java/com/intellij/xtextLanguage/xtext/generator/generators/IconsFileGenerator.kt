@@ -16,7 +16,7 @@ class IconsFileGenerator(extension: String, rootPath: String) : AbstractGenerato
             |import javax.swing.*;
             
             |public class ${extension.capitalize()}Icons {
-            |    public static final Icon FILE = IconLoader.getIcon("/icons/simpleIcon.png");
+            |    public static final Icon FILE = IconLoader.getIcon("/icons/${extension}Icon.png");
             |}
         """.trimMargin("|"))
         out.close()

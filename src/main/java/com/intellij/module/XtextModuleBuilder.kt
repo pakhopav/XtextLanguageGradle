@@ -76,14 +76,7 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
         super.setupRootModel(rootModel)
         val separator = File.separator
         val sourcePath = "$contentEntryPath${separator}src${separator}main${separator}java"
-////        val contentEntry = doAddContentEntry(rootModel)
-////        if (contentEntry != null) {
-////            File(sourcePath).mkdirs()
-////            val sourceRoot = LocalFileSystem.getInstance()
-////                .refreshAndFindFileByPath(FileUtil.toSystemIndependentName(sourcePath))
-////            if (sourceRoot != null) contentEntry.addSourceFolder(sourceRoot, false, "")
-////        }
-//
+
         configureGradleBuildScript(rootModel)
         grammarFile?.let {
             registerEpackages()
@@ -124,7 +117,7 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
                     """
                     |sourceSets {
                     |    main {
-                    |        java.srcDirs project.files("src/main/java", "gen")
+                    |        java.srcDirs project.files("src/main/java", "src/main/gen")
                     |    }
                     |    test {
                     |        java.srcDirs "src/test/java"
@@ -179,6 +172,12 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
 
         jarUri = javaClass.classLoader.getResource("org.xtext.xtext.model.jar")
         targetPath = Paths.get("$contentEntryPath/libs/org.xtext.xtext.model.jar")
+        Files.copy(jarUri.openStream(), targetPath)
+
+        val iconsDir = File("$contentEntryPath/src/main/resources/icons")
+        iconsDir.mkdirs()
+        jarUri = javaClass.classLoader.getResource("icons/simpleIcon.png")
+        targetPath = Paths.get("$contentEntryPath/src/main/resources/icons/${langExtension}Icon.png")
         Files.copy(jarUri.openStream(), targetPath)
     }
 
