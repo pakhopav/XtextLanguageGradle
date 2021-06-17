@@ -39,15 +39,17 @@
     <psi.referenceContributor language="Xtext"
                               implementation="com.intellij.xtextLanguage.xtext.XtextReferenceContributor"/>
     <braceMatcher filetype="Xtext" implementationClass="com.intellij.xtextLanguage.xtext.XtextBraceMatcher"/>
-      <lang.braceMatcher language="Xtext"
-                         implementationClass="com.intellij.xtextLanguage.xtext.XtextPairedBraceMatcher"/>
-      <completion.contributor language="Xtext"
-                              implementationClass="com.intellij.xtextLanguage.xtext.XtextCompletionContributor"/>
+    <lang.braceMatcher language="Xtext"
+                       implementationClass="com.intellij.xtextLanguage.xtext.XtextPairedBraceMatcher"/>
+    <completion.contributor language="Xtext"
+                            implementationClass="com.intellij.xtextLanguage.xtext.XtextCompletionContributor"/>
 
 
       <moduleType id="XTEXT_MODULE" implementationClass="com.intellij.module.XtextModuleType"/>
     <applicationService serviceInterface="com.intellij.xtextLanguage.xtext.EcorePackageRegistry"
                         serviceImplementation="com.intellij.xtextLanguage.xtext.EcorePackageRegistry$ListBasedRegistry"/>
+
+    <externalProjectDataService implementation="com.intellij.module.OnSuccessImportGrammarKitLauncher"/>
   </extensions>
 
 
