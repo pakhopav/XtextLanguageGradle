@@ -1,5 +1,6 @@
 package com.intellij.xtextLanguage.xtext;
 
+
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
@@ -23,7 +24,7 @@ public class XtextReference extends PsiReferenceBase<PsiElement> implements PsiP
     @NotNull
     @Override
     public ResolveResult[] multiResolve(boolean incompleteCode) {
-        return MultiResolve(incompleteCode, tClasses);
+        return _multiResolve(tClasses);
     }
 
     @Nullable
@@ -36,15 +37,16 @@ public class XtextReference extends PsiReferenceBase<PsiElement> implements PsiP
     @NotNull
     @Override
     public Object[] getVariants() {
-        return XtextGetVariants(tClasses);
+        return _getVariants(tClasses);
     }
 
-    public ResolveResult[] MultiResolve(boolean incompleteCode, final List<Class<? extends PsiNameIdentifierOwner>> classes) {
+    private ResolveResult[] _multiResolve(final List<Class<? extends PsiNameIdentifierOwner>> classes) {
         PsiFile file = myElement.getContainingFile();
         List<? extends PsiNameIdentifierOwner> elements = new ArrayList<>();
         classes.forEach(it -> {
-            elements.addAll((ArrayList) XtextUtil.findElementsInCurrentFile(file, it, key));
+            elements.addAll((ArrayList) XtextReferenceUtil.findElementsInCurrentFile(file, it, key));
         });
+
         List<ResolveResult> results = new ArrayList<>();
         elements.forEach(it -> {
             results.add(new PsiElementResolveResult(it));
@@ -53,11 +55,11 @@ public class XtextReference extends PsiReferenceBase<PsiElement> implements PsiP
         return results.toArray(new ResolveResult[results.size()]);
     }
 
-    public Object[] XtextGetVariants(List<Class<? extends PsiNameIdentifierOwner>> classes) {
+    public Object[] _getVariants(List<Class<? extends PsiNameIdentifierOwner>> classes) {
         PsiFile file = myElement.getContainingFile();
         List<? extends PsiNameIdentifierOwner> elements = new ArrayList<>();
         classes.forEach(it -> {
-            elements.addAll((ArrayList) XtextUtil.findElementsInCurrentFile(file, it));
+            elements.addAll((ArrayList) XtextReferenceUtil.findElementsInCurrentFile(file, it));
         });
         List<LookupElement> variants = new ArrayList<LookupElement>();
         elements.forEach(it -> {

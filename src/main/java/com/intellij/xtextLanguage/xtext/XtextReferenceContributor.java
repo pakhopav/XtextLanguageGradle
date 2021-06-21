@@ -22,9 +22,9 @@ public class XtextReferenceContributor extends PsiReferenceContributor {
                                                                  @NotNull ProcessingContext context) {
                         XtextREFERENCEGrammarGrammarID reference = (XtextREFERENCEGrammarGrammarID) element;
                         String value = reference.getText();
-                        ArrayList<Class<? extends PsiNameIdentifierOwner>> list = new ArrayList<>((Collection<? extends Class<? extends PsiNameIdentifierOwner>>) Arrays.asList(XtextGrammar.class));
+//                        ArrayList<Class<? extends PsiNameIdentifierOwner>> list = new ArrayList<>((Collection<? extends Class<? extends PsiNameIdentifierOwner>>) Arrays.asList(XtextGrammar.class));
                         return new PsiReference[]{
-                                new XtextReference(element, new TextRange(0, value.length()), list)};
+                                new XtextGrammarReference(element, new TextRange(0, value.length()))};
                     }
                 });
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(XtextREFERENCEAbstractRuleRuleID.class).withLanguage(XtextLanguage.INSTANCE),
@@ -35,9 +35,9 @@ public class XtextReferenceContributor extends PsiReferenceContributor {
                                                                  @NotNull ProcessingContext context) {
                         XtextREFERENCEAbstractRuleRuleID reference = (XtextREFERENCEAbstractRuleRuleID) element;
                         String value = reference.getText();
-                        ArrayList<Class<? extends PsiNameIdentifierOwner>> list = new ArrayList<>((Collection<? extends Class<? extends PsiNameIdentifierOwner>>) Arrays.asList(XtextAbstractRule.class));
+//                        ArrayList<Class<? extends PsiNameIdentifierOwner>> list = new ArrayList<>((Collection<? extends Class<? extends PsiNameIdentifierOwner>>) Arrays.asList(XtextAbstractRule.class));
                         return new PsiReference[]{
-                                new XtextReference(element, new TextRange(0, value.length()), list)};
+                                new XtextRuleReference(element, new TextRange(0, value.length()))};
                     }
                 });
         registrar.registerReferenceProvider(PlatformPatterns.psiElement(XtextREFERENCEAbstractMetamodelDeclaration.class).withLanguage(XtextLanguage.INSTANCE),

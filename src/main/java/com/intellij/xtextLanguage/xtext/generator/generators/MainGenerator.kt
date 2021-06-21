@@ -43,6 +43,7 @@ open class MainGenerator(val extension: String, val context: MetaContext, val ro
         generateInspection()
         generateReferencesInspection()
         generateValidator()
+
     }
 
     companion object {

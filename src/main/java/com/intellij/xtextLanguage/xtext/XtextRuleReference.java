@@ -1,30 +1,28 @@
 package com.intellij.xtextLanguage.xtext;
 
-
 import com.intellij.codeInsight.lookup.LookupElement;
 import com.intellij.codeInsight.lookup.LookupElementBuilder;
 import com.intellij.openapi.util.TextRange;
 import com.intellij.psi.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextFile;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
 import java.util.ArrayList;
 import java.util.List;
 
-public class Reference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
+public class XtextRuleReference extends PsiReferenceBase<PsiElement> implements PsiPolyVariantReference {
     private String key;
-    private List<Class<? extends PsiNameIdentifierOwner>> tClasses;
 
-    public Reference(@NotNull PsiElement element, TextRange textRange, List<Class<? extends PsiNameIdentifierOwner>> tclasses) {
+    public XtextRuleReference(@NotNull PsiElement element, TextRange textRange) {
         super(element, textRange);
         key = element.getText().substring(textRange.getStartOffset(), textRange.getEndOffset());
-        this.tClasses = tclasses;
     }
 
     @NotNull
     @Override
     public ResolveResult[] multiResolve(boolean incompleteCode) {
-        return MultiResolve(incompleteCode, tClasses);
+        return _multiResolve();
     }
 
     @Nullable
@@ -37,15 +35,17 @@ public class Reference extends PsiReferenceBase<PsiElement> implements PsiPolyVa
     @NotNull
     @Override
     public Object[] getVariants() {
-        return XtextGetVariants(tClasses);
+        return _getVariants();
     }
 
-    public ResolveResult[] MultiResolve(boolean incompleteCode, final List<Class<? extends PsiNameIdentifierOwner>> classes) {
+    private ResolveResult[] _multiResolve() {
         PsiFile file = myElement.getContainingFile();
         List<? extends PsiNameIdentifierOwner> elements = new ArrayList<>();
-        classes.forEach(it -> {
-            elements.addAll((ArrayList) XtextReferenceUtil.findElementsInCurrentFile(file, it, key));
-        });
+
+        elements.addAll(XtextReferenceUtil.findRulesInCurrentFile(file, key));
+
+        elements.addAll(XtextReferenceUtil.findRulesByNameInUsedGrammars((XtextFile) file, key));
+
         List<ResolveResult> results = new ArrayList<>();
         elements.forEach(it -> {
             results.add(new PsiElementResolveResult(it));
@@ -54,12 +54,10 @@ public class Reference extends PsiReferenceBase<PsiElement> implements PsiPolyVa
         return results.toArray(new ResolveResult[results.size()]);
     }
 
-    public Object[] XtextGetVariants(List<Class<? extends PsiNameIdentifierOwner>> classes) {
+    public Object[] _getVariants() {
         PsiFile file = myElement.getContainingFile();
         List<? extends PsiNameIdentifierOwner> elements = new ArrayList<>();
-        classes.forEach(it -> {
-            elements.addAll((ArrayList) XtextReferenceUtil.findElementsInCurrentFile(file, it));
-        });
+        elements.addAll(XtextReferenceUtil.findAllRulesInCurrentFile(file));
         List<LookupElement> variants = new ArrayList<LookupElement>();
         elements.forEach(it -> {
             if (it.getName() != null && it.getName().length() > 0) {
@@ -72,5 +70,4 @@ public class Reference extends PsiReferenceBase<PsiElement> implements PsiPolyVa
 
         return variants.toArray();
     }
-
 }

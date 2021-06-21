@@ -43,7 +43,9 @@
                        implementationClass="com.intellij.xtextLanguage.xtext.XtextPairedBraceMatcher"/>
     <completion.contributor language="Xtext"
                             implementationClass="com.intellij.xtextLanguage.xtext.XtextCompletionContributor"/>
-
+    <localInspection groupName="Xtext" language="Xtext" shortName="XtextReferencesInspection"
+                     displayName="Xtext reference inspection" enabledByDefault="true" level="ERROR"
+                     implementationClass="com.intellij.xtextLanguage.xtext.inspections.XtextReferencesInspection"/>
 
     <moduleType id="XTEXT_MODULE" implementationClass="com.intellij.module.XtextModuleType"/>
     <applicationService serviceInterface="com.intellij.xtextLanguage.xtext.EcorePackageRegistry"
