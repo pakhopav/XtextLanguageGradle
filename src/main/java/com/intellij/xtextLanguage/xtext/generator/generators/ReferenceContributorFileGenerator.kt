@@ -34,10 +34,15 @@ class ReferenceContributorFileGenerator(extension: String, val context: MetaCont
         """.trimMargin("|"))
         val referenceNodes = relevantRules.flatMap { it.filterNodesIsInstance(TreeCrossReference::class.java) }
         referenceNodes.distinctBy { it.getBnfName() }.forEach { crossReferenceNode ->
-            val targetRuleNames = relevantRules.filter { it.returnType == crossReferenceNode.targetType }.map { it.name }
-            if (targetRuleNames.isEmpty()) return@forEach
+            val targetRuleNames =
+                relevantRules.filter { it.returnType == crossReferenceNode.targetType }.map { it.name }
+            var referenceFileName = "${extension.capitalize()}Reference"
+            if (targetRuleNames.isEmpty()) {
+                referenceFileName = "${extension.capitalize()}UnresolvedReference"
+            }
             val referenceName = crossReferenceNode.getBnfName().replace("_", "")
-            out.print("""
+            out.print(
+                """
             |        registrar.registerReferenceProvider(PlatformPatterns.psiElement(${extension.capitalize()}${referenceName}.class).withLanguage(${extension.capitalize()}Language.INSTANCE),
             |                new PsiReferenceProvider() {
             |            @NotNull
@@ -50,9 +55,10 @@ class ReferenceContributorFileGenerator(extension: String, val context: MetaCont
             """.trimMargin("|"))
             out.print(targetRuleNames.map { "${extension.capitalize()}$it.class" }.joinToString())
             out.println("));")
-            out.println("""
+            out.println(
+                """
             |                return new PsiReference[]{
-            |                    new ${extension.capitalize()}Reference(element, new TextRange(0, value.length()), list)};
+            |                    new $referenceFileName(element, new TextRange(0, value.length()), list)};
             |                }
             |        });
             """.trimMargin("|"))

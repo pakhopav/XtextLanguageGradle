@@ -14,7 +14,7 @@ class CachedValueProviderGenerator(extension: String, rootPath: String) : Abstra
             |import com.intellij.psi.PsiFile
             |import com.intellij.psi.util.CachedValueProvider
             |import $packageDir.emf.${extensionCapitalized}EmfCreator
-            |import com.intellij.xtextLanguage.xtext.emf.BridgeResult
+            |import com.intellij.xtextLanguage.xtext.bridge.BridgeResult
             |
             |class ${extensionCapitalized}CachedValueProvider(val psiFile: PsiFile) : CachedValueProvider<BridgeResult> {
             |    override fun compute(): CachedValueProvider.Result<BridgeResult> {

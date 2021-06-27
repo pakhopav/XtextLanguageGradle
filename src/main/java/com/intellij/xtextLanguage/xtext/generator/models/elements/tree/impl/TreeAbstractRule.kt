@@ -22,7 +22,7 @@ abstract class TreeAbstractRule : TreeNodeImpl, TreeRule {
 
 
     constructor(psiRule: XtextParserRule, type: EmfClassDescriptor) : super(null, Cardinality.NONE) {
-        name = psiRule.ruleNameAndParams.validID.text.eliminateCaret().capitalize()
+        name = psiRule.validID.text.eliminateCaret().capitalize()
         _returnType = type
     }
 

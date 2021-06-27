@@ -7,28 +7,31 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface XtextParserRule extends PsiElement {
+public interface XtextParserRule extends XtextAbstractRule {
 
-    @NotNull
+  @NotNull
   XtextAlternatives getAlternatives();
 
   @NotNull
   List<XtextAnnotation> getAnnotationList();
 
   @NotNull
-  List<XtextREFERENCEAbstractRuleRuleID> getREFERENCEAbstractRuleRuleIDList();
+  List<XtextParameter> getParameterList();
 
   @NotNull
-  XtextRuleNameAndParams getRuleNameAndParams();
+  List<XtextREFERENCEAbstractRuleRuleID> getREFERENCEAbstractRuleRuleIDList();
 
   @Nullable
   XtextTypeRef getTypeRef();
 
+  @NotNull
+  XtextValidID getValidID();
+
   @Nullable
   PsiElement getAsteriskKeyword();
 
-    @NotNull
-    PsiElement getColonKeyword();
+  @NotNull
+  PsiElement getColonKeyword();
 
   @Nullable
   PsiElement getFragmentKeyword();
@@ -37,10 +40,16 @@ public interface XtextParserRule extends PsiElement {
   PsiElement getHiddenKeyword();
 
   @Nullable
+  PsiElement getLAngleBracketKeyword();
+
+  @Nullable
   PsiElement getLBracketKeyword();
 
   @Nullable
   PsiElement getReturnsKeyword();
+
+  @Nullable
+  PsiElement getRAngleBracketKeyword();
 
   @Nullable
   PsiElement getRBracketKeyword();

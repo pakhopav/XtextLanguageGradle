@@ -76,7 +76,7 @@ public class KeywordCompletionProvider<T extends PsiFile, F extends IElementType
                 }
 
                 String text = fClass.isInstance(o) ? o.toString() : null;
-                if (XtextTypes.TokenMetaInfo.isRegexpToken((IElementType) o)) return null;
+                if (isRegexpToken((IElementType) o)) return null;
 
                 return text != null && text.length() > 0 ? text : null;
             }
@@ -134,4 +134,42 @@ public class KeywordCompletionProvider<T extends PsiFile, F extends IElementType
         }
 
     }
+
+    //FIXME doubtful code
+    private boolean isRegexpToken(IElementType token) {
+        String debugName = token.toString();
+        if (debugName.equals("ID")) {
+            return true;
+
+        }
+        if (debugName.equals("INT")) {
+
+            return true;
+
+        }
+        if (debugName.equals("STRING")) {
+
+            return true;
+
+        }
+        if (debugName.equals("ML_COMMENT")) {
+
+            return true;
+
+        }
+        if (debugName.equals("SL_COMMENT")) {
+
+            return true;
+
+        }
+        if (debugName.equals("ANY_OTHER")) {
+
+            return true;
+
+        }
+
+        return false;
+
+    }
+
 }

@@ -40,13 +40,13 @@ public class XtextReferenceContributor extends PsiReferenceContributor {
                                 new XtextRuleReference(element, new TextRange(0, value.length()))};
                     }
                 });
-        registrar.registerReferenceProvider(PlatformPatterns.psiElement(XtextREFERENCEAbstractMetamodelDeclaration.class).withLanguage(XtextLanguage.INSTANCE),
+        registrar.registerReferenceProvider(PlatformPatterns.psiElement(XtextREFERENCEAbstractMetamodelDeclarationID.class).withLanguage(XtextLanguage.INSTANCE),
                 new PsiReferenceProvider() {
                     @NotNull
                     @Override
                     public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
                                                                  @NotNull ProcessingContext context) {
-                        XtextREFERENCEAbstractMetamodelDeclaration reference = (XtextREFERENCEAbstractMetamodelDeclaration) element;
+                        XtextREFERENCEAbstractMetamodelDeclarationID reference = (XtextREFERENCEAbstractMetamodelDeclarationID) element;
                         String value = reference.getText();
                         ArrayList<Class<? extends PsiNameIdentifierOwner>> list = new ArrayList<>((Collection<? extends Class<? extends PsiNameIdentifierOwner>>) Arrays.asList(XtextAbstractMetamodelDeclaration.class));
                         return new PsiReference[]{
@@ -66,5 +66,41 @@ public class XtextReferenceContributor extends PsiReferenceContributor {
                                 new XtextReference(element, new TextRange(0, value.length()), list)};
                     }
                 });
+        registrar.registerReferenceProvider(PlatformPatterns.psiElement(XtextREFERENCEEClassifierID.class).withLanguage(XtextLanguage.INSTANCE),
+                new PsiReferenceProvider() {
+                    @NotNull
+                    @Override
+                    public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
+                                                                 @NotNull ProcessingContext context) {
+                        XtextREFERENCEEClassifierID reference = (XtextREFERENCEEClassifierID) element;
+                        String value = reference.getText();
+                        return new PsiReference[]{
+                                new XtextEClassifierReference(element, new TextRange(0, value.length()))};
+                    }
+                });
+        registrar.registerReferenceProvider(PlatformPatterns.psiElement(XtextREFERENCEEPackageSTRING.class).withLanguage(XtextLanguage.INSTANCE),
+                new PsiReferenceProvider() {
+                    @NotNull
+                    @Override
+                    public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
+                                                                 @NotNull ProcessingContext context) {
+                        XtextREFERENCEEPackageSTRING reference = (XtextREFERENCEEPackageSTRING) element;
+                        String value = reference.getText();
+                        return new PsiReference[]{
+                                new XtextEPackageReference(element, new TextRange(0, value.length()))};
+                    }
+                });
+//        registrar.registerReferenceProvider(PlatformPatterns.psiElement(XtextREFERENCEEEnumLiteralID.class).withLanguage(XtextLanguage.INSTANCE),
+//                new PsiReferenceProvider() {
+//                    @NotNull
+//                    @Override
+//                    public PsiReference[] getReferencesByElement(@NotNull PsiElement element,
+//                                                                 @NotNull ProcessingContext context){
+//                        XtextREFERENCEEEnumLiteralID reference = (XtextREFERENCEEEnumLiteralID) element;
+//                        String value = reference.getText();
+//                        return new PsiReference[]{
+//                                new XtextEnumLiteralReference(element, new TextRange(0, value.length()))};
+//                    }
+//                });
     }
 }

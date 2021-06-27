@@ -16,7 +16,7 @@ class EmfModelRegistry() {
     }
 
     fun addMetamodel(model: XtextReferencedMetamodel) {
-        val modelUri = model.referenceEcoreEPackageSTRING.text.replace("\"", "").replace("\'", "")
+        val modelUri = model.referenceePackageSTRING.text.replace("\"", "").replace("\'", "")
         EcorePackageRegistry.instance.getPackage(modelUri)?.let {
             importedModels.put(model.validID?.text ?: "", it)
         }

@@ -8,4 +8,12 @@ public abstract class XtextNamedElementImpl extends XtextPsiCompositeElementImpl
     public XtextNamedElementImpl(@NotNull ASTNode node) {
         super(node);
     }
+
+    @Override
+    public int getTextOffset() {
+        if (this.getNameIdentifier() != null) {
+            return this.getNameIdentifier().getNode().getStartOffset();
+        }
+        return super.getTextOffset();
+    }
 }

@@ -46,6 +46,12 @@ open class MainGenerator(val extension: String, val context: MetaContext, val ro
 
     }
 
+    @Throws(IOException::class)
+    fun generateOnlyEmf() {
+        generateBridgeFiles()
+    }
+
+
     companion object {
         fun createFile(fileName: String, filePath: String): File {
             val path = File(filePath)

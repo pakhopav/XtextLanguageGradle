@@ -2,11 +2,14 @@
 package com.intellij.xtextLanguage.xtext.psi;
 
 import com.intellij.psi.PsiElement;
-import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface XtextLiteralCondition extends PsiElement {
 
-    @NotNull
-    XtextRuleFromLiteralConditionBranch1 getRuleFromLiteralConditionBranch1();
+    @Nullable
+    PsiElement getFalseKeyword();
+
+    @Nullable
+    PsiElement getTrueKeyword();
 
 }

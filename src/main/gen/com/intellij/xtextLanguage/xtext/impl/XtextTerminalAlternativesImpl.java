@@ -1,16 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextTerminalAlternatives;
+import com.intellij.xtextLanguage.xtext.psi.XtextTerminalAlternativesSuffix1;
+import com.intellij.xtextLanguage.xtext.psi.XtextTerminalGroup;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class XtextTerminalAlternativesImpl extends XtextPsiCompositeElementImpl implements XtextTerminalAlternatives {
 
@@ -18,19 +17,26 @@ public class XtextTerminalAlternativesImpl extends XtextPsiCompositeElementImpl 
     super(node);
   }
 
-  public void accept(@NotNull XtextVisitor visitor) {
-    visitor.visitTerminalAlternatives(this);
-  }
+    public void accept(@NotNull XtextVisitor visitor) {
+        visitor.visitTerminalAlternatives(this);
+    }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
-    else super.accept(visitor);
-  }
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof XtextVisitor) accept((XtextVisitor) visitor);
+        else super.accept(visitor);
+    }
 
-  @Override
-  @NotNull
-  public List<XtextTerminalGroup> getTerminalGroupList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, XtextTerminalGroup.class);
-  }
+    @Override
+    @Nullable
+    public XtextTerminalAlternativesSuffix1 getTerminalAlternativesSuffix1() {
+        return findChildByClass(XtextTerminalAlternativesSuffix1.class);
+    }
+
+    @Override
+    @NotNull
+    public XtextTerminalGroup getTerminalGroup() {
+        return findNotNullChildByClass(XtextTerminalGroup.class);
+    }
 
 }

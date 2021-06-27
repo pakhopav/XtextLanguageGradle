@@ -6,7 +6,6 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
@@ -14,20 +13,22 @@ import java.util.List;
 
 import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
 
-public class XtextTerminalRuleImpl extends XtextPsiCompositeElementImpl implements XtextTerminalRule {
+public class XtextTerminalRuleImpl extends XtextAbstractRuleImpl implements XtextTerminalRule {
 
-  public XtextTerminalRuleImpl(@NotNull ASTNode node) {
-    super(node);
-  }
+    public XtextTerminalRuleImpl(@NotNull ASTNode node) {
+        super(node);
+    }
 
-  public void accept(@NotNull XtextVisitor visitor) {
-    visitor.visitTerminalRule(this);
-  }
+    @Override
+    public void accept(@NotNull XtextVisitor visitor) {
+        visitor.visitTerminalRule(this);
+    }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
-    else super.accept(visitor);
-  }
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
+        else super.accept(visitor);
+    }
 
   @Override
   @NotNull

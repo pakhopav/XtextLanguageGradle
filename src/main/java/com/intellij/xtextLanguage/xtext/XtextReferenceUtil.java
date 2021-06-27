@@ -2,17 +2,17 @@ package com.intellij.xtextLanguage.xtext;
 
 import com.intellij.openapi.project.Project;
 import com.intellij.openapi.roots.ProjectFileIndex;
+import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiNameIdentifierOwner;
 import com.intellij.psi.util.PsiTreeUtil;
-import com.intellij.xtextLanguage.xtext.psi.XtextAbstractRule;
-import com.intellij.xtextLanguage.xtext.psi.XtextFile;
-import com.intellij.xtextLanguage.xtext.psi.XtextGrammarID;
-import com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEGrammarGrammarID;
+import com.intellij.xtextLanguage.xtext.psi.*;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.jar.JarEntry;
+import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 public class XtextReferenceUtil {
@@ -81,17 +81,13 @@ public class XtextReferenceUtil {
         ArrayList<T> result = new ArrayList<>();
         XtextFile xtextFile = (XtextFile) file;
         if (xtextFile != null) {
-
             List<T> elements = new ArrayList(PsiTreeUtil.findChildrenOfType(xtextFile, tClass));
-
             for (T property : elements) {
                 if (id.equals(property.getName())) {
                     result.add(property);
                 }
             }
-
         }
-
         return result;
     }
 
@@ -131,5 +127,34 @@ public class XtextReferenceUtil {
         }
 
         return result;
+    }
+
+
+    public static List<String> findImportedModelsNames(XtextFile xtextFile) {
+        List<String> result = new ArrayList<>();
+        _findImportedModelsNames(xtextFile, result);
+        return result;
+    }
+
+    private static void _findImportedModelsNames(XtextFile xtextFile, List<String> result) {
+        List<String> modelNames = PsiTreeUtil.findChildrenOfType(xtextFile, XtextReferencedMetamodel.class).stream().map(it -> it.getREFERENCEEPackageSTRING().getText()).collect(Collectors.toList());
+        result.addAll(modelNames);
+        List<String> usedGrammarsNames = PsiTreeUtil.findChildrenOfType(xtextFile, XtextREFERENCEGrammarGrammarID.class).stream().map(it -> it.getGrammarID().getText()).collect(Collectors.toList());
+        usedGrammarsNames.forEach(grammarName -> {
+            List<XtextFile> grammars = findGrammarsInProjectByName(xtextFile.getProject(), grammarName);
+            if (grammars.size() == 1) {
+                _findImportedModelsNames(grammars.get(0), result);
+            }
+        });
+    }
+
+    public static boolean isClassifierPresentInJar(JarFile jar, String key) {
+        VirtualFile ecoreFile = null;
+        JarEntry modelEntry = jar.getJarEntry("model");
+        if (modelEntry != null) {
+
+        }
+        jar.entries();
+        return false;
     }
 }

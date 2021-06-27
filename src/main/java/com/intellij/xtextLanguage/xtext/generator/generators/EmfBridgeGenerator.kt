@@ -77,8 +77,8 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
             import $packageDir.psi.*
             import $packageDir.emf.scope.${capitalizedExtension}Scope
             import com.intellij.psi.PsiElement
-            import com.intellij.xtextLanguage.xtext.emf.*
-            import com.intellij.xtextLanguage.xtext.emf.impl.ObjectDescriptionImpl
+            import com.intellij.xtextLanguage.xtext.bridge.*
+            import com.intellij.xtextLanguage.xtext.bridge.impl.ObjectDescriptionImpl
             import org.eclipse.emf.ecore.EClass
             import org.eclipse.emf.ecore.EObject
             import org.eclipse.emf.common.util.EList
@@ -217,8 +217,8 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
             """
             |package ${packageDir}.emf.scope
             |
-            |import com.intellij.xtextLanguage.xtext.emf.ObjectDescription
-            |import com.intellij.xtextLanguage.xtext.emf.impl.ScopeImpl
+            |import com.intellij.xtextLanguage.xtext.bridge.ObjectDescription
+            |import com.intellij.xtextLanguage.xtext.bridge.impl.ScopeImpl
             |
             |class ${capitalizedExtension}Scope(descriptions: List<ObjectDescription>) : ScopeImpl(descriptions) {
             |}
@@ -238,7 +238,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
             |import $packageDir.psi.${capitalizedExtension}${rootRuleName}
             |import com.intellij.psi.PsiFile
             |import com.intellij.psi.util.PsiTreeUtil
-            |import com.intellij.xtextLanguage.xtext.emf.EmfBridge
+            |import com.intellij.xtextLanguage.xtext.bridge.EmfBridge
             |import org.eclipse.emf.ecore.EObject
             |
             |class ${capitalizedExtension}EmfBridge : EmfBridge {

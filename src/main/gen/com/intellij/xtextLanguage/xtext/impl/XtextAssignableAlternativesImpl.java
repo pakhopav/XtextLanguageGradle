@@ -1,16 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextAssignableAlternatives;
+import com.intellij.xtextLanguage.xtext.psi.XtextAssignableAlternativesSuffix1;
+import com.intellij.xtextLanguage.xtext.psi.XtextAssignableTerminal;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class XtextAssignableAlternativesImpl extends XtextPsiCompositeElementImpl implements XtextAssignableAlternatives {
 
@@ -18,19 +17,26 @@ public class XtextAssignableAlternativesImpl extends XtextPsiCompositeElementImp
     super(node);
   }
 
-  public void accept(@NotNull XtextVisitor visitor) {
-    visitor.visitAssignableAlternatives(this);
-  }
+    public void accept(@NotNull XtextVisitor visitor) {
+        visitor.visitAssignableAlternatives(this);
+    }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
-    else super.accept(visitor);
-  }
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof XtextVisitor) accept((XtextVisitor) visitor);
+        else super.accept(visitor);
+    }
 
-  @Override
-  @NotNull
-  public List<XtextAssignableTerminal> getAssignableTerminalList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, XtextAssignableTerminal.class);
-  }
+    @Override
+    @Nullable
+    public XtextAssignableAlternativesSuffix1 getAssignableAlternativesSuffix1() {
+        return findChildByClass(XtextAssignableAlternativesSuffix1.class);
+    }
+
+    @Override
+    @NotNull
+    public XtextAssignableTerminal getAssignableTerminal() {
+        return findNotNullChildByClass(XtextAssignableTerminal.class);
+    }
 
 }

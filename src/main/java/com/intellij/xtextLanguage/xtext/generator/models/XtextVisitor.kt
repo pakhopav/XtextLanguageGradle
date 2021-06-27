@@ -5,158 +5,168 @@ open class XtextVisitor {
     open fun visitAbstractMetamodelDeclaration(o: XtextAbstractMetamodelDeclaration) {
     }
 
-    open fun visitAbstractNegatedToken(o: XtextAbstractNegatedToken) {
-        o.negatedToken?.let {
+    open fun visitAbstractNegatedToken(abstractNegatedToken: XtextAbstractNegatedToken) {
+        abstractNegatedToken.negatedToken?.let {
             visitNegatedToken(it)
         }
-        o.untilToken?.let {
+        abstractNegatedToken.untilToken?.let {
             visitUntilToken(it)
         }
     }
 
-    open fun visitAbstractRule(o: XtextAbstractRule) {
-        o.parserRule?.let {
-            visitParserRule(it)
-        }
-        o.enumRule?.let {
-            visitEnumRule(it)
-        }
-        o.terminalRule?.let {
-            visitTerminalRule(it)
+    open fun visitAbstractRule(abstractRule: XtextAbstractRule) {
+        if (abstractRule is XtextParserRule) {
+            visitParserRule(abstractRule)
+
+        } else if (abstractRule is XtextEnumRule) {
+            visitEnumRule(abstractRule)
+
+        } else if (abstractRule is XtextTerminalRule) {
+            visitTerminalRule(abstractRule)
         }
     }
 
-    open fun visitAbstractTerminal(o: XtextAbstractTerminal) {
-        o.keyword?.let {
+    open fun visitAbstractTerminal(abstractTerminal: XtextAbstractTerminal) {
+        abstractTerminal.keyword?.let {
             visitKeyword(it)
         }
-        o.ruleCall?.let {
+        abstractTerminal.ruleCall?.let {
             visitRuleCall(it)
         }
-        o.parenthesizedElement?.let {
+        abstractTerminal.parenthesizedElement?.let {
             visitParenthesizedElement(it)
         }
-        o.predicatedKeyword?.let {
+        abstractTerminal.predicatedKeyword?.let {
             visitPredicatedKeyword(it)
         }
-        o.predicatedRuleCall?.let {
+        abstractTerminal.predicatedRuleCall?.let {
             visitPredicatedRuleCall(it)
         }
-        o.predicatedGroup?.let {
+        abstractTerminal.predicatedGroup?.let {
             visitPredicatedGroup(it)
         }
     }
 
-    open fun visitAbstractToken(o: XtextAbstractToken) {
-        o.action?.let {
+    open fun visitAbstractToken(abstractToken: XtextAbstractToken) {
+        abstractToken.action?.let {
             visitAction(it)
         }
-        o.abstractTokenWithCardinality?.let {
+        abstractToken.abstractTokenWithCardinality?.let {
             visitAbstractTokenWithCardinality(it)
         }
     }
 
-    open fun visitAbstractTokenWithCardinality(o: XtextAbstractTokenWithCardinality) {
-        o.abstractTerminal?.let {
+    open fun visitAbstractTokenWithCardinality(abstractTokenWithCardinality: XtextAbstractTokenWithCardinality) {
+        abstractTokenWithCardinality.abstractTerminal?.let {
             visitAbstractTerminal(it)
         }
-        o.assignment?.let {
+        abstractTokenWithCardinality.assignment?.let {
             visitAssignment(it)
         }
 
     }
 
-    open fun visitAction(o: XtextAction) {
+    open fun visitAction(action: XtextAction) {
     }
 
-    open fun visitAlternatives(o: XtextAlternatives) {
-        o.conditionalBranchList.forEach {
-            visitConditionalBranch(it)
+    open fun visitAlternatives(alternatives: XtextAlternatives) {
+        visitConditionalBranch(alternatives.conditionalBranch)
+        alternatives.alternativesSuffix1?.let {
+            it.conditionalBranchList.forEach {
+                visitConditionalBranch(it)
+            }
         }
     }
 
-    open fun visitAnnotation(o: XtextAnnotation) {
+    open fun visitAnnotation(annotation: XtextAnnotation) {
 
     }
 
-    open fun visitAssignableAlternatives(o: XtextAssignableAlternatives) {
-        o.assignableTerminalList.forEach {
-            visitAssignableTerminal(it)
+    open fun visitAssignableAlternatives(assignableAlternatives: XtextAssignableAlternatives) {
+        visitAssignableTerminal(assignableAlternatives.assignableTerminal)
+        assignableAlternatives.assignableAlternativesSuffix1?.let {
+            it.assignableTerminalList.forEach {
+                visitAssignableTerminal(it)
+            }
         }
     }
 
 
-    open fun visitAssignableTerminal(o: XtextAssignableTerminal) {
-        o.keyword?.let {
+    open fun visitAssignableTerminal(assignableTerminal: XtextAssignableTerminal) {
+        assignableTerminal.keyword?.let {
             visitKeyword(it)
         }
-        o.ruleCall?.let {
+        assignableTerminal.ruleCall?.let {
             visitRuleCall(it)
         }
-        o.parenthesizedAssignableElement?.let {
+        assignableTerminal.parenthesizedAssignableElement?.let {
             visitParenthesizedAssignableElement(it)
         }
-        o.crossReference?.let {
+        assignableTerminal.crossReference?.let {
             visitCrossReference(it)
         }
     }
 
-    open fun visitAssignment(o: XtextAssignment) {
-        visitAssignableTerminal(o.assignableTerminal)
+    open fun visitAssignment(assignment: XtextAssignment) {
+        visitValidID(assignment.validID)
+        visitAssignableTerminal(assignment.assignableTerminal)
     }
 
     open fun visitAtom(o: XtextAtom) {
     }
 
-    open fun visitCaretEOF(o: XtextCaretEOF) {
+    open fun visitCharacterRange(characterRange: XtextCharacterRange) {
     }
 
-    open fun visitCharacterRange(o: XtextCharacterRange) {
-    }
-
-    open fun visitConditionalBranch(o: XtextConditionalBranch) {
-        o.unorderedGroup?.let {
+    open fun visitConditionalBranch(conditionalBranch: XtextConditionalBranch) {
+        conditionalBranch.unorderedGroup?.let {
             visitUnorderedGroup(it)
         }
-        o.ruleFromConditionalBranchBranch2?.let {
-            visitRuleFromConditionalBranchBranch2(it)
+        conditionalBranch.disjunction?.let {
+            visitDisjunction(it)
+        }
+        conditionalBranch.abstractTokenList.forEach {
+            visitAbstractToken(it)
         }
     }
 
     open fun visitConjunction(o: XtextConjunction) {
     }
 
-    open fun visitCrossReference(o: XtextCrossReference) {
-        visitTypeRef(o.typeRef)
-        o.crossReferenceableTerminal?.let {
+    open fun visitCrossReference(crossReference: XtextCrossReference) {
+        visitTypeRef(crossReference.typeRef)
+        crossReference.crossReferenceableTerminal?.let {
             visitCrossReferenceableTerminal(it)
         }
     }
 
-    open fun visitCrossReferenceableTerminal(o: XtextCrossReferenceableTerminal) {
-        o.keyword?.let {
+    open fun visitCrossReferenceableTerminal(crossReferenceableTerminal: XtextCrossReferenceableTerminal) {
+        crossReferenceableTerminal.keyword?.let {
             visitKeyword(it)
         }
-        o.ruleCall?.let {
+        crossReferenceableTerminal.ruleCall?.let {
             visitRuleCall(it)
         }
     }
 
-    open fun visitDisjunction(o: XtextDisjunction) {
+    open fun visitDisjunction(disjunction: XtextDisjunction) {
     }
 
-    open fun visitEnumLiteralDeclaration(o: XtextEnumLiteralDeclaration) {
+    open fun visitEnumLiteralDeclaration(enumLiteralDeclaration: XtextEnumLiteralDeclaration) {
     }
 
-    open fun visitEnumLiterals(o: XtextEnumLiterals) {
-        o.enumLiteralDeclarationList.forEach {
-            visitEnumLiteralDeclaration(it)
+    open fun visitEnumLiterals(enumLiterals: XtextEnumLiterals) {
+        visitEnumLiteralDeclaration(enumLiterals.enumLiteralDeclaration)
+        enumLiterals.enumLiteralsSuffix1?.let {
+            it.enumLiteralDeclarationList.forEach {
+                visitEnumLiteralDeclaration(it)
+            }
         }
     }
 
-    open fun visitEnumRule(o: XtextEnumRule) {
-
-        visitEnumLiterals(o.enumLiterals)
+    open fun visitEnumRule(enumRule: XtextEnumRule) {
+        visitValidID(enumRule.validID)
+        visitEnumLiterals(enumRule.enumLiterals)
     }
 
     open fun visitGeneratedMetamodel(o: XtextGeneratedMetamodel) {
@@ -185,13 +195,16 @@ open class XtextVisitor {
         }
     }
 
-    open fun visitGroup(o: XtextGroup) {
-        o.abstractTokenList.forEach {
-            visitAbstractToken(it)
+    open fun visitGroup(group: XtextGroup) {
+        visitAbstractToken(group.abstractToken)
+        group.groupSuffix1?.let {
+            it.abstractTokenList.forEach {
+                visitAbstractToken(it)
+            }
         }
     }
 
-    open fun visitKeyword(o: XtextKeyword) {
+    open fun visitKeyword(keyword: XtextKeyword) {
     }
 
     open fun visitLiteralCondition(o: XtextLiteralCondition) {
@@ -201,7 +214,7 @@ open class XtextVisitor {
     open fun visitNamedArgument(o: XtextNamedArgument) {
     }
 
-    open fun visitNegatedToken(o: XtextNegatedToken) {
+    open fun visitNegatedToken(negatedToken: XtextNegatedToken) {
     }
 
     open fun visitNegation(o: XtextNegation) {
@@ -213,47 +226,45 @@ open class XtextVisitor {
     open fun visitParameterReference(o: XtextParameterReference) {
     }
 
-    open fun visitParenthesizedAssignableElement(o: XtextParenthesizedAssignableElement) {
-        visitAssignableAlternatives(o.assignableAlternatives)
+    open fun visitParenthesizedAssignableElement(assignableElement: XtextParenthesizedAssignableElement) {
+        visitAssignableAlternatives(assignableElement.assignableAlternatives)
     }
 
     open fun visitParenthesizedCondition(o: XtextParenthesizedCondition) {
     }
 
-    open fun visitParenthesizedElement(o: XtextParenthesizedElement) {
-
-        visitAlternatives(o.alternatives)
-
-    }
-
-    open fun visitParenthesizedTerminalElement(o: XtextParenthesizedTerminalElement) {
-    }
-
-    open fun visitParserRule(o: XtextParserRule) {
-
-        visitRuleNameAndParams(o.ruleNameAndParams)
-        visitAlternatives(o.alternatives)
-    }
-
-    open fun visitPredicatedGroup(o: XtextPredicatedGroup) {
-
-        visitAlternatives(o.alternatives)
+    open fun visitParenthesizedElement(parenthesizedElement: XtextParenthesizedElement) {
+        visitAlternatives(parenthesizedElement.alternatives)
 
     }
 
-    open fun visitPredicatedKeyword(o: XtextPredicatedKeyword) {
+    open fun visitParenthesizedTerminalElement(parenthesizedTerminalElement: XtextParenthesizedTerminalElement) {
+    }
+
+    open fun visitParserRule(parserRule: XtextParserRule) {
+
+        visitValidID(parserRule.validID)
+        visitAlternatives(parserRule.alternatives)
+    }
+
+    open fun visitPredicatedGroup(predicatedGroup: XtextPredicatedGroup) {
+        visitAlternatives(predicatedGroup.alternatives)
+    }
+
+    open fun visitPredicatedKeyword(predicatedKeyword: XtextPredicatedKeyword) {
 
     }
 
-    open fun visitPredicatedRuleCall(o: XtextPredicatedRuleCall) {
-        visitREFERENCEAbstractRuleRuleID(o.referenceAbstractRuleRuleID)
+    open fun visitPredicatedRuleCall(predicatedRuleCall: XtextPredicatedRuleCall) {
+        visitREFERENCEAbstractRuleRuleID(predicatedRuleCall.referenceAbstractRuleRuleID)
+        predicatedRuleCall.namedArgumentList.forEach {
+            visitNamedArgument(it)
+        }
     }
 
-    open fun visitREFERENCEAbstractMetamodelDeclaration(o: XtextREFERENCEAbstractMetamodelDeclaration) {
-    }
 
-    open fun visitREFERENCEAbstractRuleRuleID(o: XtextREFERENCEAbstractRuleRuleID) {
-        visitRuleID(o.ruleID)
+    open fun visitREFERENCEAbstractRuleRuleID(ruleID: XtextREFERENCEAbstractRuleRuleID) {
+        visitRuleID(ruleID.ruleID)
     }
 
     open fun visitREFERENCEGrammarGrammarID(o: XtextREFERENCEGrammarGrammarID) {
@@ -263,36 +274,14 @@ open class XtextVisitor {
     open fun visitREFERENCEParameterID(o: XtextREFERENCEParameterID) {
     }
 
-    open fun visitREFERENCEEcoreEClassifier(o: XtextREFERENCEEcoreEClassifier) {
-    }
-
-    open fun visitREFERENCEEcoreEEnumLiteral(o: XtextREFERENCEEcoreEEnumLiteral) {
-    }
-
-    open fun visitREFERENCEEcoreEPackageSTRING(o: XtextREFERENCEEcoreEPackageSTRING) {
-    }
 
     open fun visitReferencedMetamodel(o: XtextReferencedMetamodel) {
     }
 
-    open fun visitRuleCall(o: XtextRuleCall) {
-        visitREFERENCEAbstractRuleRuleID(o.referenceAbstractRuleRuleID)
+    open fun visitRuleCall(ruleCall: XtextRuleCall) {
+        visitREFERENCEAbstractRuleRuleID(ruleCall.referenceAbstractRuleRuleID)
     }
 
-    open fun visitRuleFromCaretEOFBranch1(o: XtextRuleFromCaretEOFBranch1) {
-    }
-
-    open fun visitRuleFromConditionalBranchBranch2(o: XtextRuleFromConditionalBranchBranch2) {
-    }
-
-    open fun visitRuleFromLiteralConditionBranch1(o: XtextRuleFromLiteralConditionBranch1) {
-    }
-
-    open fun visitRuleFromNegationBranch2(o: XtextRuleFromNegationBranch2) {
-    }
-
-    open fun visitRuleFromWildcardBranch1(o: XtextRuleFromWildcardBranch1) {
-    }
 
     open fun visitRuleID(o: XtextRuleID) {
         o.validIDList.forEach {
@@ -300,19 +289,22 @@ open class XtextVisitor {
         }
     }
 
-    open fun visitRuleNameAndParams(o: XtextRuleNameAndParams) {
-        visitValidID(o.validID)
-    }
 
-    open fun visitTerminalAlternatives(o: XtextTerminalAlternatives) {
-        o.terminalGroupList.forEach {
-            visitTerminalGroup(it)
+    open fun visitTerminalAlternatives(terminalAlternatives: XtextTerminalAlternatives) {
+        visitTerminalGroup(terminalAlternatives.terminalGroup)
+        terminalAlternatives.terminalAlternativesSuffix1?.let {
+            it.terminalGroupList.forEach {
+                visitTerminalGroup(it)
+            }
         }
     }
 
-    open fun visitTerminalGroup(o: XtextTerminalGroup) {
-        o.terminalTokenList.forEach {
-            visitTerminalToken(it)
+    open fun visitTerminalGroup(terminalGroup: XtextTerminalGroup) {
+        visitTerminalToken(terminalGroup.terminalToken)
+        terminalGroup.terminalGroupSuffix1?.let {
+            it.terminalTokenList.forEach {
+                visitTerminalToken(it)
+            }
         }
     }
 
@@ -327,47 +319,51 @@ open class XtextVisitor {
         visitTerminalAlternatives(o.terminalAlternatives)
     }
 
-    open fun visitTerminalRuleCall(o: XtextTerminalRuleCall) {
+    open fun visitTerminalRuleCall(ruleCall: XtextTerminalRuleCall) {
     }
 
-    open fun visitTerminalToken(o: XtextTerminalToken) {
-        visitTerminalTokenElement(o.terminalTokenElement)
+    open fun visitTerminalToken(terminalToken: XtextTerminalToken) {
+        visitTerminalTokenElement(terminalToken.terminalTokenElement)
     }
 
-    open fun visitTerminalTokenElement(o: XtextTerminalTokenElement) {
-        o.characterRange?.let {
+    open fun visitTerminalTokenElement(terminalTokenElement: XtextTerminalTokenElement) {
+        terminalTokenElement.characterRange?.let {
             visitCharacterRange(it)
         }
-        o.terminalRuleCall?.let {
+        terminalTokenElement.terminalRuleCall?.let {
             visitTerminalRuleCall(it)
         }
-        o.parenthesizedTerminalElement?.let {
+        terminalTokenElement.parenthesizedTerminalElement?.let {
             visitParenthesizedTerminalElement(it)
         }
-        o.abstractNegatedToken?.let {
+        terminalTokenElement.abstractNegatedToken?.let {
             visitAbstractNegatedToken(it)
         }
-        o.wildcard?.let {
+        terminalTokenElement.wildcard?.let {
             visitWildcard(it)
         }
     }
 
-    open fun visitTypeRef(o: XtextTypeRef) {
+    open fun visitTypeRef(typeRef: XtextTypeRef) {
     }
 
-    open fun visitUnorderedGroup(o: XtextUnorderedGroup) {
-        o.groupList.forEach {
-            visitGroup(it)
+    open fun visitUnorderedGroup(unorderedGroup: XtextUnorderedGroup) {
+        visitGroup(unorderedGroup.group)
+        unorderedGroup.unorderedGroupSuffix1?.let {
+            it.groupList.forEach {
+                visitGroup(it)
+            }
         }
-    }
-
-    open fun visitUntilToken(o: XtextUntilToken) {
-    }
-
-    open fun visitValidID(o: XtextValidID) {
 
     }
 
-    open fun visitWildcard(o: XtextWildcard) {
+    open fun visitUntilToken(untilToken: XtextUntilToken) {
+    }
+
+    open fun visitValidID(validID: XtextValidID) {
+
+    }
+
+    open fun visitWildcard(wildcard: XtextWildcard) {
     }
 }

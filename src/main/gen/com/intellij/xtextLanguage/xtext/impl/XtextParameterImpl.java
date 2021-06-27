@@ -22,16 +22,17 @@ public class XtextParameterImpl extends XtextNamedElementImpl implements XtextPa
     visitor.visitParameter(this);
   }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
-    else super.accept(visitor);
-  }
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof XtextVisitor) accept((XtextVisitor) visitor);
+        else super.accept(visitor);
+    }
 
-  @Override
-  @NotNull
-  public PsiElement getId() {
-    return findNotNullChildByType(ID);
-  }
+    @Override
+    @NotNull
+    public PsiElement getId() {
+        return findNotNullChildByType(ID);
+    }
 
     @Override
     public String getName() {

@@ -7,6 +7,5 @@ public class XtextLanguage extends Language {
 
     private XtextLanguage() {
         super("Xtext");
-
     }
 }

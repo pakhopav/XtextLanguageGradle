@@ -1,16 +1,13 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEAbstractRuleRuleID;
+import com.intellij.xtextLanguage.xtext.psi.XtextTerminalRuleCall;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
 
 public class XtextTerminalRuleCallImpl extends XtextPsiCompositeElementImpl implements XtextTerminalRuleCall {
 
@@ -22,10 +19,11 @@ public class XtextTerminalRuleCallImpl extends XtextPsiCompositeElementImpl impl
     visitor.visitTerminalRuleCall(this);
   }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
-    else super.accept(visitor);
-  }
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
+        else super.accept(visitor);
+    }
 
   @Override
   @NotNull

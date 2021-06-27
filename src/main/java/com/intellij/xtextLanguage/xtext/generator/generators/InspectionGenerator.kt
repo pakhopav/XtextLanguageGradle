@@ -18,8 +18,8 @@ class InspectionGenerator(extension: String, rootPath: String) : AbstractGenerat
             import com.intellij.psi.PsiFile;
             import com.intellij.psi.util.CachedValuesManager;
             import $packageDir.psi.${extensionCapitalized}File;
-            import com.intellij.xtextLanguage.xtext.emf.EmfCreator;
-            import com.intellij.xtextLanguage.xtext.emf.BridgeResult;
+            import com.intellij.xtextLanguage.xtext.bridge.EmfCreator;
+            import com.intellij.xtextLanguage.xtext.bridge.BridgeResult;
             import com.intellij.xtextLanguage.xtext.inspections.AbstractValidator;
             import com.intellij.xtextLanguage.xtext.inspections.InspectorBase;
             import com.intellij.xtextLanguage.xtext.inspections.ValidatorMethodsHolder;

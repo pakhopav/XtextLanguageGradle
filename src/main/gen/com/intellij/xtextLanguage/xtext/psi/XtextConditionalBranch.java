@@ -2,14 +2,26 @@
 package com.intellij.xtextLanguage.xtext.psi;
 
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
+
+import java.util.List;
 
 public interface XtextConditionalBranch extends PsiElement {
 
-  @Nullable
-  XtextRuleFromConditionalBranchBranch2 getRuleFromConditionalBranchBranch2();
+    @NotNull
+    List<XtextAbstractToken> getAbstractTokenList();
 
-  @Nullable
-  XtextUnorderedGroup getUnorderedGroup();
+    @Nullable
+    XtextDisjunction getDisjunction();
+
+    @Nullable
+    XtextUnorderedGroup getUnorderedGroup();
+
+    @Nullable
+    PsiElement getLAngleBracketKeyword();
+
+    @Nullable
+    PsiElement getRAngleBracketKeyword();
 
 }

@@ -5,20 +5,21 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-import java.util.List;
+public interface XtextGeneratedMetamodel extends XtextAbstractMetamodelDeclaration {
 
-public interface XtextGeneratedMetamodel extends PsiElement {
+    @NotNull
+    XtextREFERENCEEPackageSTRING getREFERENCEEPackageSTRING();
 
-  @NotNull
-  XtextREFERENCEEcoreEPackageSTRING getREFERENCEEcoreEPackageSTRING();
+    @NotNull
+    XtextValidID getValidID();
 
-  @NotNull
-  List<XtextValidID> getValidIDList();
+    @Nullable
+    XtextValidID1 getValidID1();
 
-  @Nullable
-  PsiElement getAsKeyword();
+    @Nullable
+    PsiElement getAsKeyword();
 
-  @NotNull
-  PsiElement getGenerateKeyword();
+    @NotNull
+    PsiElement getGenerateKeyword();
 
 }

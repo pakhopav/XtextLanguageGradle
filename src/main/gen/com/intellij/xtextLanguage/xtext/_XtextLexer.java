@@ -55,48 +55,48 @@ public class _XtextLexer implements FlexLexer {
 
   /* The ZZ_CMAP_A table has 320 entries */
   static final char ZZ_CMAP_A[] = zzUnpackCMap(
-          "\11\0\1\15\1\6\2\10\1\7\22\0\1\15\1\37\1\4\3\0\1\60\1\12\1\57\1\33\1\14\1" +
-                  "\30\1\56\1\52\1\53\1\13\12\3\1\51\1\62\1\46\1\40\1\41\1\43\1\42\4\2\1\64\1" +
-                  "\66\10\2\1\65\13\2\1\50\1\5\1\45\1\1\1\2\1\0\1\22\1\2\1\36\1\32\1\17\1\54" +
-                  "\1\16\1\31\1\24\2\2\1\55\1\25\1\20\1\27\1\26\1\2\1\21\1\35\1\23\1\34\1\2\1" +
-                  "\44\3\2\1\63\1\47\1\61\7\0\1\11\242\0\2\11\26\0");
+          "\11\0\1\14\1\6\2\10\1\7\22\0\1\14\1\57\1\4\3\0\1\47\1\11\1\31\1\32\1\13\1" +
+                  "\51\1\25\1\60\1\33\1\12\12\3\1\42\1\43\1\44\1\53\1\45\1\50\1\37\4\2\1\63\1" +
+                  "\65\10\2\1\64\13\2\1\61\1\5\1\62\1\1\1\2\1\0\1\17\1\2\1\54\1\26\1\27\1\40" +
+                  "\1\15\1\24\1\22\2\2\1\56\1\20\1\30\1\36\1\35\1\2\1\16\1\34\1\23\1\41\1\2\1" +
+                  "\21\3\2\1\52\1\46\1\55\7\0\1\10\242\0\2\10\26\0");
 
-  /** 
+  /**
    * Translates DFA states to action switch labels.
    */
-  private static final int [] ZZ_ACTION = zzUnpackAction();
+  private static final int[] ZZ_ACTION = zzUnpackAction();
 
   private static final String ZZ_ACTION_PACKED_0 =
           "\1\0\2\1\1\2\1\3\1\1\1\4\1\5\2\1" +
-                  "\1\6\6\2\1\7\1\2\1\10\1\2\1\11\1\12" +
-                  "\1\13\1\14\1\15\1\2\1\16\1\17\1\20\1\21" +
-                  "\1\22\1\1\1\23\1\2\1\24\1\25\1\26\1\27" +
-                  "\1\30\1\31\1\2\1\0\1\32\3\0\1\33\1\0" +
-                  "\4\2\1\34\3\2\1\35\2\2\1\36\1\37\1\2" +
-                  "\1\40\1\41\1\42\3\2\1\33\2\0\14\2\1\43" +
-                  "\1\44\1\0\2\2\1\45\2\2\1\46\3\2\1\47" +
-                  "\2\2\2\0\10\2\1\50\1\44\4\2\1\51\1\52" +
-                  "\3\2\1\53\1\54\1\2\1\55\1\2\1\56\1\57" +
-                  "\1\60";
-    private static final String ZZ_ROWMAP_PACKED_0 =
-            "\0\0\0\67\0\156\0\245\0\334\0\u0113\0\u014a\0\67" +
-                    "\0\u0181\0\u01b8\0\67\0\u01ef\0\u0226\0\u025d\0\u0294\0\u02cb" +
-                    "\0\u0302\0\u0339\0\u0370\0\67\0\u03a7\0\67\0\u03de\0\67" +
-                    "\0\67\0\u0415\0\u044c\0\67\0\67\0\67\0\67\0\u0483" +
-                    "\0\u04ba\0\u04f1\0\u0528\0\67\0\67\0\67\0\67\0\67" +
-                    "\0\67\0\u055f\0\u0113\0\67\0\u0596\0\u0181\0\u05cd\0\u0604" +
-                    "\0\u063b\0\u0672\0\u06a9\0\u06e0\0\u0717\0\245\0\u074e\0\u0785" +
-                    "\0\u07bc\0\67\0\u07f3\0\u082a\0\67\0\67\0\u0861\0\67" +
-                    "\0\67\0\67\0\u0898\0\u08cf\0\u0906\0\67\0\u093d\0\u0974" +
-                    "\0\u09ab\0\u09e2\0\u0a19\0\u0a50\0\u0a87\0\u0abe\0\u0af5\0\u0b2c" +
-                    "\0\u0b63\0\u0b9a\0\u0bd1\0\u0c08\0\245\0\u0c3f\0\u0c76\0\u0cad" +
-                    "\0\u0ce4\0\245\0\u0d1b\0\u0d52\0\245\0\u0d89\0\u0dc0\0\u0df7" +
-                    "\0\245\0\u0e2e\0\u0e65\0\u0e9c\0\u0c3f\0\u0ed3\0\u0f0a\0\u0f41" +
-                    "\0\u0f78\0\u0faf\0\u0fe6\0\u101d\0\u1054\0\245\0\67\0\u108b" +
-                    "\0\u10c2\0\u10f9\0\u1130\0\245\0\245\0\u1167\0\u119e\0\u11d5" +
-                    "\0\245\0\245\0\u120c\0\245\0\u1243\0\245\0\245\0\245";
+                  "\1\6\7\2\1\7\1\2\1\10\1\11\1\12\1\13" +
+                  "\1\2\1\14\1\15\1\16\1\17\1\20\1\21\1\22" +
+                  "\1\23\1\24\1\25\1\2\1\26\1\27\1\1\1\30" +
+                  "\1\31\1\2\1\0\1\32\3\0\1\33\1\0\3\2" +
+                  "\1\34\6\2\1\35\2\2\1\36\1\37\1\40\1\41" +
+                  "\1\2\1\42\1\2\1\33\2\0\14\2\1\43\1\44" +
+                  "\1\0\3\2\1\45\1\2\1\46\2\2\1\47\3\2" +
+                  "\2\0\7\2\1\50\1\2\1\44\3\2\1\51\1\2" +
+                  "\1\52\2\2\1\53\1\2\1\54\2\2\1\55\1\56" +
+                  "\1\57\1\60";
+  private static final String ZZ_ROWMAP_PACKED_0 =
+          "\0\0\0\66\0\154\0\242\0\330\0\u010e\0\u0144\0\66" +
+                  "\0\u017a\0\u01b0\0\66\0\u01e6\0\u021c\0\u0252\0\u0288\0\u02be" +
+                  "\0\u02f4\0\u032a\0\66\0\u0360\0\66\0\66\0\u0396\0\66" +
+                  "\0\u03cc\0\u0402\0\66\0\66\0\66\0\66\0\66\0\u0438" +
+                  "\0\u046e\0\66\0\u04a4\0\u04da\0\66\0\66\0\u0510\0\66" +
+                  "\0\66\0\u0546\0\u010e\0\66\0\u057c\0\u017a\0\u05b2\0\u05e8" +
+                  "\0\u061e\0\u0654\0\u068a\0\u06c0\0\242\0\u06f6\0\u072c\0\u0762" +
+                  "\0\u0798\0\u07ce\0\u0804\0\66\0\u083a\0\u0870\0\66\0\66" +
+                  "\0\66\0\66\0\u08a6\0\66\0\u08dc\0\66\0\u0912\0\u0948" +
+                  "\0\u097e\0\u09b4\0\u09ea\0\u0a20\0\u0a56\0\u0a8c\0\u0ac2\0\u0af8" +
+                  "\0\u0b2e\0\u0b64\0\u0b9a\0\u0bd0\0\242\0\u0c06\0\u0c3c\0\u0c72" +
+                  "\0\u0ca8\0\u0cde\0\242\0\u0d14\0\242\0\u0d4a\0\u0d80\0\242" +
+                  "\0\u0db6\0\u0dec\0\u0e22\0\u0e58\0\u0c06\0\u0e8e\0\u0ec4\0\u0efa" +
+                  "\0\u0f30\0\u0f66\0\u0f9c\0\u0fd2\0\242\0\u1008\0\66\0\u103e" +
+                  "\0\u1074\0\u10aa\0\242\0\u10e0\0\242\0\u1116\0\u114c\0\242" +
+                  "\0\u1182\0\242\0\u11b8\0\u11ee\0\242\0\242\0\242\0\242";
 
-  private static int zzUnpackAction(String packed, int offset, int [] result) {
+  private static int zzUnpackAction(String packed, int offset, int[] result) {
     int i = 0;       /* index in packed string  */
     int j = offset;  /* index in unpacked array */
     int l = packed.length();
@@ -109,183 +109,198 @@ public class _XtextLexer implements FlexLexer {
   }
 
 
-  /** 
+  /**
    * Translates a state to a row index in the transition table
    */
-  private static final int [] ZZ_ROWMAP = zzUnpackRowMap();
+  private static final int[] ZZ_ROWMAP = zzUnpackRowMap();
   private static final String ZZ_TRANS_PACKED_0 =
-          "\1\2\1\3\1\4\1\5\1\6\1\2\3\7\1\10" +
-                  "\1\11\1\12\1\13\1\7\1\14\1\15\1\4\1\16" +
-                  "\1\17\1\20\1\21\3\4\1\22\1\23\1\4\1\24" +
-                  "\2\4\1\25\1\26\1\27\1\30\1\31\1\32\1\33" +
-                  "\1\34\1\35\1\36\1\37\1\40\1\41\1\42\1\43" +
-                  "\1\4\1\44\1\45\1\46\1\47\1\50\1\51\1\52" +
-                  "\2\4\71\0\1\4\13\0\12\4\1\0\2\4\1\0" +
-                  "\3\4\5\0\1\4\7\0\2\4\6\0\3\4\2\0" +
-                  "\2\4\12\0\12\4\1\0\2\4\1\0\3\4\5\0" +
-                  "\1\4\7\0\2\4\6\0\3\4\3\0\1\5\63\0" +
-                  "\4\53\1\54\1\55\61\53\6\0\3\7\4\0\1\7" +
-                  "\51\0\5\56\1\57\4\56\1\54\54\56\13\0\1\60" +
-                  "\1\61\54\0\2\4\12\0\1\4\1\62\1\4\1\63" +
-                  "\6\4\1\0\2\4\1\0\3\4\5\0\1\4\7\0" +
-                  "\2\4\6\0\3\4\2\0\2\4\12\0\2\4\1\64" +
-                  "\7\4\1\0\2\4\1\0\3\4\5\0\1\4\7\0" +
-                  "\2\4\6\0\3\4\2\0\2\4\12\0\1\4\1\65" +
-                  "\10\4\1\0\2\4\1\0\3\4\5\0\1\4\7\0" +
-                  "\2\4\6\0\3\4\2\0\2\4\12\0\12\4\1\0" +
-                  "\2\4\1\0\1\4\1\66\1\4\5\0\1\4\7\0" +
-                  "\2\4\6\0\3\4\2\0\2\4\12\0\1\4\1\67" +
-                  "\1\4\1\70\6\4\1\0\2\4\1\0\3\4\5\0" +
-                  "\1\4\7\0\2\4\6\0\3\4\2\0\2\4\12\0" +
-                  "\7\4\1\71\2\4\1\0\2\4\1\0\3\4\5\0" +
-                  "\1\4\7\0\2\4\6\0\3\4\40\0\1\72\30\0" +
-                  "\2\4\12\0\6\4\1\73\3\4\1\0\2\4\1\0" +
-                  "\3\4\5\0\1\4\7\0\2\4\6\0\3\4\2\0" +
-                  "\2\4\12\0\12\4\1\0\2\4\1\0\1\74\2\4" +
-                  "\5\0\1\4\7\0\2\4\6\0\3\4\41\0\1\75" +
-                  "\65\0\1\76\30\0\2\4\12\0\6\4\1\77\3\4" +
-                  "\1\0\2\4\1\0\3\4\5\0\1\4\7\0\2\4" +
-                  "\6\0\3\4\51\0\1\100\56\0\1\101\100\0\1\102" +
-                  "\15\0\2\4\12\0\3\4\1\103\1\104\5\4\1\0" +
-                  "\2\4\1\0\3\4\5\0\1\4\7\0\2\4\6\0" +
-                  "\3\4\2\0\2\4\12\0\12\4\1\0\2\4\1\0" +
-                  "\3\4\5\0\1\4\7\0\2\4\6\0\1\4\1\105" +
-                  "\1\4\6\53\4\0\55\53\6\56\4\0\55\56\6\60" +
-                  "\1\106\1\107\57\60\14\61\1\110\52\61\2\0\2\4" +
-                  "\12\0\2\4\1\111\7\4\1\0\2\4\1\0\3\4" +
-                  "\5\0\1\4\7\0\2\4\6\0\3\4\2\0\2\4" +
-                  "\12\0\4\4\1\112\5\4\1\0\2\4\1\0\3\4" +
-                  "\5\0\1\4\7\0\2\4\6\0\3\4\2\0\2\4" +
-                  "\12\0\12\4\1\0\2\4\1\0\1\113\2\4\5\0" +
-                  "\1\4\7\0\2\4\6\0\3\4\2\0\2\4\12\0" +
-                  "\5\4\1\114\4\4\1\0\2\4\1\0\3\4\5\0" +
-                  "\1\4\7\0\2\4\6\0\3\4\2\0\2\4\12\0" +
-                  "\3\4\1\115\6\4\1\0\2\4\1\0\3\4\5\0" +
-                  "\1\4\7\0\2\4\6\0\3\4\2\0\2\4\12\0" +
-                  "\12\4\1\0\2\4\1\0\1\116\2\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\10\4" +
-                  "\1\117\1\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\12\4" +
-                  "\1\0\1\4\1\120\1\0\3\4\5\0\1\4\7\0" +
-                  "\2\4\6\0\3\4\2\0\2\4\12\0\3\4\1\121" +
-                  "\6\4\1\0\2\4\1\0\3\4\5\0\1\4\7\0" +
-                  "\2\4\6\0\3\4\2\0\2\4\12\0\5\4\1\122" +
-                  "\4\4\1\0\2\4\1\0\3\4\5\0\1\4\7\0" +
-                  "\2\4\6\0\3\4\2\0\2\4\12\0\4\4\1\123" +
-                  "\5\4\1\0\2\4\1\0\3\4\5\0\1\4\7\0" +
-                  "\2\4\6\0\3\4\2\0\2\4\12\0\12\4\1\0" +
-                  "\2\4\1\0\3\4\5\0\1\4\7\0\1\4\1\124" +
-                  "\6\0\3\4\2\0\2\4\12\0\12\4\1\0\2\4" +
-                  "\1\0\3\4\5\0\1\4\7\0\2\4\6\0\2\4" +
-                  "\1\125\6\0\1\106\60\0\13\61\1\126\1\127\52\61" +
-                  "\2\0\2\4\12\0\1\4\1\130\10\4\1\0\2\4" +
-                  "\1\0\3\4\5\0\1\4\7\0\2\4\6\0\3\4" +
-                  "\2\0\2\4\12\0\7\4\1\131\2\4\1\0\2\4" +
-                  "\1\0\3\4\5\0\1\4\7\0\2\4\6\0\3\4" +
-                  "\2\0\2\4\12\0\7\4\1\132\2\4\1\0\2\4" +
-                  "\1\0\3\4\5\0\1\4\7\0\2\4\6\0\3\4" +
-                  "\2\0\2\4\12\0\12\4\1\0\2\4\1\0\1\133" +
-                  "\2\4\5\0\1\4\7\0\2\4\6\0\3\4\2\0" +
-                  "\2\4\12\0\7\4\1\134\2\4\1\0\2\4\1\0" +
-                  "\3\4\5\0\1\4\7\0\2\4\6\0\3\4\2\0" +
-                  "\2\4\12\0\1\4\1\135\10\4\1\0\2\4\1\0" +
-                  "\3\4\5\0\1\4\7\0\2\4\6\0\3\4\2\0" +
-                  "\2\4\12\0\11\4\1\136\1\0\2\4\1\0\3\4" +
-                  "\5\0\1\4\7\0\2\4\6\0\3\4\2\0\2\4" +
-                  "\12\0\12\4\1\0\1\4\1\137\1\0\3\4\5\0" +
-                  "\1\4\7\0\2\4\6\0\3\4\2\0\2\4\12\0" +
-                  "\3\4\1\140\6\4\1\0\2\4\1\0\3\4\5\0" +
-                  "\1\4\7\0\2\4\6\0\3\4\2\0\2\4\12\0" +
-                  "\12\4\1\0\1\141\1\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\1\142" +
-                  "\11\4\1\0\2\4\1\0\3\4\5\0\1\4\7\0" +
-                  "\2\4\6\0\3\4\2\0\2\4\12\0\12\4\1\0" +
-                  "\2\4\1\0\1\4\1\143\1\4\5\0\1\4\7\0" +
-                  "\2\4\6\0\3\4\14\0\1\144\52\0\13\61\1\145" +
-                  "\1\127\52\61\2\0\2\4\12\0\3\4\1\146\6\4" +
-                  "\1\0\2\4\1\0\3\4\5\0\1\4\7\0\2\4" +
-                  "\6\0\3\4\2\0\2\4\12\0\7\4\1\147\2\4" +
-                  "\1\0\2\4\1\0\3\4\5\0\1\4\7\0\2\4" +
-                  "\6\0\3\4\2\0\2\4\12\0\3\4\1\150\6\4" +
-                  "\1\0\2\4\1\0\3\4\5\0\1\4\7\0\2\4" +
-                  "\6\0\3\4\2\0\2\4\12\0\6\4\1\151\3\4" +
-                  "\1\0\2\4\1\0\3\4\5\0\1\4\7\0\2\4" +
-                  "\6\0\3\4\2\0\2\4\12\0\3\4\1\152\6\4" +
-                  "\1\0\2\4\1\0\3\4\5\0\1\4\7\0\2\4" +
-                  "\6\0\3\4\2\0\2\4\12\0\1\4\1\153\10\4" +
-                  "\1\0\2\4\1\0\3\4\5\0\1\4\7\0\2\4" +
-                  "\6\0\3\4\2\0\2\4\12\0\1\4\1\154\10\4" +
-                  "\1\0\2\4\1\0\3\4\5\0\1\4\7\0\2\4" +
-                  "\6\0\3\4\2\0\2\4\12\0\7\4\1\155\2\4" +
-                  "\1\0\2\4\1\0\3\4\5\0\1\4\7\0\2\4" +
-                  "\6\0\3\4\2\0\2\4\12\0\1\4\1\156\10\4" +
-                  "\1\0\2\4\1\0\3\4\5\0\1\4\7\0\2\4" +
-                  "\6\0\3\4\13\0\1\157\55\0\2\4\12\0\4\4" +
-                  "\1\160\5\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\4\4" +
-                  "\1\161\5\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\2\4" +
-                  "\1\162\7\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\2\4" +
-                  "\1\163\7\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\5\4" +
-                  "\1\164\4\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\2\4" +
-                  "\1\165\7\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\2\4" +
-                  "\1\166\7\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\1\4" +
-                  "\1\167\10\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\5\4" +
-                  "\1\170\4\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\3\4" +
-                  "\1\171\6\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\12\4" +
-                  "\1\0\2\4\1\0\1\4\1\172\1\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\4\4" +
-                  "\1\173\5\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\5\4" +
-                  "\1\174\4\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\2\4" +
-                  "\1\175\7\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\1\4" +
-                  "\1\176\10\4\1\0\2\4\1\0\3\4\5\0\1\4" +
-                  "\7\0\2\4\6\0\3\4\2\0\2\4\12\0\12\4" +
-                  "\1\0\2\4\1\0\3\4\5\0\1\4\7\0\1\4" +
-                  "\1\177\6\0\3\4\2\0\2\4\12\0\5\4\1\200" +
-                  "\4\4\1\0\2\4\1\0\3\4\5\0\1\4\7\0" +
-                  "\2\4\6\0\3\4";
-    /**
-     * The transition table of the DFA
-     */
-    private static final int[] ZZ_TRANS = zzUnpackTrans();
-    private static final String ZZ_ATTRIBUTE_PACKED_0 =
-            "\1\0\1\11\5\1\1\11\2\1\1\11\10\1\1\11" +
-                    "\1\1\1\11\1\1\2\11\2\1\4\11\4\1\6\11" +
-                    "\1\1\1\0\1\11\3\0\1\1\1\0\10\1\1\11" +
-                    "\2\1\2\11\1\1\3\11\3\1\1\11\2\0\16\1" +
-                    "\1\0\14\1\2\0\11\1\1\11\21\1";
+          "\1\2\1\3\1\4\1\5\1\6\1\2\2\7\1\10" +
+                  "\1\11\1\12\1\13\1\7\1\14\1\15\1\16\1\4" +
+                  "\1\17\1\20\1\21\1\22\1\23\1\4\1\24\1\4" +
+                  "\1\25\1\26\1\27\3\4\1\30\1\31\1\4\1\32" +
+                  "\1\33\1\34\1\35\1\36\1\37\1\40\1\41\1\42" +
+                  "\1\43\1\44\1\45\1\4\1\46\1\47\1\50\1\51" +
+                  "\1\52\2\4\70\0\1\4\12\0\10\4\1\0\3\4" +
+                  "\3\0\3\4\1\0\2\4\12\0\1\4\1\0\1\4" +
+                  "\4\0\3\4\2\0\2\4\11\0\10\4\1\0\3\4" +
+                  "\3\0\3\4\1\0\2\4\12\0\1\4\1\0\1\4" +
+                  "\4\0\3\4\3\0\1\5\62\0\4\53\1\54\1\55" +
+                  "\60\53\6\0\2\7\4\0\1\7\51\0\5\56\1\57" +
+                  "\3\56\1\54\54\56\12\0\1\60\1\61\54\0\2\4" +
+                  "\11\0\1\4\1\62\6\4\1\0\1\4\1\63\1\4" +
+                  "\3\0\3\4\1\0\2\4\12\0\1\4\1\0\1\4" +
+                  "\4\0\3\4\2\0\2\4\11\0\10\4\1\0\1\4" +
+                  "\1\64\1\4\3\0\3\4\1\0\2\4\12\0\1\4" +
+                  "\1\0\1\4\4\0\3\4\2\0\2\4\11\0\10\4" +
+                  "\1\0\3\4\3\0\1\65\2\4\1\0\2\4\12\0" +
+                  "\1\4\1\0\1\4\4\0\3\4\2\0\2\4\11\0" +
+                  "\5\4\1\66\2\4\1\0\3\4\3\0\3\4\1\0" +
+                  "\2\4\12\0\1\4\1\0\1\4\4\0\3\4\2\0" +
+                  "\2\4\11\0\3\4\1\67\4\4\1\0\3\4\3\0" +
+                  "\3\4\1\0\2\4\12\0\1\4\1\0\1\4\4\0" +
+                  "\3\4\2\0\2\4\11\0\1\4\1\70\6\4\1\0" +
+                  "\1\4\1\71\1\4\3\0\3\4\1\0\2\4\12\0" +
+                  "\1\4\1\0\1\4\4\0\3\4\2\0\2\4\11\0" +
+                  "\5\4\1\72\2\4\1\0\3\4\3\0\3\4\1\0" +
+                  "\2\4\12\0\1\4\1\0\1\4\4\0\3\4\2\0" +
+                  "\2\4\11\0\10\4\1\0\2\4\1\73\3\0\3\4" +
+                  "\1\0\2\4\12\0\1\4\1\0\1\4\4\0\3\4" +
+                  "\33\0\1\74\34\0\2\4\11\0\1\4\1\75\1\76" +
+                  "\5\4\1\0\3\4\3\0\3\4\1\0\2\4\12\0" +
+                  "\1\4\1\0\1\4\4\0\3\4\42\0\1\77\76\0" +
+                  "\1\100\65\0\1\101\57\0\1\102\22\0\2\4\11\0" +
+                  "\10\4\1\0\3\4\3\0\3\4\1\0\1\4\1\103" +
+                  "\12\0\1\4\1\0\1\4\4\0\3\4\45\0\1\104" +
+                  "\22\0\2\4\11\0\10\4\1\0\3\4\3\0\3\4" +
+                  "\1\0\2\4\12\0\1\4\1\0\1\4\4\0\1\4" +
+                  "\1\105\1\4\6\53\3\0\55\53\6\56\3\0\55\56" +
+                  "\6\60\1\106\1\107\56\60\13\61\1\110\52\61\2\0" +
+                  "\2\4\11\0\2\4\1\111\5\4\1\0\3\4\3\0" +
+                  "\3\4\1\0\2\4\12\0\1\4\1\0\1\4\4\0" +
+                  "\3\4\2\0\2\4\11\0\10\4\1\0\2\4\1\112" +
+                  "\3\0\3\4\1\0\2\4\12\0\1\4\1\0\1\4" +
+                  "\4\0\3\4\2\0\2\4\11\0\6\4\1\113\1\4" +
+                  "\1\0\3\4\3\0\3\4\1\0\2\4\12\0\1\4" +
+                  "\1\0\1\4\4\0\3\4\2\0\2\4\11\0\6\4" +
+                  "\1\114\1\4\1\0\3\4\3\0\3\4\1\0\2\4" +
+                  "\12\0\1\4\1\0\1\4\4\0\3\4\2\0\2\4" +
+                  "\11\0\10\4\1\0\3\4\3\0\1\4\1\115\1\4" +
+                  "\1\0\2\4\12\0\1\4\1\0\1\4\4\0\3\4" +
+                  "\2\0\2\4\11\0\10\4\1\0\3\4\3\0\3\4" +
+                  "\1\0\1\4\1\116\12\0\1\4\1\0\1\4\4\0" +
+                  "\3\4\2\0\2\4\11\0\1\4\1\117\6\4\1\0" +
+                  "\3\4\3\0\3\4\1\0\2\4\12\0\1\4\1\0" +
+                  "\1\4\4\0\3\4\2\0\2\4\11\0\10\4\1\0" +
+                  "\1\120\2\4\3\0\3\4\1\0\2\4\12\0\1\4" +
+                  "\1\0\1\4\4\0\3\4\2\0\2\4\11\0\10\4" +
+                  "\1\0\3\4\3\0\3\4\1\0\1\4\1\121\12\0" +
+                  "\1\4\1\0\1\4\4\0\3\4\2\0\2\4\11\0" +
+                  "\2\4\1\122\5\4\1\0\3\4\3\0\3\4\1\0" +
+                  "\2\4\12\0\1\4\1\0\1\4\4\0\3\4\2\0" +
+                  "\2\4\11\0\10\4\1\0\3\4\3\0\3\4\1\0" +
+                  "\2\4\12\0\1\4\1\0\1\123\4\0\3\4\2\0" +
+                  "\2\4\11\0\1\4\1\124\6\4\1\0\3\4\3\0" +
+                  "\3\4\1\0\2\4\12\0\1\4\1\0\1\4\4\0" +
+                  "\3\4\2\0\2\4\11\0\10\4\1\0\3\4\3\0" +
+                  "\3\4\1\0\2\4\12\0\1\4\1\0\1\4\4\0" +
+                  "\2\4\1\125\6\0\1\106\57\0\12\61\1\126\1\127" +
+                  "\52\61\2\0\2\4\11\0\3\4\1\130\4\4\1\0" +
+                  "\3\4\3\0\3\4\1\0\2\4\12\0\1\4\1\0" +
+                  "\1\4\4\0\3\4\2\0\2\4\11\0\10\4\1\0" +
+                  "\1\4\1\131\1\4\3\0\3\4\1\0\2\4\12\0" +
+                  "\1\4\1\0\1\4\4\0\3\4\2\0\2\4\11\0" +
+                  "\10\4\1\0\3\4\3\0\3\4\1\0\1\4\1\132" +
+                  "\12\0\1\4\1\0\1\4\4\0\3\4\2\0\2\4" +
+                  "\11\0\7\4\1\133\1\0\3\4\3\0\3\4\1\0" +
+                  "\2\4\12\0\1\4\1\0\1\4\4\0\3\4\2\0" +
+                  "\2\4\11\0\10\4\1\0\3\4\3\0\2\4\1\134" +
+                  "\1\0\2\4\12\0\1\4\1\0\1\4\4\0\3\4" +
+                  "\2\0\2\4\11\0\10\4\1\0\1\4\1\135\1\4" +
+                  "\3\0\3\4\1\0\2\4\12\0\1\4\1\0\1\4" +
+                  "\4\0\3\4\2\0\2\4\11\0\3\4\1\136\4\4" +
+                  "\1\0\3\4\3\0\3\4\1\0\2\4\12\0\1\4" +
+                  "\1\0\1\4\4\0\3\4\2\0\2\4\11\0\10\4" +
+                  "\1\0\1\137\2\4\3\0\3\4\1\0\2\4\12\0" +
+                  "\1\4\1\0\1\4\4\0\3\4\2\0\2\4\11\0" +
+                  "\3\4\1\140\4\4\1\0\3\4\3\0\3\4\1\0" +
+                  "\2\4\12\0\1\4\1\0\1\4\4\0\3\4\2\0" +
+                  "\2\4\11\0\1\141\7\4\1\0\3\4\3\0\3\4" +
+                  "\1\0\2\4\12\0\1\4\1\0\1\4\4\0\3\4" +
+                  "\2\0\2\4\11\0\10\4\1\0\3\4\3\0\1\142" +
+                  "\2\4\1\0\2\4\12\0\1\4\1\0\1\4\4\0" +
+                  "\3\4\2\0\2\4\11\0\1\4\1\143\6\4\1\0" +
+                  "\3\4\3\0\3\4\1\0\2\4\12\0\1\4\1\0" +
+                  "\1\4\4\0\3\4\13\0\1\144\52\0\12\61\1\145" +
+                  "\1\127\52\61\2\0\2\4\11\0\3\4\1\146\4\4" +
+                  "\1\0\3\4\3\0\3\4\1\0\2\4\12\0\1\4" +
+                  "\1\0\1\4\4\0\3\4\2\0\2\4\11\0\1\4" +
+                  "\1\147\6\4\1\0\3\4\3\0\3\4\1\0\2\4" +
+                  "\12\0\1\4\1\0\1\4\4\0\3\4\2\0\2\4" +
+                  "\11\0\1\4\1\150\6\4\1\0\3\4\3\0\3\4" +
+                  "\1\0\2\4\12\0\1\4\1\0\1\4\4\0\3\4" +
+                  "\2\0\2\4\11\0\1\4\1\151\6\4\1\0\3\4" +
+                  "\3\0\3\4\1\0\2\4\12\0\1\4\1\0\1\4" +
+                  "\4\0\3\4\2\0\2\4\11\0\5\4\1\152\2\4" +
+                  "\1\0\3\4\3\0\3\4\1\0\2\4\12\0\1\4" +
+                  "\1\0\1\4\4\0\3\4\2\0\2\4\11\0\10\4" +
+                  "\1\0\1\4\1\153\1\4\3\0\3\4\1\0\2\4" +
+                  "\12\0\1\4\1\0\1\4\4\0\3\4\2\0\2\4" +
+                  "\11\0\3\4\1\154\4\4\1\0\3\4\3\0\3\4" +
+                  "\1\0\2\4\12\0\1\4\1\0\1\4\4\0\3\4" +
+                  "\2\0\2\4\11\0\10\4\1\0\1\4\1\155\1\4" +
+                  "\3\0\3\4\1\0\2\4\12\0\1\4\1\0\1\4" +
+                  "\4\0\3\4\2\0\2\4\11\0\10\4\1\0\1\4" +
+                  "\1\156\1\4\3\0\3\4\1\0\2\4\12\0\1\4" +
+                  "\1\0\1\4\4\0\3\4\12\0\1\157\55\0\2\4" +
+                  "\11\0\2\4\1\160\5\4\1\0\3\4\3\0\3\4" +
+                  "\1\0\2\4\12\0\1\4\1\0\1\4\4\0\3\4" +
+                  "\2\0\2\4\11\0\2\4\1\161\5\4\1\0\3\4" +
+                  "\3\0\3\4\1\0\2\4\12\0\1\4\1\0\1\4" +
+                  "\4\0\3\4\2\0\2\4\11\0\10\4\1\0\2\4" +
+                  "\1\162\3\0\3\4\1\0\2\4\12\0\1\4\1\0" +
+                  "\1\4\4\0\3\4\2\0\2\4\11\0\6\4\1\163" +
+                  "\1\4\1\0\3\4\3\0\3\4\1\0\2\4\12\0" +
+                  "\1\4\1\0\1\4\4\0\3\4\2\0\2\4\11\0" +
+                  "\10\4\1\0\2\4\1\164\3\0\3\4\1\0\2\4" +
+                  "\12\0\1\4\1\0\1\4\4\0\3\4\2\0\2\4" +
+                  "\11\0\10\4\1\0\2\4\1\165\3\0\3\4\1\0" +
+                  "\2\4\12\0\1\4\1\0\1\4\4\0\3\4\2\0" +
+                  "\2\4\11\0\10\4\1\0\1\4\1\166\1\4\3\0" +
+                  "\3\4\1\0\2\4\12\0\1\4\1\0\1\4\4\0" +
+                  "\3\4\2\0\2\4\11\0\10\4\1\0\2\4\1\167" +
+                  "\3\0\3\4\1\0\2\4\12\0\1\4\1\0\1\4" +
+                  "\4\0\3\4\2\0\2\4\11\0\1\4\1\170\6\4" +
+                  "\1\0\3\4\3\0\3\4\1\0\2\4\12\0\1\4" +
+                  "\1\0\1\4\4\0\3\4\2\0\2\4\11\0\6\4" +
+                  "\1\171\1\4\1\0\3\4\3\0\3\4\1\0\2\4" +
+                  "\12\0\1\4\1\0\1\4\4\0\3\4\2\0\2\4" +
+                  "\11\0\10\4\1\0\3\4\3\0\1\172\2\4\1\0" +
+                  "\2\4\12\0\1\4\1\0\1\4\4\0\3\4\2\0" +
+                  "\2\4\11\0\2\4\1\173\5\4\1\0\3\4\3\0" +
+                  "\3\4\1\0\2\4\12\0\1\4\1\0\1\4\4\0" +
+                  "\3\4\2\0\2\4\11\0\10\4\1\0\2\4\1\174" +
+                  "\3\0\3\4\1\0\2\4\12\0\1\4\1\0\1\4" +
+                  "\4\0\3\4\2\0\2\4\11\0\6\4\1\175\1\4" +
+                  "\1\0\3\4\3\0\3\4\1\0\2\4\12\0\1\4" +
+                  "\1\0\1\4\4\0\3\4\2\0\2\4\11\0\10\4" +
+                  "\1\0\1\4\1\176\1\4\3\0\3\4\1\0\2\4" +
+                  "\12\0\1\4\1\0\1\4\4\0\3\4\2\0\2\4" +
+                  "\11\0\10\4\1\0\3\4\3\0\3\4\1\0\2\4" +
+                  "\12\0\1\4\1\0\1\177\4\0\3\4\2\0\2\4" +
+                  "\11\0\6\4\1\200\1\4\1\0\3\4\3\0\3\4" +
+                  "\1\0\2\4\12\0\1\4\1\0\1\4\4\0\3\4";
+  /**
+   * The transition table of the DFA
+   */
+  private static final int[] ZZ_TRANS = zzUnpackTrans();
+  private static final String ZZ_ATTRIBUTE_PACKED_0 =
+          "\1\0\1\11\5\1\1\11\2\1\1\11\7\1\1\11" +
+                  "\1\1\2\11\1\1\1\11\2\1\5\11\2\1\1\11" +
+                  "\2\1\2\11\1\1\2\11\1\1\1\0\1\11\3\0" +
+                  "\1\1\1\0\12\1\1\11\2\1\4\11\1\1\1\11" +
+                  "\1\1\1\11\2\0\16\1\1\0\14\1\2\0\11\1" +
+                  "\1\11\21\1";
 
-    /* user code: */
-    public _XtextLexer() {
-        this((java.io.Reader) null);
-    }
+  /* user code: */
+  public _XtextLexer() {
+    this((java.io.Reader) null);
+  }
 
-    private static int[] zzUnpackAction() {
-        int[] result = new int[128];
-        int offset = 0;
-        offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
-        return result;
-    }
-
-    private static int[] zzUnpackRowMap() {
-        int[] result = new int[128];
+  private static int[] zzUnpackAction() {
+    int[] result = new int[128];
     int offset = 0;
-        offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
+    offset = zzUnpackAction(ZZ_ACTION_PACKED_0, offset, result);
     return result;
   }
 
-  private static int zzUnpackTrans(String packed, int offset, int [] result) {
+  private static int[] zzUnpackRowMap() {
+    int[] result = new int[128];
+    int offset = 0;
+    offset = zzUnpackRowMap(ZZ_ROWMAP_PACKED_0, offset, result);
+    return result;
+  }
+
+  private static int zzUnpackTrans(String packed, int offset, int[] result) {
     int i = 0;       /* index in packed string  */
     int j = offset;  /* index in unpacked array */
     int l = packed.length();
@@ -306,35 +321,35 @@ public class _XtextLexer implements FlexLexer {
 
   /* error messages for the codes above */
   private static final String[] ZZ_ERROR_MSG = {
-    "Unknown internal scanner error",
-    "Error: could not match input",
-    "Error: pushback value was too large"
+          "Unknown internal scanner error",
+          "Error: could not match input",
+          "Error: pushback value was too large"
   };
 
   /**
    * ZZ_ATTRIBUTE[aState] contains the attributes of state <code>aState</code>
    */
-  private static final int [] ZZ_ATTRIBUTE = zzUnpackAttribute();
+  private static final int[] ZZ_ATTRIBUTE = zzUnpackAttribute();
 
-    private static int zzUnpackRowMap(String packed, int offset, int[] result) {
-        int i = 0;  /* index in packed string  */
-        int j = offset;  /* index in unpacked array */
-        int l = packed.length();
-        while (i < l) {
-            int high = packed.charAt(i++) << 16;
-            result[j++] = high | packed.charAt(i++);
-        }
-        return j;
+  private static int zzUnpackRowMap(String packed, int offset, int[] result) {
+    int i = 0;  /* index in packed string  */
+    int j = offset;  /* index in unpacked array */
+    int l = packed.length();
+    while (i < l) {
+      int high = packed.charAt(i++) << 16;
+      result[j++] = high | packed.charAt(i++);
     }
+    return j;
+  }
 
-    private static int[] zzUnpackTrans() {
-        int[] result = new int[4730];
+  private static int[] zzUnpackTrans() {
+    int[] result = new int[4644];
     int offset = 0;
-        offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
+    offset = zzUnpackTrans(ZZ_TRANS_PACKED_0, offset, result);
     return result;
   }
 
-  private static int zzUnpackAttribute(String packed, int offset, int [] result) {
+  private static int zzUnpackAttribute(String packed, int offset, int[] result) {
     int i = 0;       /* index in packed string  */
     int j = offset;  /* index in unpacked array */
     int l = packed.length();
@@ -377,24 +392,28 @@ public class _XtextLexer implements FlexLexer {
    */
   private boolean zzAtBOL = true;
 
-  /** zzAtEOF == true <=> the scanner is at the EOF */
+  /**
+   * zzAtEOF == true <=> the scanner is at the EOF
+   */
   private boolean zzAtEOF;
 
-  /** denotes if the user-EOF-code has already been executed */
+  /**
+   * denotes if the user-EOF-code has already been executed
+   */
   private boolean zzEOFDone;
 
-    private static int[] zzUnpackAttribute() {
-        int[] result = new int[128];
-        int offset = 0;
-        offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
-        return result;
+  private static int[] zzUnpackAttribute() {
+    int[] result = new int[128];
+    int offset = 0;
+    offset = zzUnpackAttribute(ZZ_ATTRIBUTE_PACKED_0, offset, result);
+    return result;
   }
 
 
   /**
    * Creates a new scanner
    *
-   * @param   in  the java.io.Reader to read input from.
+   * @param in the java.io.Reader to read input from.
    */
   public _XtextLexer(java.io.Reader in) {
     this.zzReader = in;
@@ -443,9 +462,9 @@ public class _XtextLexer implements FlexLexer {
   /**
    * Refills the input buffer.
    *
-   * @return      <code>false</code>, iff there was new input.
+   * @return      {@code false}, iff there was new input.
    *
-   * @exception   java.io.IOException  if any I/O-Error occurs
+   * @exception java.io.IOException  if any I/O-Error occurs
    */
   private boolean zzRefill() throws java.io.IOException {
     return true;
@@ -479,7 +498,7 @@ public class _XtextLexer implements FlexLexer {
 
 
   /**
-   * Returns the character at position <tt>pos</tt> from the
+   * Returns the character at position {@code pos} from the
    * matched text.
    *
    * It is equivalent to yytext().charAt(pos), but faster
@@ -543,6 +562,7 @@ public class _XtextLexer implements FlexLexer {
 
     zzMarkedPos -= number;
   }
+
 
   /**
    * Resumes scanning until the next regular expression is matched,
@@ -634,297 +654,297 @@ public class _XtextLexer implements FlexLexer {
       }
       else {
         switch (zzAction < 0 ? zzAction : ZZ_ACTION[zzAction]) {
-            case 1: {
-                return ANY_OTHER;
-            } 
-            // fall through
-            case 49:
-                break;
-          case 2: 
-            { return ID;
-            } 
-            // fall through
-            case 50:
-                break;
-          case 3: 
-            { return INT;
-            } 
-            // fall through
-            case 51:
-                break;
-          case 4: 
-            { return WHITE_SPACE;
-            } 
-            // fall through
-            case 52:
-                break;
-            case 5: {
-                return BAD_CHARACTER;
-            } 
-            // fall through
-            case 53:
-                break;
-            case 6: {
-                return ASTERISK_KEYWORD;
-            } 
-            // fall through
-            case 54:
-                break;
-            case 7: {
-                return PLUS_KEYWORD;
-            } 
-            // fall through
-            case 55:
-                break;
-            case 8: {
-                return R_BRACKET_KEYWORD;
-            } 
-            // fall through
-            case 56:
-                break;
-            case 9: {
-                return ACX_MARK_KEYWORD;
-            } 
-            // fall through
-            case 57:
-                break;
-            case 10: {
-                return EQUALS_KEYWORD;
-            } 
-            // fall through
-            case 58:
-                break;
-            case 11: {
-                return R_ANGLE_BRACKET_KEYWORD;
-            } 
-            // fall through
-            case 59:
-                break;
-            case 12: {
-                return AT_SIGN_KEYWORD;
-            }
-            // fall through
-            case 60:
-                break;
-            case 13: {
-                return QUES_MARK_KEYWORD;
-            } 
-            // fall through
-            case 61:
-                break;
-            case 14: {
-                return R_SQUARE_BRACKET_KEYWORD;
-            } 
-            // fall through
-            case 62:
-                break;
-            case 15: {
-                return L_ANGLE_BRACKET_KEYWORD;
-            } 
-            // fall through
-            case 63:
-                break;
-            case 16: {
-                return PIPE_KEYWORD;
-            } 
-            // fall through
-            case 64:
-                break;
-            case 17: {
-                return L_SQUARE_BRACKET_KEYWORD;
-            } 
-            // fall through
-            case 65:
-                break;
-            case 18: {
-                return COLON_KEYWORD;
-            } 
-            // fall through
-            case 66:
-                break;
-            case 19: {
-                return DOT_KEYWORD;
-            } 
-            // fall through
-            case 67:
-                break;
-            case 20: {
-                return COMMA_KEYWORD;
-            } 
-            // fall through
-            case 68:
-                break;
-            case 21: {
-                return L_BRACKET_KEYWORD;
-            } 
-            // fall through
-            case 69:
-                break;
-            case 22: {
-                return AMPERSAND_KEYWORD;
-            } 
-            // fall through
-            case 70:
-                break;
-            case 23: {
-                return R_BRACE_KEYWORD;
-            } 
-            // fall through
-            case 71:
-                break;
-            case 24: {
-                return SEMICOLON_KEYWORD;
-            } 
-            // fall through
-            case 72:
-                break;
-            case 25: {
-                return L_BRACE_KEYWORD;
-            } 
-            // fall through
-            case 73:
-                break;
-            case 26:
-            { return STRING;
-            } 
-            // fall through
-            case 74:
-                break;
-            case 27:
-            { return SL_COMMENT;
-            } 
-            // fall through
-            case 75:
-                break;
-            case 28: {
-                return AS_KEYWORD;
-            } 
-            // fall through
-            case 76:
-                break;
-            case 29: {
-                return PLUS_EQUALS_KEYWORD;
-            } 
-            // fall through
-            case 77:
-                break;
-            case 30: {
-                return PRED_KEYWORD;
-            } 
-            // fall through
-            case 78:
-                break;
-            case 31: {
-                return QUES_EQUALS_KEYWORD;
-            } 
-            // fall through
-            case 79:
-                break;
-            case 32: {
-                return COLONS_KEYWORD;
-            } 
-            // fall through
-            case 80:
-                break;
-            case 33: {
-                return WEAK_PRED_KEYWORD;
-            } 
-            // fall through
-            case 81:
-                break;
-            case 34: {
-                return RANGE_KEYWORD;
-            } 
-            // fall through
-            case 82:
-                break;
-            case 35: {
-                return EOF_KEY_KEYWORD;
-            } 
-            // fall through
-            case 83:
-                break;
-            case 36: {
-                return ML_COMMENT;
-            } 
-            // fall through
-            case 84:
-                break;
-            case 37: {
-                return ENUM_KEYWORD;
-            } 
-            // fall through
-            case 85:
-                break;
-            case 38: {
-                return TRUE_KEYWORD;
-            } 
-            // fall through
-            case 86:
-                break;
-            case 39: {
-                return WITH_KEYWORD;
-            } 
-            // fall through
-            case 87:
-                break;
-            case 40: {
-                return FALSE_KEYWORD;
-            } 
-            // fall through
-            case 88:
-                break;
-            case 41: {
-                return IMPORT_KEYWORD;
-            } 
-            // fall through
-            case 89:
-                break;
-            case 42: {
-                return HIDDEN_KEYWORD;
-            } 
-            // fall through
-            case 90:
-                break;
-            case 43: {
-                return GRAMMAR_KEYWORD;
-            }
-            // fall through
-            case 91:
-                break;
-            case 44: {
-                return RETURNS_KEYWORD;
-            } 
-            // fall through
-            case 92:
-                break;
-            case 45: {
-                return CURRENT_KEYWORD;
-            } 
-            // fall through
-            case 93:
-                break;
-            case 46: {
-                return GENERATE_KEYWORD;
-            } 
-            // fall through
-            case 94:
-                break;
-            case 47: {
-                return TERMINAL_KEYWORD;
-            } 
-            // fall through
-            case 95:
-                break;
-            case 48: {
-                return FRAGMENT_KEYWORD;
-            } 
-            // fall through
-            case 96:
-                break;
+          case 1: {
+            return ANY_OTHER;
+          }
+          // fall through
+          case 49:
+            break;
+          case 2: {
+            return ID;
+          }
+          // fall through
+          case 50:
+            break;
+          case 3: {
+            return INT;
+          }
+          // fall through
+          case 51:
+            break;
+          case 4: {
+            return WHITE_SPACE;
+          }
+          // fall through
+          case 52:
+            break;
+          case 5: {
+            return BAD_CHARACTER;
+          }
+          // fall through
+          case 53:
+            break;
+          case 6: {
+            return ASTERISK_KEYWORD;
+          }
+          // fall through
+          case 54:
+            break;
+          case 7: {
+            return COMMA_KEYWORD;
+          }
+          // fall through
+          case 55:
+            break;
+          case 8: {
+            return L_BRACKET_KEYWORD;
+          }
+          // fall through
+          case 56:
+            break;
+          case 9: {
+            return R_BRACKET_KEYWORD;
+          }
+          // fall through
+          case 57:
+            break;
+          case 10: {
+            return DOT_KEYWORD;
+          }
+          // fall through
+          case 58:
+            break;
+          case 11: {
+            return AT_SIGN_KEYWORD;
+          }
+          // fall through
+          case 59:
+            break;
+          case 12: {
+            return COLON_KEYWORD;
+          }
+          // fall through
+          case 60:
+            break;
+          case 13: {
+            return SEMICOLON_KEYWORD;
+          }
+          // fall through
+          case 61:
+            break;
+          case 14: {
+            return L_ANGLE_BRACKET_KEYWORD;
+          }
+          // fall through
+          case 62:
+            break;
+          case 15: {
+            return R_ANGLE_BRACKET_KEYWORD;
+          }
+          // fall through
+          case 63:
+            break;
+          case 16: {
+            return PIPE_KEYWORD;
+          }
+          // fall through
+          case 64:
+            break;
+          case 17: {
+            return AMPERSAND_KEYWORD;
+          }
+          // fall through
+          case 65:
+            break;
+          case 18: {
+            return QUES_MARK_KEYWORD;
+          }
+          // fall through
+          case 66:
+            break;
+          case 19: {
+            return PLUS_KEYWORD;
+          }
+          // fall through
+          case 67:
+            break;
+          case 20: {
+            return L_BRACE_KEYWORD;
+          }
+          // fall through
+          case 68:
+            break;
+          case 21: {
+            return EQUALS_KEYWORD;
+          }
+          // fall through
+          case 69:
+            break;
+          case 22: {
+            return R_BRACE_KEYWORD;
+          }
+          // fall through
+          case 70:
+            break;
+          case 23: {
+            return ACX_MARK_KEYWORD;
+          }
+          // fall through
+          case 71:
+            break;
+          case 24: {
+            return L_SQUARE_BRACKET_KEYWORD;
+          }
+          // fall through
+          case 72:
+            break;
+          case 25: {
+            return R_SQUARE_BRACKET_KEYWORD;
+          }
+          // fall through
+          case 73:
+            break;
+          case 26: {
+            return STRING;
+          }
+          // fall through
+          case 74:
+            break;
+          case 27: {
+            return SL_COMMENT;
+          }
+          // fall through
+          case 75:
+            break;
+          case 28: {
+            return AS_KEYWORD;
+          }
+          // fall through
+          case 76:
+            break;
+          case 29: {
+            return RANGE_KEYWORD;
+          }
+          // fall through
+          case 77:
+            break;
+          case 30: {
+            return COLONS_KEYWORD;
+          }
+          // fall through
+          case 78:
+            break;
+          case 31: {
+            return QUES_EQUALS_KEYWORD;
+          }
+          // fall through
+          case 79:
+            break;
+          case 32: {
+            return PLUS_EQUALS_KEYWORD;
+          }
+          // fall through
+          case 80:
+            break;
+          case 33: {
+            return PRED_KEYWORD;
+          }
+          // fall through
+          case 81:
+            break;
+          case 34: {
+            return WEAK_PRED_KEYWORD;
+          }
+          // fall through
+          case 82:
+            break;
+          case 35: {
+            return EOF_KEYWORD;
+          }
+          // fall through
+          case 83:
+            break;
+          case 36: {
+            return ML_COMMENT;
+          }
+          // fall through
+          case 84:
+            break;
+          case 37: {
+            return WITH_KEYWORD;
+          }
+          // fall through
+          case 85:
+            break;
+          case 38: {
+            return TRUE_KEYWORD;
+          }
+          // fall through
+          case 86:
+            break;
+          case 39: {
+            return ENUM_KEYWORD;
+          }
+          // fall through
+          case 87:
+            break;
+          case 40: {
+            return FALSE_KEYWORD;
+          }
+          // fall through
+          case 88:
+            break;
+          case 41: {
+            return IMPORT_KEYWORD;
+          }
+          // fall through
+          case 89:
+            break;
+          case 42: {
+            return HIDDEN_KEYWORD;
+          }
+          // fall through
+          case 90:
+            break;
+          case 43: {
+            return GRAMMAR_KEYWORD;
+          }
+          // fall through
+          case 91:
+            break;
+          case 44: {
+            return RETURNS_KEYWORD;
+          }
+          // fall through
+          case 92:
+            break;
+          case 45: {
+            return CURRENT_KEYWORD;
+          }
+          // fall through
+          case 93:
+            break;
+          case 46: {
+            return GENERATE_KEYWORD;
+          }
+          // fall through
+          case 94:
+            break;
+          case 47: {
+            return TERMINAL_KEYWORD;
+          }
+          // fall through
+          case 95:
+            break;
+          case 48: {
+            return FRAGMENT_KEYWORD;
+          }
+          // fall through
+          case 96:
+            break;
           default:
             zzScanError(ZZ_NO_MATCH);
-          }
+        }
       }
     }
   }

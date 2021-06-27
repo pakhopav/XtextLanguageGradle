@@ -4,7 +4,7 @@ import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.openapi.util.TextRange
 import com.intellij.psi.PsiElement
-import com.intellij.xtextLanguage.xtext.emf.BridgeResult
+import com.intellij.xtextLanguage.xtext.bridge.BridgeResult
 import org.eclipse.emf.ecore.EObject
 import org.eclipse.emf.ecore.EStructuralFeature
 import kotlin.test.assertNotNull

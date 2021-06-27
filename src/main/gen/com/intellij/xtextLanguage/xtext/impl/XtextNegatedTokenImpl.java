@@ -22,10 +22,11 @@ public class XtextNegatedTokenImpl extends XtextPsiCompositeElementImpl implemen
     visitor.visitNegatedToken(this);
   }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
-    else super.accept(visitor);
-  }
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
+        else super.accept(visitor);
+    }
 
   @Override
   @NotNull

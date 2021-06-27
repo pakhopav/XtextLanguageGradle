@@ -8,10 +8,10 @@ import org.jetbrains.annotations.Nullable;
 public interface XtextTypeRef extends PsiElement {
 
   @Nullable
-  XtextREFERENCEAbstractMetamodelDeclaration getREFERENCEAbstractMetamodelDeclaration();
+  XtextREFERENCEAbstractMetamodelDeclarationID getREFERENCEAbstractMetamodelDeclarationID();
 
   @NotNull
-  XtextREFERENCEEcoreEClassifier getREFERENCEEcoreEClassifier();
+  XtextREFERENCEEClassifierID getREFERENCEEClassifierID();
 
   @Nullable
   PsiElement getColonsKeyword();

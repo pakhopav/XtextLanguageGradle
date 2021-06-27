@@ -26,7 +26,7 @@ class BridgeRuleFileGenerator(extension: String, val context: MetaContext, rootP
             """
             |import $packageDir.psi.*
             |import com.intellij.psi.PsiElement
-            |import com.intellij.xtextLanguage.xtext.emf.*
+            |import com.intellij.xtextLanguage.xtext.bridge.*
             |import org.eclipse.emf.ecore.EObject
             |import org.eclipse.emf.ecore.EDataType
             |import org.eclipse.emf.ecore.EStructuralFeature

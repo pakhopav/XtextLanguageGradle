@@ -6,7 +6,7 @@ import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
 import com.intellij.xtextLanguage.xtext.psi.XtextEnumLiteralDeclaration;
 import com.intellij.xtextLanguage.xtext.psi.XtextKeyword;
-import com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEEcoreEEnumLiteral;
+import com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEEEnumLiteralID;
 import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
 import org.jetbrains.annotations.NotNull;
@@ -24,10 +24,11 @@ public class XtextEnumLiteralDeclarationImpl extends XtextPsiCompositeElementImp
     visitor.visitEnumLiteralDeclaration(this);
   }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
-    else super.accept(visitor);
-  }
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
+        else super.accept(visitor);
+    }
 
   @Override
   @Nullable
@@ -35,11 +36,11 @@ public class XtextEnumLiteralDeclarationImpl extends XtextPsiCompositeElementImp
     return findChildByClass(XtextKeyword.class);
   }
 
-  @Override
-  @NotNull
-  public XtextREFERENCEEcoreEEnumLiteral getREFERENCEEcoreEEnumLiteral() {
-    return findNotNullChildByClass(XtextREFERENCEEcoreEEnumLiteral.class);
-  }
+    @Override
+    @NotNull
+    public XtextREFERENCEEEnumLiteralID getREFERENCEEEnumLiteralID() {
+        return findNotNullChildByClass(XtextREFERENCEEEnumLiteralID.class);
+    }
 
   @Override
   @Nullable

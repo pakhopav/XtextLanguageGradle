@@ -69,26 +69,30 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
         //========================================================
 
         override fun visitTerminalAlternatives(alternatives: XtextTerminalAlternatives) {
-            val manyGroups = alternatives.terminalGroupList.size > 1
+            val terminalGroupList = mutableListOf(alternatives.terminalGroup)
+            alternatives.terminalAlternativesSuffix1?.let { terminalGroupList.addAll(it.terminalGroupList) }
+            val manyGroups = terminalGroupList.size > 1
             if (manyGroups) {
                 val treeBranch = TreeTerminalBranch(treeNodeStack.peek())
                 treeNodeStack.peek().addChild(treeBranch)
                 treeNodeStack.push(treeBranch)
             }
-            alternatives.terminalGroupList.forEach {
+            terminalGroupList.forEach {
                 visitTerminalGroup(it)
             }
             if (manyGroups) treeNodeStack.pop()
         }
 
         override fun visitTerminalGroup(group: XtextTerminalGroup) {
-            val manyTokens = group.terminalTokenList.size > 1
+            val terminalTokenList = mutableListOf(group.terminalToken)
+            group.terminalGroupSuffix1?.let { terminalTokenList.addAll(it.terminalTokenList) }
+            val manyTokens = terminalTokenList.size > 1
             if (manyTokens) {
                 val treeGroup = TreeTerminalGroup(treeNodeStack.peek(), Cardinality.NONE, false)
                 treeNodeStack.peek().addChild(treeGroup)
                 treeNodeStack.push(treeGroup)
             }
-            group.terminalTokenList.forEach {
+            terminalTokenList.forEach {
                 visitTerminalToken(it)
             }
             if (manyTokens) treeNodeStack.pop()
@@ -112,11 +116,11 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
             treeNodeStack.peek().addChild(terminalRange)
         }
 
-        override fun visitParenthesizedTerminalElement(o: XtextParenthesizedTerminalElement) {
+        override fun visitParenthesizedTerminalElement(parenthesizedTerminalElement: XtextParenthesizedTerminalElement) {
             val terminalGroup = TreeTerminalGroup(treeNodeStack.peek(), getCurrentCardinality(), true)
             treeNodeStack.peek().addChild(terminalGroup)
             treeNodeStack.push(terminalGroup)
-            visitTerminalAlternatives(o.terminalAlternatives)
+            visitTerminalAlternatives(parenthesizedTerminalElement.terminalAlternatives)
             treeNodeStack.pop()
 
         }
@@ -203,7 +207,7 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
         }
 
         private fun getRuleTypeDescriptor(rule: XtextParserRule): EmfClassDescriptor {
-            val returnTypeText = rule.typeRef?.text ?: rule.ruleNameAndParams.validID.text.eliminateCaret()
+            val returnTypeText = rule.typeRef?.text ?: rule.validID.text.eliminateCaret()
             val ruleType = emfRegistry.findOrCreateType(returnTypeText)
             if (ruleType == null) return EmfClassDescriptor.STRING
             return ruleType
@@ -249,8 +253,11 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
             //if token itself is not optional, check if it is parenthesized,
             // if so check optionality of every first token in group branches
             token.abstractTerminal?.parenthesizedElement?.let { parenthesizedElement ->
-                parenthesizedElement.alternatives.conditionalBranchList.forEach { branch ->
-                    val firstTokenInBrackets = PsiTreeUtil.getChildrenOfType(branch, XtextAbstractTokenWithCardinality::class.java)?.get(0)
+                val conditionalBranchList = mutableListOf(parenthesizedElement.alternatives.conditionalBranch)
+                parenthesizedElement.alternatives.alternativesSuffix1?.let { conditionalBranchList.addAll(it.conditionalBranchList) }
+                conditionalBranchList.forEach { branch ->
+                    val firstTokenInBrackets =
+                        PsiTreeUtil.getChildrenOfType(branch, XtextAbstractTokenWithCardinality::class.java)?.get(0)
                     firstTokenInBrackets?.let {
                         if (!goodElement(it)) return false
                     } ?: return false
@@ -353,14 +360,14 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
         }
 
 
-        override fun visitAbstractTerminal(o: XtextAbstractTerminal) {
-            o.keyword?.let {
+        override fun visitAbstractTerminal(abstractTerminal: XtextAbstractTerminal) {
+            abstractTerminal.keyword?.let {
                 visitKeyword(it)
             }
-            o.ruleCall?.let {
+            abstractTerminal.ruleCall?.let {
                 visitRuleCall(it)
             }
-            o.parenthesizedElement?.let {
+            abstractTerminal.parenthesizedElement?.let {
                 val treeGroup = TreeGroupImpl(it, treeNodeStack.peek(), getCurrentCardinality())
                 treeNodeStack.peek().addChild(treeGroup)
                 treeNodeStack.push(treeGroup)
@@ -370,35 +377,37 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
                 l--
                 treeNodeStack.pop()
             }
-            o.predicatedKeyword?.let {
+            abstractTerminal.predicatedKeyword?.let {
                 visitPredicatedKeyword(it)
             }
-            o.predicatedRuleCall?.let {
+            abstractTerminal.predicatedRuleCall?.let {
                 visitPredicatedRuleCall(it)
             }
-            o.predicatedGroup?.let {
+            abstractTerminal.predicatedGroup?.let {
                 visitPredicatedGroup(it)
             }
         }
 
-        override fun visitAssignment(o: XtextAssignment) {
-            var assignmentString = o.validID.text.replace("^", "")
-            o.equalsKeyword?.let { assignmentString = "$assignmentString=" }
-            o.plusEqualsKeyword?.let { assignmentString = "$assignmentString+=" }
-            o.quesEqualsKeyword?.let { assignmentString = "$assignmentString?=" }
+        override fun visitAssignment(assignment: XtextAssignment) {
+            var assignmentString = assignment.validID.text.replace("^", "")
+            assignment.equalsKeyword?.let { assignmentString = "$assignmentString=" }
+            assignment.plusEqualsKeyword?.let { assignmentString = "$assignmentString+=" }
+            assignment.quesEqualsKeyword?.let { assignmentString = "$assignmentString?=" }
 
-            visitAssignableTerminal(o.assignableTerminal, assignmentString)
+            visitAssignableTerminal(assignment.assignableTerminal, assignmentString)
         }
 
         override fun visitAlternatives(alternatives: XtextAlternatives) {
             val lastActionOnEntry = lastAction
-            var moreThanOneChild = alternatives.conditionalBranchList.size > 1
+            val conditionalBranchList = mutableListOf(alternatives.conditionalBranch)
+            alternatives.alternativesSuffix1?.let { conditionalBranchList.addAll(it.conditionalBranchList) }
+            var moreThanOneChild = conditionalBranchList.size > 1
             if (moreThanOneChild) {
                 val treeBranch = TreeBranchImpl(treeNodeStack.peek())
                 treeNodeStack.peek().addChild(treeBranch)
                 treeNodeStack.push(treeBranch)
             }
-            alternatives.conditionalBranchList.forEach {
+            conditionalBranchList.forEach {
                 if (lastActionOnEntry != null && lastAction == null) lastAction = lastActionOnEntry
                 visitConditionalBranch(it)
                 popSuffixIfNeeded()
@@ -408,9 +417,17 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
             }
         }
 
-        override fun visitConditionalBranch(o: XtextConditionalBranch) {
-            o.unorderedGroup?.let { unorderedGroup ->
-                val tokensListSize = unorderedGroup.groupList.flatMap { it.abstractTokenList }.filter { it.abstractTokenWithCardinality != null }.size
+        override fun visitConditionalBranch(branch: XtextConditionalBranch) {
+            branch.unorderedGroup?.let { unorderedGroup ->
+                val groupList = mutableListOf(unorderedGroup.group)
+                unorderedGroup.unorderedGroupSuffix1?.let { groupList.addAll(it.groupList) }
+                val tokensListSize = groupList
+                    .flatMap {
+                        val abstractTokenList = mutableListOf(it.abstractToken)
+                        it.groupSuffix1?.let { abstractTokenList.addAll(it.abstractTokenList) }
+                        abstractTokenList
+                    }
+                    .filter { it.abstractTokenWithCardinality != null }.size
                 if (treeNodeStack.peek() is TreeGroup || treeNodeStack.peek() is TreeRule || tokensListSize < 2) {
                     visitUnorderedGroup(unorderedGroup)
                 } else {
@@ -421,20 +438,20 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
                     treeNodeStack.pop()
                 }
             }
-            o.ruleFromConditionalBranchBranch2?.let {
-                visitRuleFromConditionalBranchBranch2(it)
-            }
+            //TODO branch with <Disjunction>
         }
 
         fun visitAssignableAlternatives(xtextAssignableAlternatives: XtextAssignableAlternatives, assignmentString: String) {
             val lastActionOnEntry = lastAction
-            var moreThanOneChild = xtextAssignableAlternatives.assignableTerminalList.size > 1
+            val assignableTerminalList = mutableListOf(xtextAssignableAlternatives.assignableTerminal)
+            xtextAssignableAlternatives.assignableAlternativesSuffix1?.let { assignableTerminalList.addAll(it.assignableTerminalList) }
+            var moreThanOneChild = assignableTerminalList.size > 1
             if (moreThanOneChild) {
                 val treeBranch = TreeBranchImpl(treeNodeStack.peek())
                 treeNodeStack.peek().addChild(treeBranch)
                 treeNodeStack.push(treeBranch)
             }
-            xtextAssignableAlternatives.assignableTerminalList.forEach {
+            assignableTerminalList.forEach {
                 if (lastActionOnEntry != null && lastAction == null) lastAction = lastActionOnEntry
                 visitAssignableTerminal(it, assignmentString)
                 popSuffixIfNeeded()
@@ -466,15 +483,24 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
             assignableTerminal.crossReference?.let {
                 val referenceType = emfRegistry.findOrCreateType(it.typeRef.text)
                 assertNotNull(referenceType)
-                val referenceNode = TreeCrossReferenceImpl(it, currentRule!!.name, treeNodeStack.peek(), getCurrentCardinality(), referenceType, Assignment.fromString(assignmentString))
+                val referenceNode = TreeCrossReferenceImpl(
+                    it,
+                    currentRule!!.name,
+                    treeNodeStack.peek(),
+                    getCurrentCardinality(),
+                    referenceType,
+                    Assignment.fromString(assignmentString)
+                )
                 addTreeNode(referenceNode)
             }
         }
 
 
-        override fun visitUnorderedGroup(o: XtextUnorderedGroup) {
-            if (o.groupList.size == 1) {
-                visitGroup(o.groupList.first())
+        override fun visitUnorderedGroup(unorderedGroup: XtextUnorderedGroup) {
+            val groupList = mutableListOf(unorderedGroup.group)
+            unorderedGroup.unorderedGroupSuffix1?.let { groupList.addAll(it.groupList) }
+            if (groupList.size == 1) {
+                visitGroup(groupList.first())
             } else {
                 throw Exception("Plugin does not support unordered groups")
             }
@@ -490,12 +516,12 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
             visitAssignableAlternatives(o.assignableAlternatives, assignmentString)
         }
 
-        override fun visitParenthesizedElement(o: XtextParenthesizedElement) {
-            visitAlternatives(o.alternatives)
+        override fun visitParenthesizedElement(parenthesizedElement: XtextParenthesizedElement) {
+            visitAlternatives(parenthesizedElement.alternatives)
         }
 
-        override fun visitPredicatedGroup(o: XtextPredicatedGroup) {
-            visitAlternatives(o.alternatives)
+        override fun visitPredicatedGroup(predicatedGroup: XtextPredicatedGroup) {
+            visitAlternatives(predicatedGroup.alternatives)
         }
 
         override fun visitPredicatedKeyword(predicatedKeyword: XtextPredicatedKeyword) {
@@ -503,13 +529,13 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
             addTreeNode(keywordNode)
         }
 
-        override fun visitRuleCall(o: XtextRuleCall) {
-            val treeLeaf = TreeRuleCallImpl(o, treeNodeStack.peek(), getCurrentCardinality())
+        override fun visitRuleCall(ruleCall: XtextRuleCall) {
+            val treeLeaf = TreeRuleCallImpl(ruleCall, treeNodeStack.peek(), getCurrentCardinality())
             addTreeNode(treeLeaf)
         }
 
-        override fun visitPredicatedRuleCall(o: XtextPredicatedRuleCall) {
-            val treeLeafRuleCall = TreeRuleCallImpl(o, treeNodeStack.peek(), getCurrentCardinality())
+        override fun visitPredicatedRuleCall(predicatedRuleCall: XtextPredicatedRuleCall) {
+            val treeLeafRuleCall = TreeRuleCallImpl(predicatedRuleCall, treeNodeStack.peek(), getCurrentCardinality())
             addTreeNode(treeLeafRuleCall)
         }
 
@@ -519,19 +545,21 @@ class RuleCreator(keywords: List<Keyword>, emfRegistry: EmfModelRegistry) {
 
 
         override fun visitEnumLiterals(enumLiterals: XtextEnumLiterals) {
-            val branchAdded = enumLiterals.enumLiteralDeclarationList.size > 1
+            val enumLiteralDeclarationList = mutableListOf(enumLiterals.enumLiteralDeclaration)
+            enumLiterals.enumLiteralsSuffix1?.let { enumLiteralDeclarationList.addAll(it.enumLiteralDeclarationList) }
+            val branchAdded = enumLiteralDeclarationList.size > 1
             if (branchAdded) {
                 val treeBranch = TreeBranchImpl(treeNodeStack.peek())
                 addTreeNode(treeBranch)
             }
-            enumLiterals.enumLiteralDeclarationList.forEach {
+            enumLiteralDeclarationList.forEach {
                 visitEnumLiteralDeclaration(it)
             }
             if (branchAdded) treeNodeStack.pop()
         }
 
         override fun visitEnumLiteralDeclaration(literalDeclaration: XtextEnumLiteralDeclaration) {
-            val psiKeyword = literalDeclaration.keyword ?: literalDeclaration.referenceEcoreEEnumLiteral
+            val psiKeyword = literalDeclaration.keyword ?: literalDeclaration.referenceeEnumLiteralID
             val keywordNode = createTreeKeyword(psiKeyword, null)
             addTreeNode(keywordNode)
         }

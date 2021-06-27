@@ -18,32 +18,33 @@ public class XtextTerminalTokenElementImpl extends XtextPsiCompositeElementImpl 
     visitor.visitTerminalTokenElement(this);
   }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
-    else super.accept(visitor);
-  }
-
-  @Override
-  @Nullable
-  public XtextAbstractNegatedToken getAbstractNegatedToken() {
-    return findChildByClass(XtextAbstractNegatedToken.class);
-  }
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof XtextVisitor) accept((XtextVisitor) visitor);
+        else super.accept(visitor);
+    }
 
     @Override
     @Nullable
-    public XtextCaretEOF getCaretEOF() {
-        return findChildByClass(XtextCaretEOF.class);
+    public XtextAbstractNegatedToken getAbstractNegatedToken() {
+        return findChildByClass(XtextAbstractNegatedToken.class);
     }
 
-  @Override
-  @Nullable
-  public XtextCharacterRange getCharacterRange() {
-    return findChildByClass(XtextCharacterRange.class);
-  }
+    @Override
+    @Nullable
+    public XtextCharacterRange getCharacterRange() {
+        return findChildByClass(XtextCharacterRange.class);
+    }
 
-  @Override
-  @Nullable
-  public XtextParenthesizedTerminalElement getParenthesizedTerminalElement() {
+    @Override
+    @Nullable
+    public XtextEof getEof() {
+        return findChildByClass(XtextEof.class);
+    }
+
+    @Override
+    @Nullable
+    public XtextParenthesizedTerminalElement getParenthesizedTerminalElement() {
     return findChildByClass(XtextParenthesizedTerminalElement.class);
   }
 

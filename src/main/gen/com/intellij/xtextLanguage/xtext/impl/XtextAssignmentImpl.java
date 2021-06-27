@@ -24,10 +24,11 @@ public class XtextAssignmentImpl extends XtextPsiCompositeElementImpl implements
     visitor.visitAssignment(this);
   }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
-    else super.accept(visitor);
-  }
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
+        else super.accept(visitor);
+    }
 
   @Override
   @NotNull

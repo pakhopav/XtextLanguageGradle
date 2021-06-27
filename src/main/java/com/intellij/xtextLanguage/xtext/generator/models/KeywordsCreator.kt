@@ -91,20 +91,20 @@ class KeywordsCreator() {
             }
         }
 
-        override fun visitKeyword(o: XtextKeyword) {
-            keywordList.add(o.text)
+        override fun visitKeyword(keyword: XtextKeyword) {
+            keywordList.add(keyword.text)
         }
 
         override fun visitEnumLiteralDeclaration(literalDeclaration: XtextEnumLiteralDeclaration) {
             literalDeclaration.keyword?.let {
                 keywordList.add(it.text)
             } ?: kotlin.run {
-                keywordList.add(literalDeclaration.referenceEcoreEEnumLiteral.text)
+                keywordList.add(literalDeclaration.referenceeEnumLiteralID.text)
             }
         }
 
-        override fun visitPredicatedKeyword(o: XtextPredicatedKeyword) {
-            keywordList.add(o.string.text)
+        override fun visitPredicatedKeyword(predicatedKeyword: XtextPredicatedKeyword) {
+            keywordList.add(predicatedKeyword.string.text)
         }
     }
 }

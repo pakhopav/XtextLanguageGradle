@@ -18,7 +18,8 @@ import org.jetbrains.annotations.NotNull;
 
 public class XtextParserDefinition implements ParserDefinition {
     public static final TokenSet WHITE_SPACES = TokenSet.create(TokenType.WHITE_SPACE);
-    public static final TokenSet KEYWORDS = TokenSet.create(XtextTypes.GRAMMAR_KEYWORD,
+    public static final TokenSet KEYWORDS = TokenSet.create(
+            XtextTypes.GRAMMAR_KEYWORD,
             XtextTypes.WITH_KEYWORD,
             XtextTypes.HIDDEN_KEYWORD,
             XtextTypes.GENERATE_KEYWORD,
@@ -30,10 +31,11 @@ public class XtextParserDefinition implements ParserDefinition {
             XtextTypes.TRUE_KEYWORD,
             XtextTypes.FALSE_KEYWORD,
             XtextTypes.TERMINAL_KEYWORD,
+            XtextTypes.EOF_KEYWORD,
             XtextTypes.ENUM_KEYWORD);
     public static final TokenSet COMMENTS = TokenSet.create(XtextTypes.SL_COMMENT, XtextTypes.ML_COMMENT);
     public static final IFileElementType FILE = new IFileElementType(XtextLanguage.INSTANCE);
-            
+
     @NotNull
     @Override
     public Lexer createLexer(Project project) {

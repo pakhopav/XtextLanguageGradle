@@ -7,22 +7,22 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface XtextTerminalRule extends PsiElement {
+public interface XtextTerminalRule extends XtextAbstractRule {
 
   @NotNull
   List<XtextAnnotation> getAnnotationList();
 
-    @NotNull
+  @NotNull
   XtextTerminalAlternatives getTerminalAlternatives();
 
   @Nullable
   XtextTypeRef getTypeRef();
 
-    @NotNull
+  @NotNull
   XtextValidID getValidID();
 
-    @NotNull
-    PsiElement getColonKeyword();
+  @NotNull
+  PsiElement getColonKeyword();
 
   @Nullable
   PsiElement getFragmentKeyword();
@@ -30,8 +30,8 @@ public interface XtextTerminalRule extends PsiElement {
   @Nullable
   PsiElement getReturnsKeyword();
 
-    @NotNull
-    PsiElement getSemicolonKeyword();
+  @NotNull
+  PsiElement getSemicolonKeyword();
 
   @NotNull
   PsiElement getTerminalKeyword();

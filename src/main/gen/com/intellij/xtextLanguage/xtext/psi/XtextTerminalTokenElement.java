@@ -9,11 +9,11 @@ public interface XtextTerminalTokenElement extends PsiElement {
   @Nullable
   XtextAbstractNegatedToken getAbstractNegatedToken();
 
-    @Nullable
-    XtextCaretEOF getCaretEOF();
-
   @Nullable
   XtextCharacterRange getCharacterRange();
+
+  @Nullable
+  XtextEof getEof();
 
   @Nullable
   XtextParenthesizedTerminalElement getParenthesizedTerminalElement();

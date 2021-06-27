@@ -1,16 +1,15 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.impl;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.lang.ASTNode;
-import com.intellij.psi.PsiElement;
 import com.intellij.psi.PsiElementVisitor;
-import com.intellij.psi.util.PsiTreeUtil;
-import static com.intellij.xtextLanguage.xtext.psi.XtextTypes.*;
+import com.intellij.xtextLanguage.xtext.psi.XtextTerminalGroup;
+import com.intellij.xtextLanguage.xtext.psi.XtextTerminalGroupSuffix1;
+import com.intellij.xtextLanguage.xtext.psi.XtextTerminalToken;
+import com.intellij.xtextLanguage.xtext.psi.XtextVisitor;
 import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl;
-import com.intellij.xtextLanguage.xtext.psi.*;
-import com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public class XtextTerminalGroupImpl extends XtextPsiCompositeElementImpl implements XtextTerminalGroup {
 
@@ -18,19 +17,26 @@ public class XtextTerminalGroupImpl extends XtextPsiCompositeElementImpl impleme
     super(node);
   }
 
-  public void accept(@NotNull XtextVisitor visitor) {
-    visitor.visitTerminalGroup(this);
-  }
+    public void accept(@NotNull XtextVisitor visitor) {
+        visitor.visitTerminalGroup(this);
+    }
 
-  public void accept(@NotNull PsiElementVisitor visitor) {
-    if (visitor instanceof XtextVisitor) accept((XtextVisitor)visitor);
-    else super.accept(visitor);
-  }
+    @Override
+    public void accept(@NotNull PsiElementVisitor visitor) {
+        if (visitor instanceof XtextVisitor) accept((XtextVisitor) visitor);
+        else super.accept(visitor);
+    }
 
-  @Override
-  @NotNull
-  public List<XtextTerminalToken> getTerminalTokenList() {
-    return PsiTreeUtil.getChildrenOfTypeAsList(this, XtextTerminalToken.class);
-  }
+    @Override
+    @Nullable
+    public XtextTerminalGroupSuffix1 getTerminalGroupSuffix1() {
+        return findChildByClass(XtextTerminalGroupSuffix1.class);
+    }
+
+    @Override
+    @NotNull
+    public XtextTerminalToken getTerminalToken() {
+        return findNotNullChildByClass(XtextTerminalToken.class);
+    }
 
 }

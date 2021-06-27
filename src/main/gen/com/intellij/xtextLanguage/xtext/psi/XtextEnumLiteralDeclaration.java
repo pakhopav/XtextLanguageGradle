@@ -11,7 +11,7 @@ public interface XtextEnumLiteralDeclaration extends PsiElement {
   XtextKeyword getKeyword();
 
   @NotNull
-  XtextREFERENCEEcoreEEnumLiteral getREFERENCEEcoreEEnumLiteral();
+  XtextREFERENCEEEnumLiteralID getREFERENCEEEnumLiteralID();
 
   @Nullable
   PsiElement getEqualsKeyword();

@@ -86,6 +86,17 @@ public class XtextGenerateBnfTest extends XtextGenerateBnfTestBase {
         }
     }
 
+//    public void testXtext() {
+//        List<XtextFile> allXtextFiles = findAllFiles();
+//        MetaContext context = new MetaContextImpl(allXtextFiles);
+//        MainGenerator generator = new MainGenerator("xtext", context);
+//        try {
+//            generator.generate();
+//        } catch (IOException e) {
+//            e.printStackTrace();
+//        }
+//    }
+
     //
     public void testExpressions() {
         List<XtextFile> allXtextFiles = findAllFiles();

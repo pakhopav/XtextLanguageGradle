@@ -7,30 +7,30 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.List;
 
-public interface XtextEnumRule extends PsiElement {
-
-  @NotNull
-  List<XtextAnnotation> getAnnotationList();
+public interface XtextEnumRule extends XtextAbstractRule {
 
     @NotNull
-  XtextEnumLiterals getEnumLiterals();
-
-  @Nullable
-  XtextTypeRef getTypeRef();
+    List<XtextAnnotation> getAnnotationList();
 
     @NotNull
-  XtextValidID getValidID();
+    XtextEnumLiterals getEnumLiterals();
+
+    @Nullable
+    XtextTypeRef getTypeRef();
+
+    @NotNull
+    XtextValidID getValidID();
 
     @NotNull
     PsiElement getColonKeyword();
 
-  @NotNull
-  PsiElement getEnumKeyword();
+    @NotNull
+    PsiElement getEnumKeyword();
 
-  @Nullable
-  PsiElement getReturnsKeyword();
+    @Nullable
+    PsiElement getReturnsKeyword();
 
-  @NotNull
-  PsiElement getSemicolonKeyword();
+    @NotNull
+    PsiElement getSemicolonKeyword();
 
 }

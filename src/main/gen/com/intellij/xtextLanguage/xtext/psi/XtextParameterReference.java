@@ -6,7 +6,7 @@ import org.jetbrains.annotations.NotNull;
 
 public interface XtextParameterReference extends PsiElement {
 
-    @NotNull
-    XtextREFERENCEParameterID getREFERENCEParameterID();
+  @NotNull
+  XtextREFERENCEParameterID getREFERENCEParameterID();
 
 }

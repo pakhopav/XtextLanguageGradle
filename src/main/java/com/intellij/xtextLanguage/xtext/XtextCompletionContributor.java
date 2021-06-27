@@ -11,11 +11,8 @@ import static com.intellij.patterns.PlatformPatterns.psiElement;
 
 public class XtextCompletionContributor extends CompletionContributor {
     public XtextCompletionContributor() {
-
-        extend(CompletionType.BASIC, psiElement().withLanguage(XtextLanguage.INSTANCE)
-                ,
+        extend(CompletionType.BASIC, psiElement().withLanguage(XtextLanguage.INSTANCE),
                 new KeywordCompletionProvider<XtextFile, XtextTokenType>(XtextLanguage.INSTANCE, XtextFileType.INSTANCE, XtextTokenType.class));
-
     }
 }
 

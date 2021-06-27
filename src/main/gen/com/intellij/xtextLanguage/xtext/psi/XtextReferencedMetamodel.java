@@ -5,10 +5,10 @@ import com.intellij.psi.PsiElement;
 import org.jetbrains.annotations.NotNull;
 import org.jetbrains.annotations.Nullable;
 
-public interface XtextReferencedMetamodel extends PsiElement {
+public interface XtextReferencedMetamodel extends XtextAbstractMetamodelDeclaration {
 
   @NotNull
-  XtextREFERENCEEcoreEPackageSTRING getREFERENCEEcoreEPackageSTRING();
+  XtextREFERENCEEPackageSTRING getREFERENCEEPackageSTRING();
 
   @Nullable
   XtextValidID getValidID();

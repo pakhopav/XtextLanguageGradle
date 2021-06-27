@@ -12,7 +12,6 @@ import org.jetbrains.annotations.NotNull;
 import static com.intellij.openapi.editor.colors.TextAttributesKey.createTextAttributesKey;
 
 public class XtextSyntaxHighlighter extends SyntaxHighlighterBase {
-
     public static final TextAttributesKey KEYWORD =
             createTextAttributesKey("XTEXT_KEYWORD", DefaultLanguageHighlighterColors.KEYWORD);
     public static final TextAttributesKey VALUE =

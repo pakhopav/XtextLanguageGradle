@@ -1,13 +1,16 @@
 // This is a generated file. Not intended for manual editing.
 package com.intellij.xtextLanguage.xtext.psi;
 
-import java.util.List;
-import org.jetbrains.annotations.*;
 import com.intellij.psi.PsiElement;
+import org.jetbrains.annotations.NotNull;
+import org.jetbrains.annotations.Nullable;
 
 public interface XtextEnumLiterals extends PsiElement {
 
-  @NotNull
-  List<XtextEnumLiteralDeclaration> getEnumLiteralDeclarationList();
+    @NotNull
+    XtextEnumLiteralDeclaration getEnumLiteralDeclaration();
+
+    @Nullable
+    XtextEnumLiteralsSuffix1 getEnumLiteralsSuffix1();
 
 }

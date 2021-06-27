@@ -10,10 +10,10 @@ public interface XtextParameter extends PsiNameIdentifierOwner {
   @NotNull
   PsiElement getId();
 
-    String getName();
+  String getName();
 
-    PsiElement setName(String newName);
+  PsiElement setName(String newName);
 
-    PsiElement getNameIdentifier();
+  PsiElement getNameIdentifier();
 
 }
