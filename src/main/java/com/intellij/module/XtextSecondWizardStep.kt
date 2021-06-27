@@ -17,6 +17,7 @@ import com.intellij.xtextLanguage.xtext.psi.XtextFile
 import com.intellij.xtextLanguage.xtext.psi.XtextGrammar
 import com.intellij.xtextLanguage.xtext.psi.XtextReferencedMetamodel
 import java.awt.Color
+import java.util.jar.JarFile
 import javax.swing.JLabel
 
 class XtextSecondWizardStep(val context: WizardContext, val builder: XtextModuleBuilder) : ModuleWizardStep() {
@@ -167,18 +168,25 @@ class XtextSecondWizardStep(val context: WizardContext, val builder: XtextModule
         usedGrammars.forEach {
             val grammarName = it.text
             if (helper.containsInKnownGrammars(grammarName)) {
+                val grammarFile = helper.getKnownGrammar(grammarName)!!
                 this.myUsedGrammars.add(XtextGrammarFileInfo(grammarName, helper.getKnownGrammar(grammarName)))
-                findUsedGrammars(helper.getKnownGrammar(grammarName)!!)
+                findUsedGrammars(grammarFile)
+                findImportedModels(grammarFile)
             } else this.myUsedGrammars.add(XtextGrammarFileInfo(grammarName, null))
         }
     }
 
     private fun findImportedModels(grammarFile: XtextFile) {
         val importedModels = PsiTreeUtil.findChildrenOfType(grammarFile, XtextReferencedMetamodel::class.java)
-        print("")
         importedModels.forEach {
-            val modelName = it.referenceEcoreEPackageSTRING.text.replace("\"", "")
-            myImportedModels.add(EcoreModelJarInfo(modelName))
+            val modelName = it.referenceePackageSTRING.text.replace("\"", "")
+            if (helper.containsInKnownModels(modelName)) {
+                val file = helper.getKnownModel(modelName)!!
+                val jarFile = JarFile(file)
+                myImportedModels.add(EcoreModelJarInfo(modelName, path = file.path, file = jarFile))
+            } else {
+                myImportedModels.add(EcoreModelJarInfo(modelName))
+            }
         }
     }
 

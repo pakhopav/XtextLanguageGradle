@@ -168,7 +168,7 @@ class UsedGrammarsTable(val jarsTable: ImportedJarsTable) : JPanel(BorderLayout(
         val importedModels = PsiTreeUtil.findChildrenOfType(grammarFile, XtextReferencedMetamodel::class.java)
         print("")
         importedModels.forEach {
-            val modelName = it.referenceEcoreEPackageSTRING.text.replace("\"", "")
+            val modelName = it.referenceePackageSTRING.text.replace("\"", "")
             jarsTable.addElement(EcoreModelJarInfo(modelName))
         }
     }

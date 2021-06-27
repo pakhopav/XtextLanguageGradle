@@ -8,16 +8,20 @@ import com.intellij.openapi.Disposable
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleType
 import com.intellij.openapi.options.ConfigurationException
+import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
 import com.intellij.openapi.util.Disposer
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.LocalFileSystem
+import com.intellij.psi.util.CachedValue
 import com.intellij.xtextLanguage.xtext.EcorePackageRegistry
 import com.intellij.xtextLanguage.xtext.XtextIcons
 import com.intellij.xtextLanguage.xtext.generator.generators.MainGenerator
 import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import com.intellij.xtextLanguage.xtext.generator.models.MetaContextImpl
 import com.intellij.xtextLanguage.xtext.psi.XtextFile
+import com.intellij.xtextLanguage.xtext.references.XtextImportedModelsManager
 import org.jetbrains.plugins.gradle.service.project.wizard.AbstractGradleModuleBuilder
 import org.jetbrains.plugins.gradle.service.project.wizard.GradleStructureWizardStep
 import java.io.File
@@ -88,11 +92,12 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
             assertNotNull(context)
             val generator = MainGenerator(langExtension, context as MetaContext, sourcePath + separator)
             generator.generate()
-            copyXtextFilesToProject()
+            copyXtextFilesToProject(rootModel.project)
         }
+
     }
 
-    fun copyXtextFilesToProject() {
+    fun copyXtextFilesToProject(project: Project) {
         val grammarsDir =
             "$contentEntryPath${separator}src${separator}main${separator}java${separator}${langExtension}Language$separator$langExtension${separator}grammar"
         val grammarFileTargetPath = Paths.get("$grammarsDir$separator${langExtension.capitalize()}.xtext")
@@ -104,6 +109,20 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
             val targetPath = Paths.get("$usedGrammarsDir$separator${grammarName}.xtext")
             Files.copy(it.file!!.virtualFile.inputStream, targetPath)
         }
+        val packagesMap = mutableMapOf<String, String>()
+        importedModels.filter { it.file != null }.forEach {
+            packagesMap.put(it.uri, it.targetPath!!)
+
+//            val jarFile = it.file!!
+//            val pluginXmlEntry = jarFile.getJarEntry("plugin.xml") ?: return@forEach
+//            val inputStream = jarFile.getInputStream(pluginXmlEntry)
+//            val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream)
+//            val packageNode = doc.getElementsByTagName("package")
+//            val classItemValue = packageNode.item(0).attributes.getNamedItem("class").nodeValue
+//            val ePackageName = classItemValue.split(".").last()
+//            val basePackagePath = classItemValue.slice(0..classItemValue.length-ePackageName.length-2)
+        }
+        XtextImportedModelsManager.getInstance(project).refreshPackages(packagesMap)
     }
 
     fun configureGradleBuildScript(rootModel: ModifiableRootModel) {
@@ -167,16 +186,22 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
         val libDir = File("$contentEntryPath/libs")
         libDir.mkdirs()
 
-        copyJarToNewProject("Xtext.jar")
-        copyJarToNewProject("org.eclipse.emf.common_2.16.0.v20190528-0845.jar")
-        copyJarToNewProject("org.eclipse.emf.ecore.change_2.14.0.v20190528-0725.jar")
-        copyJarToNewProject("org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar")
-        copyJarToNewProject("org.eclipse.emf.ecore_2.18.0.v20190528-0845.jar")
-        copyJarToNewProject("org.xtext.xtext.model.jar")
 
         importedModels.filter { it.file != null }.forEach {
             copyJarToNewProject(it)
         }
+
+
+        copyJarToNewProject("Xtext.jar")
+        copyJarToNewProject("org.eclipse.emf.common_2.16.0.v20190528-0845.jar")
+        copyJarToNewProject("org.eclipse.emf.ecore.change_2.14.0.v20190528-0725.jar")
+        copyJarToNewProject("org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar")
+        if (!File("$contentEntryPath/libs/org.eclipse.emf.ecore_2.18.0.v20190528-0845.jar").exists()) {
+            copyJarToNewProject("org.eclipse.emf.ecore_2.18.0.v20190528-0845.jar")
+        }
+        copyJarToNewProject("org.xtext.xtext.model.jar")
+
+
 
         copyIcon()
     }
@@ -206,7 +231,7 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
     protected fun copyIcon() {
         val iconsDir = File("$contentEntryPath/src/main/resources/icons")
         iconsDir.mkdirs()
-        var jarUri = javaClass.classLoader.getResource("icons/simpleIcon.png")
+        var jarUri = javaClass.classLoader.getResource("icons/xtextIcon.png")
         var targetPath = Paths.get("$contentEntryPath/src/main/resources/icons/${langExtension}Icon.png")
         Files.copy(jarUri.openStream(), targetPath)
     }
@@ -218,5 +243,9 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
         }
     }
 
+    companion object {
+        @JvmStatic
+        val ECORE_PACKAGE_KEY: Key<CachedValue<Map<String, String>>> = Key.create("Associated ecore models packages")
+    }
 
 }

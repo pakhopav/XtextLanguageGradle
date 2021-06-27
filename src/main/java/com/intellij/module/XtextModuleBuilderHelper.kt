@@ -7,6 +7,7 @@ import com.intellij.psi.PsiFileFactory
 import com.intellij.psi.PsiManager
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.LocalTimeCounter
+import com.intellij.util.PathUtil
 import com.intellij.xtextLanguage.xtext.XtextFileType
 import com.intellij.xtextLanguage.xtext.psi.XtextFile
 import com.intellij.xtextLanguage.xtext.psi.XtextGrammarID
@@ -24,11 +25,13 @@ import javax.xml.parsers.DocumentBuilderFactory
 class XtextModuleBuilderHelper(val project: Project = ProjectManager.getInstance().defaultProject) {
     private val srcPath = "src/main/resources/grammars"
     private val knownGrammars: Map<String, XtextFile>
+    private val knownModels: Map<String, File>
 //    private val knownJARs: Map<String, XtextFile>
 
 
     init {
         knownGrammars = initGrammars()
+        knownModels = initModels()
     }
 
     fun getKnownGrammar(fileName: String): XtextFile? {
@@ -44,6 +47,13 @@ class XtextModuleBuilderHelper(val project: Project = ProjectManager.getInstance
         return false
     }
 
+    fun containsInKnownModels(modelUri: String): Boolean {
+        return knownModels.get(modelUri) != null
+    }
+
+    fun getKnownModel(modelName: String): File? {
+        return knownModels.get(modelName)
+    }
 
     private fun initGrammars(): Map<String, XtextFile> {
         val result = HashMap<String, XtextFile>()
@@ -51,24 +61,23 @@ class XtextModuleBuilderHelper(val project: Project = ProjectManager.getInstance
         result.put("Xbase", findXtextFileByRelativePath("grammars/Xbase.xtext"))
         result.put("Xtext", findXtextFileByRelativePath("grammars/Xtext.xtext"))
         result.put("Xtype", findXtextFileByRelativePath("grammars/Xtype.xtext"))
+        return result
+    }
 
-//        val text  = BufferedReader(InputStreamReader(url.openStream())).lines().collect(Collectors.joining("\n"))
-//        val termFile = PsiFileFactory.getInstance(project).createFileFromText("temp." + XtextFileType.INSTANCE.defaultExtension, XtextFileType.INSTANCE, text, LocalTimeCounter.currentTime(), true) as XtextFile
-//
-//
-//        val srcFolder = File(srcPath)
-//        srcFolder.listFiles().forEach {
-//            val virtualFile = LocalFileSystem.getInstance().findFileByIoFile(it)
-//            virtualFile?.let {
-//                val xtextFile = PsiManager.getInstance(project).findFile(virtualFile) as? XtextFile
-//                xtextFile?.let {
-//                    val fileName = PsiTreeUtil.findChildOfType(it, XtextGrammarID::class.java)?.validIDList?.last()?.text
-//                        ?: return@forEach
-//
-//                    result.put(fileName, it)
-//                }
-//            }
-//        }
+    private fun initModels(): Map<String, File> {
+        val result = mutableMapOf<String, File>()
+        result.put(
+            "http://www.eclipse.org/xtext/xbase/Xbase",
+            findJarFileByRelativePath("org.eclipse.xtext.xbase_2.22.0.v20200602-1114.jar")
+        )
+        result.put(
+            "http://www.eclipse.org/emf/2002/Ecore",
+            findJarFileByRelativePath("org.eclipse.emf.ecore_2.18.0.v20190528-0845.jar")
+        )
+        result.put(
+            "http://www.eclipse.org/xtext/xbase/Xtype",
+            findJarFileByRelativePath("org.eclipse.xtext.xbase_2.22.0.v20200602-1114.jar")
+        )
         return result
     }
 
@@ -128,8 +137,15 @@ class XtextModuleBuilderHelper(val project: Project = ProjectManager.getInstance
         return xtextFile
     }
 
-    fun findXtextFileByRelativePath(fileRelativePath: String): XtextFile {
 
+    fun findJarFileByRelativePath(fileRelativePath: String): File {
+        val classesRoot: String = PathUtil.getJarPathForClass(XtextModuleBuilder::class.java)
+        val jarName = classesRoot.split("/").last()
+        val tPath = classesRoot.slice(0..classesRoot.length - jarName.length - 1) + fileRelativePath
+        return File(tPath)
+    }
+
+    fun findXtextFileByRelativePath(fileRelativePath: String): XtextFile {
         val url = javaClass.classLoader.getResource(fileRelativePath)
         val text = BufferedReader(InputStreamReader(url.openStream())).lines().collect(Collectors.joining("\n"))
         val termFile = PsiFileFactory.getInstance(project).createFileFromText(
@@ -139,7 +155,6 @@ class XtextModuleBuilderHelper(val project: Project = ProjectManager.getInstance
             LocalTimeCounter.currentTime(),
             true
         ) as? XtextFile
-
 
         return termFile ?: throw FileNotFoundException()
     }

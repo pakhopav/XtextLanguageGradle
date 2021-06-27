@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.ui.components.JBScrollPane
 import com.intellij.ui.table.JBTable
+import com.intellij.util.JarUtil
 import com.intellij.util.ui.AbstractTableCellEditor
 import com.intellij.xtextLanguage.xtext.psi.XtextFile
 import com.intellij.xtextLanguage.xtext.psi.XtextReferencedMetamodel
@@ -74,8 +75,8 @@ class ImportedJarsTable() : JPanel(BorderLayout()) {
                             tfwbb.text = jarPath
                             try {
                                 val jarFile = JarFile(jarPath)
-                                val jarName = helper.getEcoreModelUri(jarFile)
-                                if (currentModelInfo.uri == jarName) {
+                                val jarNames = JarUtil.getEcoreModelUris(jarFile)
+                                if (jarNames != null && jarNames.contains(currentModelInfo.uri)) {
                                     currentModelInfo.file = jarFile
                                     setErrorMessage(" ")
                                     tfwbb.foreground = Color.BLACK
@@ -145,7 +146,7 @@ class ImportedJarsTable() : JPanel(BorderLayout()) {
         val importedModels = PsiTreeUtil.findChildrenOfType(grammarFile, XtextReferencedMetamodel::class.java)
         print("")
         importedModels.forEach {
-            val modelName = it.referenceEcoreEPackageSTRING.text
+            val modelName = it.referenceePackageSTRING.text
             addElement(EcoreModelJarInfo(modelName))
         }
     }
