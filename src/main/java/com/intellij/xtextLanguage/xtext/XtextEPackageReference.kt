@@ -57,9 +57,7 @@ class XtextEPackageReference(element: PsiElement, textRange: TextRange) :
     fun _getVariants(): Array<Any> {
         val variants = mutableListOf<LookupElement>()
         val map = XtextImportedModelsManager.getInstance(myElement!!.project).getPackages()
-        map.keys.forEach {
-            variants.add(LookupElementBuilder.create(it))
-        }
+        variants.addAll(map.keys.map { LookupElementBuilder.create("\"$it\"") })
         return variants.toTypedArray()
     }
 

@@ -48,11 +48,11 @@ public class XtextGrammarReference extends PsiReferenceBase<PsiElement> implemen
         List<ResolveResult> result = grammars.stream()
                 .filter(grammar -> {
                     String grammarName = PsiTreeUtil.findChildOfType(grammar, XtextGrammarID.class).getText();
-                    String[] nameParts = grammarName.split("\\.");
-                    int namePartsCount = nameParts.length;
-                    if (namePartsCount > 1) {
-                        grammarName = nameParts[namePartsCount - 1];
-                    }
+//                    String[] nameParts = grammarName.split("\\.");
+//                    int namePartsCount = nameParts.length;
+//                    if (namePartsCount > 1) {
+//                        grammarName = nameParts[namePartsCount - 1];
+//                    }
                     return grammarName.equals(key);
                 })
                 .map(grammar -> new PsiElementResolveResult(grammar))
@@ -67,13 +67,13 @@ public class XtextGrammarReference extends PsiReferenceBase<PsiElement> implemen
         List<LookupElement> variants = new ArrayList<LookupElement>();
         grammars.forEach(it -> {
             String grammarName = PsiTreeUtil.findChildOfType(it, XtextGrammarID.class).getText();
-            String[] nameParts = grammarName.split("\\.");
-            int namePartsCount = nameParts.length;
-            String shortName = grammarName;
-            if (namePartsCount > 1) {
-                shortName = nameParts[namePartsCount - 1];
-            }
-            variants.add(LookupElementBuilder.create(shortName).
+//            String[] nameParts = grammarName.split("\\.");
+//            int namePartsCount = nameParts.length;
+//            String shortName = grammarName;
+//            if (namePartsCount > 1) {
+//                shortName = nameParts[namePartsCount - 1];
+//            }
+            variants.add(LookupElementBuilder.create(grammarName).
                     withIcon(XtextIcons.FILE).
                     withTypeText(grammarName)
             );

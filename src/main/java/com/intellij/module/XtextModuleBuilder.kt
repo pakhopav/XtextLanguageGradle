@@ -12,9 +12,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
 import com.intellij.openapi.util.Disposer
-import com.intellij.openapi.util.Key
 import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.psi.util.CachedValue
 import com.intellij.xtextLanguage.xtext.EcorePackageRegistry
 import com.intellij.xtextLanguage.xtext.XtextIcons
 import com.intellij.xtextLanguage.xtext.generator.generators.MainGenerator
@@ -186,11 +184,9 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
         val libDir = File("$contentEntryPath/libs")
         libDir.mkdirs()
 
-
         importedModels.filter { it.file != null }.forEach {
             copyJarToNewProject(it)
         }
-
 
         copyJarToNewProject("Xtext.jar")
         copyJarToNewProject("org.eclipse.emf.common_2.16.0.v20190528-0845.jar")
@@ -200,8 +196,6 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
             copyJarToNewProject("org.eclipse.emf.ecore_2.18.0.v20190528-0845.jar")
         }
         copyJarToNewProject("org.xtext.xtext.model.jar")
-
-
 
         copyIcon()
     }
@@ -243,9 +237,9 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
         }
     }
 
-    companion object {
-        @JvmStatic
-        val ECORE_PACKAGE_KEY: Key<CachedValue<Map<String, String>>> = Key.create("Associated ecore models packages")
-    }
+//    companion object {
+//        @JvmStatic
+//        val ECORE_PACKAGE_KEY: Key<CachedValue<Map<String, String>>> = Key.create("Associated ecore models packages")
+//    }
 
 }

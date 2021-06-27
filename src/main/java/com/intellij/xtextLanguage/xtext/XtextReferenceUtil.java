@@ -37,11 +37,6 @@ public class XtextReferenceUtil {
             PsiFile psiFile = psiManager.findFile(fileOrDir);
             if (psiFile instanceof XtextFile) {
                 String grammarName = PsiTreeUtil.findChildOfType(psiFile, XtextGrammarID.class).getText();
-                String[] nameParts = grammarName.split("\\.");
-                int namePartsCount = nameParts.length;
-                if (namePartsCount > 1) {
-                    grammarName = nameParts[namePartsCount - 1];
-                }
                 if (grammarName.equals(name)) xtextFiles.add((XtextFile) psiFile);
             }
             return true;
@@ -52,7 +47,7 @@ public class XtextReferenceUtil {
     public static <T extends PsiNameIdentifierOwner> ArrayList<T> findRulesByNameInUsedGrammars(XtextFile file, String id) {
         ArrayList<T> result = new ArrayList<>();
         if (file == null) return result;
-        List<String> usedGrammarsNames = PsiTreeUtil.findChildrenOfType(file, XtextREFERENCEGrammarGrammarID.class).stream().map(it -> it.getGrammarID().getText()).collect(Collectors.toList());
+        List<String> usedGrammarsNames = PsiTreeUtil.findChildrenOfType(file, XtextREFERENCEGrammarGrammarID.class).stream().map(it -> it.getText()).collect(Collectors.toList());
         usedGrammarsNames.forEach(grammarName -> {
             List<XtextFile> grammars = findGrammarsInProjectByName(file.getProject(), grammarName);
             if (grammars.size() == 1) {
