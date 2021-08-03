@@ -11,7 +11,7 @@ class ReferenceContributorFileGenerator(extension: String, val context: MetaCont
     AbstractGenerator(extension, rootPath) {
     private val relevantRules = context.rules.filterIsInstance<TreeParserRule>()
     fun generateReferenceContributorFile() {
-        val file = createFile(extension.capitalize() + "ReferenceContributor.java", myGenDir)
+        val file = createOrFindFile(extension.capitalize() + "ReferenceContributor.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

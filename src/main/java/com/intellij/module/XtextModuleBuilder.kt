@@ -19,7 +19,8 @@ import com.intellij.xtextLanguage.xtext.generator.generators.MainGenerator
 import com.intellij.xtextLanguage.xtext.generator.models.MetaContext
 import com.intellij.xtextLanguage.xtext.generator.models.MetaContextImpl
 import com.intellij.xtextLanguage.xtext.psi.XtextFile
-import com.intellij.xtextLanguage.xtext.references.XtextImportedModelsManager
+import com.intellij.xtextLanguage.xtext.references.XtextLanguageDependenciesManager
+import com.intellij.xtextLanguage.xtext.references.XtextLanguageInfoManager
 import org.jetbrains.plugins.gradle.service.project.wizard.AbstractGradleModuleBuilder
 import org.jetbrains.plugins.gradle.service.project.wizard.GradleStructureWizardStep
 import java.io.File
@@ -79,6 +80,7 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
     @Throws(ConfigurationException::class)
     override fun setupRootModel(rootModel: ModifiableRootModel) {
         super.setupRootModel(rootModel)
+        val project = rootModel.project
         val sourcePath = "$contentEntryPath${separator}src${separator}main${separator}java"
         addPluginJars()
         configureGradleBuildScript(rootModel)
@@ -90,7 +92,8 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
             assertNotNull(context)
             val generator = MainGenerator(langExtension, context as MetaContext, sourcePath + separator)
             generator.generate()
-            copyXtextFilesToProject(rootModel.project)
+            copyXtextFilesToProject(project)
+            persistInputValues(project)
         }
 
     }
@@ -100,27 +103,32 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
             "$contentEntryPath${separator}src${separator}main${separator}java${separator}${langExtension}Language$separator$langExtension${separator}grammar"
         val grammarFileTargetPath = Paths.get("$grammarsDir$separator${langExtension.capitalize()}.xtext")
         Files.copy(grammarFile!!.virtualFile.inputStream, grammarFileTargetPath)
-        val usedGrammarsDir = "$grammarsDir${separator}dependencies"
-        File(usedGrammarsDir).mkdirs()
-        usedGrammars.filter { it.file != null }.forEach {
-            val grammarName = it.grammarName
-            val targetPath = Paths.get("$usedGrammarsDir$separator${grammarName}.xtext")
-            Files.copy(it.file!!.virtualFile.inputStream, targetPath)
-        }
-        val packagesMap = mutableMapOf<String, String>()
-        importedModels.filter { it.file != null }.forEach {
-            packagesMap.put(it.uri, it.targetPath!!)
 
-//            val jarFile = it.file!!
-//            val pluginXmlEntry = jarFile.getJarEntry("plugin.xml") ?: return@forEach
-//            val inputStream = jarFile.getInputStream(pluginXmlEntry)
-//            val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream)
-//            val packageNode = doc.getElementsByTagName("package")
-//            val classItemValue = packageNode.item(0).attributes.getNamedItem("class").nodeValue
-//            val ePackageName = classItemValue.split(".").last()
-//            val basePackagePath = classItemValue.slice(0..classItemValue.length-ePackageName.length-2)
+//        val usedGrammarsFiles = usedGrammars.mapNotNull { it.file  }.map{File(it.virtualFile.path)}
+//        JarUtil.createJarWithFiles("$contentEntryPath${separator}libs${separator}usedGrammars.jar", usedGrammarsFiles)
+
+//        val usedGrammarsDir = "$grammarsDir${separator}dependencies"
+//        File(usedGrammarsDir).mkdirs()
+//        usedGrammars.filter { it.file != null }.forEach {
+//            val grammarName = it.grammarName
+//            val targetPath = Paths.get("$usedGrammarsDir$separator${grammarName}.xtext")
+//            Files.copy(it.file!!.virtualFile.inputStream, targetPath)
+//        }
+    }
+
+    protected fun persistInputValues(project: Project) {
+        val ecoreModels = mutableMapOf<String, String>()
+        importedModels.filter { it.file != null }.forEach {
+            ecoreModels.put(it.uri, it.targetPath!!)
         }
-        XtextImportedModelsManager.getInstance(project).refreshPackages(packagesMap)
+        val grammars = mutableMapOf<String, String>()
+        usedGrammars.filter { it.file != null }.forEach {
+            grammars.put(it.grammarName, it.filePath)
+        }
+        val dependenciesManager = XtextLanguageDependenciesManager.getInstance(project)
+        dependenciesManager.refreshEcoreModels(ecoreModels)
+        dependenciesManager.refreshGrammars(grammars)
+        XtextLanguageInfoManager.getInstance(project).setNameAndExtension(langName, langExtension)
     }
 
     fun configureGradleBuildScript(rootModel: ModifiableRootModel) {
@@ -129,7 +137,7 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
             val kotlinJvmPluginVersion = kotlinPluginVersion?.split("-")?.get(1) ?: "1.4.10"
 
             val pluginJarPaths =
-                "'libs/Xtext.jar', 'libs/org.eclipse.emf.common_2.16.0.v20190528-0845.jar', 'libs/org.eclipse.emf.ecore.change_2.14.0.v20190528-0725.jar', 'libs/org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar', 'libs/org.eclipse.emf.ecore_2.18.0.v20190528-0845.jar', 'libs/org.xtext.xtext.model.jar'"
+                "'libs/Xtext.jar', 'libs/DefaultGrammars.jar', 'libs/org.eclipse.emf.common_2.16.0.v20190528-0845.jar', 'libs/org.eclipse.emf.ecore.change_2.14.0.v20190528-0725.jar', 'libs/org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar', 'libs/org.eclipse.emf.ecore_2.18.0.v20190528-0845.jar', 'libs/org.xtext.xtext.model.jar'"
 
             val importedModelsPaths = importedModels.mapNotNull { it.targetPath }
                 .joinToString(separator = "', '", prefix = "'", postfix = "'")
@@ -189,6 +197,7 @@ class XtextModuleBuilder : AbstractGradleModuleBuilder() {
         }
 
         copyJarToNewProject("Xtext.jar")
+        copyJarToNewProject("DefaultGrammars.jar")
         copyJarToNewProject("org.eclipse.emf.common_2.16.0.v20190528-0845.jar")
         copyJarToNewProject("org.eclipse.emf.ecore.change_2.14.0.v20190528-0725.jar")
         copyJarToNewProject("org.eclipse.emf.ecore.xmi_2.16.0.v20190528-0725.jar")

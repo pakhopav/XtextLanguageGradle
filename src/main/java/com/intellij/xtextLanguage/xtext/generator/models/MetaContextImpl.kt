@@ -121,8 +121,8 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
 
 
     private fun refactorRules(rawRules: MutableList<TreeRule>) {
-        initOccurrencesMap(rawRules)
         addRulesForCrossReferences(rawRules)
+        initOccurrencesMap(rawRules)
         setCalledFragmentRuleProperty(rawRules)
         checkReferencedRules(rawRules.filterIsInstance<TreeParserRuleImpl>())
         markDatatypeRules(rawRules)
@@ -384,6 +384,7 @@ class MetaContextImpl(xtextFiles: List<XtextFile>) : MetaContext {
         parserRules.forEach { ruleNameOccurrences.putIfAbsent(it.name, 0) }
         terminalRules.forEach { ruleNameOccurrences.putIfAbsent(it.name, 0) }
     }
+
 
     private fun checkReferencedRules(rules: List<TreeParserRuleImpl>) {
         val allCrossReferenceNodes = rules

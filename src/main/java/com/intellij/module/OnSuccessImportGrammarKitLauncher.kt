@@ -31,7 +31,9 @@ class OnSuccessImportGrammarKitLauncher : AbstractProjectDataService<ModuleData,
         val builder = xtextModule?.xtextModuleBuilder ?: return
 
         DumbService.getInstance(project).runWhenSmart {
-            GrammarKitGenerator(builder).launchGrammarKitGeneration(xtextModule)
+            val gkitGenerator = GrammarKitGenerator(builder, project)
+            gkitGenerator.launchGrammarKitGeneration()
+            gkitGenerator.updatePluginXml()
             xtextModule.removeUserData(GrammarKitGenerator.XTEXT_MODULE_BUILDER_KEY)
         }
     }

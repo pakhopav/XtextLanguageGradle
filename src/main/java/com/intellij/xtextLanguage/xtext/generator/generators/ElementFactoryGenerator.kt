@@ -11,7 +11,7 @@ class ElementFactoryGenerator(extension: String, val context: MetaContext, rootP
     val relevantRules = context.rules
 
     fun generateElementFactoryFile() {
-        val file = createFile("${extensionCapitalized}ElementFactory.java", myGenDir + "/psi")
+        val file = createOrFindFile("${extensionCapitalized}ElementFactory.java", myGenDir + "/psi")
         val out = PrintWriter(FileOutputStream(file))
         out.println(
             """

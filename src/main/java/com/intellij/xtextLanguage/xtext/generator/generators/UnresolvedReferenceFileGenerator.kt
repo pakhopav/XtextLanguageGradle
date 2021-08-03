@@ -6,7 +6,7 @@ import java.io.PrintWriter
 class UnresolvedReferenceFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
 
     fun generateReferenceFile() {
-        val file = createFile(extension.capitalize() + "Reference.java", myGenDir)
+        val file = createOrFindFile(extension.capitalize() + "Reference.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

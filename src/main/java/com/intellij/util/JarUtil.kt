@@ -3,8 +3,10 @@ package com.intellij.util
 import org.apache.xerces.dom.ElementImpl
 import org.w3c.dom.Document
 import org.w3c.dom.Node
-import java.util.jar.JarFile
+import java.io.*
+import java.util.jar.*
 import javax.xml.parsers.DocumentBuilderFactory
+
 
 class JarUtil {
     companion object {
@@ -42,13 +44,7 @@ class JarUtil {
         @JvmStatic
         fun getAllClassifiersNames(jarFile: JarFile, uri: String): List<String> {
             val result = mutableListOf<String>()
-            val pluginXmlEntry = jarFile.getJarEntry("plugin.xml")
-            val inputStream = jarFile.getInputStream(pluginXmlEntry)
-            val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream)
-            val packageNode = findAppropriatePackageTag(doc, uri) ?: return result
-            val genModelPath = packageNode.attributes.getNamedItem("genModel").nodeValue
-            val ecoreFileName = genModelPath.replace("genmodel", "ecore")
-            val ecoreEntry = jarFile.getJarEntry(ecoreFileName)
+            val ecoreEntry = findEcoreEntry(jarFile, uri)
             val ecoreDoc =
                 DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(jarFile.getInputStream(ecoreEntry))
             val classifiersTags = ecoreDoc.getElementsByTagName("eClassifiers")
@@ -62,13 +58,7 @@ class JarUtil {
         @JvmStatic
         fun getEObjectAndEDatatypeNames(jarFile: JarFile, uri: String): Map<String, String?> {
             val result = mutableMapOf<String, String?>()
-            val pluginXmlEntry = jarFile.getJarEntry("plugin.xml")
-            val inputStream = jarFile.getInputStream(pluginXmlEntry)
-            val doc = DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(inputStream)
-            val packageNode = findAppropriatePackageTag(doc, uri) ?: return result
-            val genModelPath = packageNode.attributes.getNamedItem("genModel").nodeValue
-            val ecoreFileName = genModelPath.replace("genmodel", "ecore")
-            val ecoreEntry = jarFile.getJarEntry(ecoreFileName)
+            val ecoreEntry = findEcoreEntry(jarFile, uri)
             val ecoreDoc =
                 DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(jarFile.getInputStream(ecoreEntry))
             val classifiersTags = ecoreDoc.getElementsByTagName("eClassifiers")
@@ -80,12 +70,70 @@ class JarUtil {
             return result
         }
 
+        @JvmStatic
+        fun createJarWithFiles(jarPath: String, files: List<File>) {
+            val manifest = Manifest()
+            manifest.getMainAttributes().put(Attributes.Name.MANIFEST_VERSION, "1.0")
+            val target = JarOutputStream(FileOutputStream(jarPath), manifest)
+            for (file in files) {
+                addFileToJar(file, target)
+            }
+            target.close()
+        }
+
+        @JvmStatic
+        @Throws(IOException::class)
+        fun addFileToJar(source: File, target: JarOutputStream) {
+            var inputStream: BufferedInputStream? = null
+            try {
+                if (source.isDirectory()) {
+                    var name: String = source.getPath().replace("\\", "/")
+                    if (!name.isEmpty()) {
+                        if (!name.endsWith("/")) name += "/"
+                        val entry = JarEntry(name)
+                        entry.time = source.lastModified()
+                        target.putNextEntry(entry)
+                        target.closeEntry()
+                    }
+                    for (nestedFile in source.listFiles()) addFileToJar(nestedFile, target)
+                    return
+                }
+                val entry = JarEntry(source.getPath().replace("\\", "/"))
+                entry.time = source.lastModified()
+                target.putNextEntry(entry)
+                inputStream = BufferedInputStream(FileInputStream(source))
+                val buffer = ByteArray(1024)
+                while (true) {
+                    val count = inputStream.read(buffer)
+                    if (count == -1) break
+                    target.write(buffer, 0, count)
+                }
+                target.closeEntry()
+            } finally {
+                inputStream?.close()
+            }
+        }
 
         private fun findAppropriatePackageTag(doc: Document, uri: String): Node? {
             val packageNodes = doc.getElementsByTagName("package")
             for (i in 0 until packageNodes.length) {
                 val node = packageNodes.item(i)
                 if (node.attributes.getNamedItem("uri").nodeValue == uri) return node
+            }
+            return null
+        }
+
+        private fun findEcoreEntry(jarFile: JarFile, uri: String): JarEntry? {
+            val iterator = jarFile.entries()
+            while (iterator.hasMoreElements()) {
+                val entry = iterator.nextElement()
+                if (entry.name.endsWith(".ecore")) {
+                    val doc =
+                        DocumentBuilderFactory.newInstance().newDocumentBuilder().parse(jarFile.getInputStream(entry))
+                    val rootTag = doc.getElementsByTagName("ecore:EPackage").item(0) ?: continue
+                    val nsUri = rootTag.attributes.getNamedItem("nsURI")?.nodeValue ?: continue
+                    if (nsUri == uri) return entry
+                }
             }
             return null
         }

@@ -5,7 +5,7 @@ import java.io.PrintWriter
 
 class ValidatorGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateValidator() {
-        val file = createFile(extension.capitalize() + "Validator.java", myGenDir + "/inspection")
+        val file = createOrFindFile(extension.capitalize() + "Validator.java", myGenDir + "/inspection")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

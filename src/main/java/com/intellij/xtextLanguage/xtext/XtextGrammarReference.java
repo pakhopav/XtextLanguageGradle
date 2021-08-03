@@ -44,20 +44,26 @@ public class XtextGrammarReference extends PsiReferenceBase<PsiElement> implemen
 
     private ResolveResult[] _multiResolve() {
         Project project = myElement.getProject();
-        List<XtextFile> grammars = XtextReferenceUtil.findAllGrammarsInProject(project);
-        List<ResolveResult> result = grammars.stream()
-                .filter(grammar -> {
-                    String grammarName = PsiTreeUtil.findChildOfType(grammar, XtextGrammarID.class).getText();
+        List<ResolveResult> result = new ArrayList<>();
+        if (XtextReferenceUtil.DEFAULT_GRAMMARS.contains(key)) {
+            PsiFile grammar = XtextReferenceUtil.getDefaultGrammar(key, project);
+            if (grammar != null) result.add(new PsiElementResolveResult(grammar));
+        } else {
+            List<XtextFile> grammars = XtextReferenceUtil.findAllGrammarsInProject(project);
+            result = grammars.stream()
+                    .filter(grammar -> {
+                        String grammarName = PsiTreeUtil.findChildOfType(grammar, XtextGrammarID.class).getText();
 //                    String[] nameParts = grammarName.split("\\.");
 //                    int namePartsCount = nameParts.length;
 //                    if (namePartsCount > 1) {
 //                        grammarName = nameParts[namePartsCount - 1];
 //                    }
-                    return grammarName.equals(key);
-                })
-                .map(grammar -> new PsiElementResolveResult(grammar))
-                .collect(Collectors.toList());
+                        return grammarName.equals(key);
+                    })
+                    .map(grammar -> new PsiElementResolveResult(grammar))
+                    .collect(Collectors.toList());
 
+        }
         return result.toArray(new ResolveResult[result.size()]);
     }
 

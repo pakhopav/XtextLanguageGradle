@@ -5,7 +5,7 @@ import java.io.PrintWriter
 
 class ElementTypeFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateElementTypeFile() {
-        val file = createFile(extension.capitalize() + "ElementType.java", myGenDir + "/psi")
+        val file = createOrFindFile(extension.capitalize() + "ElementType.java", myGenDir + "/psi")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

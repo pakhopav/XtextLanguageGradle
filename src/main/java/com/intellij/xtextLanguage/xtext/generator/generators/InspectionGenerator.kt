@@ -5,7 +5,7 @@ import java.io.PrintWriter
 
 class InspectionGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateInspection() {
-        val file = createFile(extension.capitalize() + "Inspection.java", myGenDir + "/inspection")
+        val file = createOrFindFile(extension.capitalize() + "Inspection.java", myGenDir + "/inspection")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

@@ -10,7 +10,7 @@ class FindUsagesProviderGenerator(extension: String, val context: MetaContext, r
     AbstractGenerator(extension, rootPath) {
     private val referencedRules = context.rules.filterIsInstance<TreeParserRule>().filter { it.isReferenced }
     fun generateUsagesProvider() {
-        val file = createFile(extensionCapitalized + "FindUsagesProvider.java", myGenDir)
+        val file = createOrFindFile(extensionCapitalized + "FindUsagesProvider.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.println(
             """

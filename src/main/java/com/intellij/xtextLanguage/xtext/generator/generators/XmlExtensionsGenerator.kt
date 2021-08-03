@@ -11,7 +11,7 @@ import java.io.PrintWriter
 class XmlExtensionsGenerator(extension: String, val context: MetaContext, rootPath: String) :
     AbstractGenerator(extension, rootPath) {
     fun generateXmlExtensions() {
-        val file = createFile(extensionCapitalized + "extensions.txt", myGenDir + "/grammar")
+        val file = createOrFindFile(extensionCapitalized + "extensions.txt", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
         out.println(
             """

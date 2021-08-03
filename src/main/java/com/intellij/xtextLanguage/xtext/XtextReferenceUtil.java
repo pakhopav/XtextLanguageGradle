@@ -6,16 +6,21 @@ import com.intellij.openapi.vfs.VirtualFile;
 import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiManager;
 import com.intellij.psi.PsiNameIdentifierOwner;
+import com.intellij.psi.search.FilenameIndex;
+import com.intellij.psi.search.GlobalSearchScope;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.xtextLanguage.xtext.psi.*;
 
+import javax.annotation.Nullable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.jar.JarEntry;
 import java.util.jar.JarFile;
 import java.util.stream.Collectors;
 
 public class XtextReferenceUtil {
+    public static final List<String> DEFAULT_GRAMMARS = Arrays.asList("org.eclipse.xtext.common.Terminals", "org.eclipse.xtext.xbase.Xbase", "org.eclipse.xtext.Xtext", "org.eclipse.xtext.xbase.Xtype");
 
     public static List<XtextFile> findAllGrammarsInProject(Project project) {
         List<XtextFile> xtextFiles = new ArrayList<>();
@@ -44,14 +49,32 @@ public class XtextReferenceUtil {
         return xtextFiles;
     }
 
+
+    //TODO case while 2 grammars in project have the same name
+    public static @Nullable
+    XtextFile getDefaultGrammar(String grammarName, Project project) {
+        String[] fqnParts = grammarName.split("\\.");
+        String fileName = fqnParts[fqnParts.length - 1] + ".xtext";
+        PsiFile[] found = FilenameIndex.getFilesByName(project, fileName, GlobalSearchScope.allScope(project));
+        if (found.length == 1) {
+            return (XtextFile) found[0];
+        }
+        return null;
+    }
+
+
     public static <T extends PsiNameIdentifierOwner> ArrayList<T> findRulesByNameInUsedGrammars(XtextFile file, String id) {
         ArrayList<T> result = new ArrayList<>();
         if (file == null) return result;
         List<String> usedGrammarsNames = PsiTreeUtil.findChildrenOfType(file, XtextREFERENCEGrammarGrammarID.class).stream().map(it -> it.getText()).collect(Collectors.toList());
         usedGrammarsNames.forEach(grammarName -> {
-            List<XtextFile> grammars = findGrammarsInProjectByName(file.getProject(), grammarName);
-            if (grammars.size() == 1) {
-                _findRulesByNameInUsedGrammars(grammars.get(0), id, result);
+            if (DEFAULT_GRAMMARS.contains(grammarName)) {
+                _findRulesByNameInUsedGrammars(getDefaultGrammar(grammarName, file.getProject()), id, result);
+            } else {
+                List<XtextFile> grammars = findGrammarsInProjectByName(file.getProject(), grammarName);
+                if (grammars.size() == 1) {
+                    _findRulesByNameInUsedGrammars(grammars.get(0), id, result);
+                }
             }
         });
         return result;
@@ -63,9 +86,13 @@ public class XtextReferenceUtil {
         result.addAll(allRules.stream().filter(r -> r.getName().equals(id)).collect(Collectors.toList()));
         List<String> usedGrammarsNames = PsiTreeUtil.findChildrenOfType(file, XtextREFERENCEGrammarGrammarID.class).stream().map(it -> it.getGrammarID().getText()).collect(Collectors.toList());
         usedGrammarsNames.forEach(grammarName -> {
-            List<XtextFile> grammars = findGrammarsInProjectByName(file.getProject(), grammarName);
-            if (grammars.size() == 1) {
-                _findRulesByNameInUsedGrammars(grammars.get(0), id, result);
+            if (DEFAULT_GRAMMARS.contains(grammarName)) {
+                _findRulesByNameInUsedGrammars(getDefaultGrammar(grammarName, file.getProject()), id, result);
+            } else {
+                List<XtextFile> grammars = findGrammarsInProjectByName(file.getProject(), grammarName);
+                if (grammars.size() == 1) {
+                    _findRulesByNameInUsedGrammars(grammars.get(0), id, result);
+                }
             }
         });
         return result;

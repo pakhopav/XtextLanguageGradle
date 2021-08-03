@@ -5,7 +5,7 @@ import java.io.PrintWriter
 
 class FileTypeGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateFileTypeFile() {
-        val file = createFile(extension.capitalize() + "FileType.java", myGenDir)
+        val file = createOrFindFile(extension.capitalize() + "FileType.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

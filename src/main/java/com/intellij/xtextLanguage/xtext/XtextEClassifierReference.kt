@@ -7,7 +7,7 @@ import com.intellij.psi.*
 import com.intellij.psi.impl.file.impl.JavaFileManager
 import com.intellij.psi.search.GlobalSearchScope
 import com.intellij.util.JarUtil
-import com.intellij.xtextLanguage.xtext.references.XtextImportedModelsManager
+import com.intellij.xtextLanguage.xtext.references.XtextLanguageDependenciesManager
 import java.io.File
 import java.io.IOException
 import java.util.jar.JarFile
@@ -45,7 +45,7 @@ class XtextEClassifierReference(element: PsiElement, textRange: TextRange) :
     private fun _multiResolve(): Array<ResolveResult>? {
         val results = mutableListOf<ResolveResult>()
         val project = myElement!!.project
-        val map = XtextImportedModelsManager.getInstance(project).getPackages()
+        val map = XtextLanguageDependenciesManager.getInstance(project).getPackages()
         val finder = JavaFileManager.getInstance(project)
         map.entries.forEach {
             val jarFile = JarFile(File("${project.basePath}/${it.value}"))
@@ -75,7 +75,7 @@ class XtextEClassifierReference(element: PsiElement, textRange: TextRange) :
     fun _getVariants(): Array<Any> {
         val variants = mutableListOf<LookupElement>()
         val project = myElement!!.project
-        val map = XtextImportedModelsManager.getInstance(project).getPackages()
+        val map = XtextLanguageDependenciesManager.getInstance(project).getPackages()
         map.entries.forEach {
             val jarFile = JarFile(File("${project.basePath}/${it.value}"))
             assertNotNull(jarFile)

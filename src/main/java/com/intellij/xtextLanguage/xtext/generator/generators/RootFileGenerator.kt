@@ -5,7 +5,7 @@ import java.io.PrintWriter
 
 class RootFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateRootFileFile() {
-        val file = createFile(extension.capitalize() + "File.java", myGenDir + "/psi")
+        val file = createOrFindFile(extension.capitalize() + "File.java", myGenDir + "/psi")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

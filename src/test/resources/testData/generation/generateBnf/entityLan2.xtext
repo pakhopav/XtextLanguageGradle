@@ -1,4 +1,4 @@
-grammar org.xtext.example.entity.Entity with org.eclipse.xtext.common.Terminals
+grammar org.xtext.example.entity.Entity with org.xtext.example.simple.Simple
 
 import "http://www.xtext.org/example/entity/Entity"
 
@@ -18,4 +18,3 @@ Entity:
 
 Feature:
     (many?='many')? name=ID ':' type=[Type];
-

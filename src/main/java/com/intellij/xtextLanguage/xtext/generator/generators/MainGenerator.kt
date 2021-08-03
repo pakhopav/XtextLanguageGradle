@@ -9,6 +9,7 @@ open class MainGenerator(val extension: String, val context: MetaContext, val ro
 
     constructor(extension: String, context: MetaContext) : this(extension, context, "src/main/java/com/intellij/")
 
+
     @Throws(IOException::class)
     fun generate() {
         generateLanguageFile()

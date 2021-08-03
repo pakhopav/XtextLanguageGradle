@@ -5,7 +5,7 @@ import java.io.PrintWriter
 
 class LexerAdapterFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateLexerAdapterFile() {
-        val file = createFile(extension.capitalize() + "LexerAdapter.java", myGenDir)
+        val file = createOrFindFile(extension.capitalize() + "LexerAdapter.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

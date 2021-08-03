@@ -5,7 +5,7 @@ import java.io.PrintWriter
 
 class CachedValueProviderGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateCachedValueProvider() {
-        val file = createFile(extension.capitalize() + "CachedValueProvider.kt", myGenDir + "/inspection")
+        val file = createOrFindFile(extension.capitalize() + "CachedValueProvider.kt", myGenDir + "/inspection")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

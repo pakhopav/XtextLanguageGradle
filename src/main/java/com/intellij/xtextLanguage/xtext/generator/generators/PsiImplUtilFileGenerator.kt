@@ -13,7 +13,7 @@ import java.io.PrintWriter
 class PsiImplUtilFileGenerator(extension: String, val context: MetaContext, rootPath: String) :
     AbstractGenerator(extension, rootPath) {
     fun geneneratePsiImplUtilFile() {
-        val file = createFile(extension.capitalize() + "PsiImplUtil.java", myGenDir + "/psi/impl")
+        val file = createOrFindFile(extension.capitalize() + "PsiImplUtil.java", myGenDir + "/psi/impl")
         val out = PrintWriter(FileOutputStream(file))
         out.println(
             """

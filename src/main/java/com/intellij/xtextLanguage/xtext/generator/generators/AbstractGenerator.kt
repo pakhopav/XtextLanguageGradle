@@ -9,14 +9,16 @@ abstract class AbstractGenerator(val extension: String, rootPath: String = "src/
     internal val packageDir = "${getGroupIdPart(rootPath)}${extension.toLowerCase()}Language.${extension.toLowerCase()}"
 
 
-    fun createFile(fileName: String, filePath: String): File {
+    fun createOrFindFile(fileName: String, filePath: String): File {
         val path = File(filePath)
         val file = File(filePath + "/" + fileName)
-        try {
-            path.mkdirs()
-            file.createNewFile()
-        } catch (e: IOException) {
-            e.printStackTrace()
+        if (!file.exists()) {
+            try {
+                path.mkdirs()
+                file.createNewFile()
+            } catch (e: IOException) {
+                e.printStackTrace()
+            }
         }
         return file
     }

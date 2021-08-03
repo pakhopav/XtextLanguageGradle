@@ -7,7 +7,7 @@ import java.io.PrintWriter
 class FlexFileGenerator(extension: String, val context: MetaContext, rootPath: String) :
     AbstractGenerator(extension, rootPath) {
     fun generateFlexFile() {
-        val file = createFile(extension.capitalize() + ".flex", myGenDir + "/grammar")
+        val file = createOrFindFile(extension.capitalize() + ".flex", myGenDir + "/grammar")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

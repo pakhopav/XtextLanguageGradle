@@ -5,7 +5,7 @@ import java.io.PrintWriter
 
 class TokenTypeFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateTokenTypeFile() {
-        val file = createFile(extension.capitalize() + "TokenType.java", myGenDir + "/psi")
+        val file = createOrFindFile(extension.capitalize() + "TokenType.java", myGenDir + "/psi")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

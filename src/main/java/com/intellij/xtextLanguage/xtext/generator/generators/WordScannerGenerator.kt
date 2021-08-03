@@ -5,7 +5,7 @@ import java.io.PrintWriter
 
 class WordScannerGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateWordScanner() {
-        val file = createFile(extensionCapitalized + "WordScanner.java", myGenDir)
+        val file = createOrFindFile(extensionCapitalized + "WordScanner.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

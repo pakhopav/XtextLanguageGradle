@@ -127,7 +127,9 @@ class ImportedJarsTable() : JPanel(BorderLayout()) {
     }
 
     fun addElement(element: EcoreModelJarInfo) {
-        myTableModel.addRow(element)
+        if (!myTableModel.items.map { it.uri }.contains(element.uri)) {
+            myTableModel.addRow(element)
+        }
     }
 
     fun setElements(elements: List<EcoreModelJarInfo>) {

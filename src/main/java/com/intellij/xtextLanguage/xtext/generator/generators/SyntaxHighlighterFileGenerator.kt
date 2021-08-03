@@ -7,7 +7,7 @@ import java.io.PrintWriter
 class SyntaxHighlighterFileGenerator(extension: String, val context: MetaContext, rootPath: String) :
     AbstractGenerator(extension, rootPath) {
     fun generateSyntaxHighlighterFile() {
-        val file = createFile(extension.capitalize() + "SyntaxHighlighter.java", myGenDir)
+        val file = createOrFindFile(extension.capitalize() + "SyntaxHighlighter.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.println(
             """

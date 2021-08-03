@@ -8,7 +8,7 @@ import java.io.PrintWriter
 class RefactoringSupportProviderGenerator(extension: String, val context: MetaContext, rootPath: String) :
     AbstractGenerator(extension, rootPath) {
     fun generateRefactoringSupportProvider() {
-        val file = createFile("${extensionCapitalized}RefactoringSupportProvider.java", myGenDir)
+        val file = createOrFindFile("${extensionCapitalized}RefactoringSupportProvider.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         val referencedRules = context.rules.filterIsInstance<TreeParserRule>()
             .filter { it.isReferenced }

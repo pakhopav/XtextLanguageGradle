@@ -21,7 +21,7 @@ class ManipulatorsGenerator(extension: String, val context: MetaContext, rootPat
 
     fun generateManipulator(crossReference: TreeCrossReference) {
         val referenceName = NameGenerator.toGKitClassName(crossReference.getBnfName())
-        val file = createFile("$extensionCapitalized${referenceName}Manipulator.java", myGenDir + "/psi")
+        val file = createOrFindFile("$extensionCapitalized${referenceName}Manipulator.java", myGenDir + "/psi")
         val out = PrintWriter(FileOutputStream(file))
         out.print("""
             |package $packageDir.psi;

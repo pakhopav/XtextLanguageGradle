@@ -183,10 +183,16 @@ class XtextSecondWizardStep(val context: WizardContext, val builder: XtextModule
             if (helper.containsInKnownModels(modelName)) {
                 val file = helper.getKnownModel(modelName)!!
                 val jarFile = JarFile(file)
-                myImportedModels.add(EcoreModelJarInfo(modelName, path = file.path, file = jarFile))
+                addModel(EcoreModelJarInfo(modelName, path = file.path, file = jarFile))
             } else {
-                myImportedModels.add(EcoreModelJarInfo(modelName))
+                addModel(EcoreModelJarInfo(modelName))
             }
+        }
+    }
+
+    private fun addModel(modelInfo: EcoreModelJarInfo) {
+        if (!myImportedModels.map { it.uri }.contains(modelInfo.uri)) {
+            myImportedModels.add(modelInfo)
         }
     }
 

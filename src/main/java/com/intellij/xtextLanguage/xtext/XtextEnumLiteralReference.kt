@@ -5,7 +5,7 @@ import com.intellij.codeInsight.lookup.LookupElementBuilder
 import com.intellij.openapi.util.TextRange
 import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.*
-import com.intellij.xtextLanguage.xtext.references.XtextImportedModelsManager
+import com.intellij.xtextLanguage.xtext.references.XtextLanguageDependenciesManager
 import java.io.File
 import java.io.IOException
 
@@ -40,7 +40,7 @@ class XtextEnumLiteralReference(element: PsiElement, textRange: TextRange) :
     private fun _multiResolve(): Array<ResolveResult>? {
         val results = mutableListOf<ResolveResult>()
         val project = myElement!!.project
-        val map = XtextImportedModelsManager.getInstance(project).getPackages()
+        val map = XtextLanguageDependenciesManager.getInstance(project).getPackages()
         val jarPath = map.get(key.replace("\"", "").replace("'", ""))
         jarPath?.let {
             LocalFileSystem.getInstance().findFileByIoFile(File("${project.basePath}/$it"))?.let {
@@ -56,7 +56,7 @@ class XtextEnumLiteralReference(element: PsiElement, textRange: TextRange) :
 
     fun _getVariants(): Array<Any> {
         val variants = mutableListOf<LookupElement>()
-        val map = XtextImportedModelsManager.getInstance(myElement!!.project).getPackages()
+        val map = XtextLanguageDependenciesManager.getInstance(myElement!!.project).getPackages()
         map.keys.forEach {
             variants.add(LookupElementBuilder.create(it))
         }

@@ -1,4 +1,4 @@
-grammar org.xtext.example.smalljava.SmallJava with Terminals
+grammar org.xtext.example.smalljava.SmallJava with org.eclipse.xtext.common.Terminals
 
 import "http://www.xtext.org/example/smalljava/SmallJava"
 

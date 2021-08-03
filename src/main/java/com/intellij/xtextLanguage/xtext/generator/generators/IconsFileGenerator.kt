@@ -5,7 +5,7 @@ import java.io.PrintWriter
 
 class IconsFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateIconsFile() {
-        val file = createFile(extension.capitalize() + "Icons.java", myGenDir)
+        val file = createOrFindFile(extension.capitalize() + "Icons.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

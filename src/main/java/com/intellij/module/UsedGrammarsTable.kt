@@ -19,6 +19,7 @@ import java.awt.BorderLayout
 import java.awt.Color
 import java.awt.Component
 import java.awt.Dimension
+import java.util.jar.JarFile
 import javax.swing.JLabel
 import javax.swing.JPanel
 import javax.swing.JTable
@@ -73,10 +74,8 @@ class UsedGrammarsTable(val jarsTable: ImportedJarsTable) : JPanel(BorderLayout(
                             tfwbb.text = chosenFile.path
                             try {
                                 val xtextFile = PsiManager.getInstance(defaultProject).findFile(chosenFile) as XtextFile
-                                val xtextFileName = PsiTreeUtil.findChildOfType(
-                                    xtextFile,
-                                    XtextGrammarID::class.java
-                                )?.validIDList?.last()?.text
+                                val xtextFileName =
+                                    PsiTreeUtil.findChildOfType(xtextFile, XtextGrammarID::class.java)?.text
                                 if (xtextFileName != null && xtextFileName.equals(currentGrammarInfo.grammarName)) {
                                     currentGrammarInfo.file = xtextFile
                                     findUsedGrammars(xtextFile)
@@ -166,10 +165,15 @@ class UsedGrammarsTable(val jarsTable: ImportedJarsTable) : JPanel(BorderLayout(
 
     private fun findImportedModels(grammarFile: XtextFile) {
         val importedModels = PsiTreeUtil.findChildrenOfType(grammarFile, XtextReferencedMetamodel::class.java)
-        print("")
         importedModels.forEach {
             val modelName = it.referenceePackageSTRING.text.replace("\"", "")
-            jarsTable.addElement(EcoreModelJarInfo(modelName))
+            if (helper.containsInKnownModels(modelName)) {
+                val file = helper.getKnownModel(modelName)!!
+                val jarFile = JarFile(file)
+                jarsTable.addElement(EcoreModelJarInfo(modelName, path = file.path, file = jarFile))
+            } else {
+                jarsTable.addElement(EcoreModelJarInfo(modelName))
+            }
         }
     }
 }

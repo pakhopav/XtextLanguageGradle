@@ -58,6 +58,9 @@ class XtextModuleBuilderHelper(val project: Project = ProjectManager.getInstance
     private fun initGrammars(): Map<String, XtextFile> {
         val result = HashMap<String, XtextFile>()
         result.put("Terminals", findXtextFileByRelativePath("grammars/Terminals.xtext"))
+//        val file = File("grammars/Terminals.xtext")
+//        val xtextFile = PsiManager.getInstance(project).findFile(LocalFileSystem.getInstance().findFileByIoFile(file)!!) as XtextFile
+//        result.put("Terminals", xtextFile)
         result.put("Xbase", findXtextFileByRelativePath("grammars/Xbase.xtext"))
         result.put("Xtext", findXtextFileByRelativePath("grammars/Xtext.xtext"))
         result.put("Xtype", findXtextFileByRelativePath("grammars/Xtype.xtext"))
@@ -82,7 +85,7 @@ class XtextModuleBuilderHelper(val project: Project = ProjectManager.getInstance
     }
 
     fun getGrammarName(file: XtextFile): String {
-        return PsiTreeUtil.findChildOfType(file, XtextGrammarID::class.java)?.validIDList?.last()?.text!!
+        return PsiTreeUtil.findChildOfType(file, XtextGrammarID::class.java)!!.text
     }
 
 
@@ -162,11 +165,11 @@ class XtextModuleBuilderHelper(val project: Project = ProjectManager.getInstance
 
     fun isValidGrammarName(name: String): Boolean {
         if (name.isEmpty()) return false
-        return name.matches(Regex("[A-Za-z]*"))
+        return name.matches(Regex("[A-Za-z]+(\\.[A-Za-z]+)*"))
     }
 
     fun isValidGrammarExtension(extension: String): Boolean {
         if (extension.isEmpty()) return false
-        return extension.matches(Regex("[a-z]*"))
+        return extension.matches(Regex("[a-z]+"))
     }
 }

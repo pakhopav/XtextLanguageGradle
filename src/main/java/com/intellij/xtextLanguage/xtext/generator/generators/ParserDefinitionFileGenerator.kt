@@ -7,7 +7,7 @@ import java.io.PrintWriter
 class ParserDefinitionFileGenerator(extension: String, val context: MetaContext, rootPath: String) :
     AbstractGenerator(extension, rootPath) {
     fun generateParserDefinitionFile() {
-        val file = createFile(extension.capitalize() + "ParserDefinition.java", myGenDir)
+        val file = createOrFindFile(extension.capitalize() + "ParserDefinition.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.println(
             """

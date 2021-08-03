@@ -7,7 +7,7 @@ class LanguageFileGenerator(extension: String, rootPath: String) : AbstractGener
 
 
     fun generateLanguageFile() {
-        val file = createFile(extension.capitalize() + "Language.java", myGenDir)
+        val file = createOrFindFile(extension.capitalize() + "Language.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

@@ -5,7 +5,7 @@ import java.io.PrintWriter
 
 class ReferencesInspectionGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateReferencesInspection() {
-        val file = createFile(extension.capitalize() + "ReferencesInspection.java", myGenDir + "/inspection")
+        val file = createOrFindFile(extension.capitalize() + "ReferencesInspection.java", myGenDir + "/inspection")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

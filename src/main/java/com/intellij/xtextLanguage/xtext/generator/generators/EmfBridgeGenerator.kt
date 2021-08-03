@@ -35,7 +35,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
     }
 
     private fun generateEmfCreator() {
-        val file = createFile("${capitalizedExtension}EmfCreator.kt", myGenDir + "/emf")
+        val file = createOrFindFile("${capitalizedExtension}EmfCreator.kt", myGenDir + "/emf")
         val out = PrintWriter(FileOutputStream(file))
         generateEmfCreatorImports(out)
         out.println("class ${capitalizedExtension}EmfCreator : EmfCreator() {")
@@ -135,8 +135,9 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
         relevantRules
                 .filter { it.hasNameFeature() }
                 .forEach {
-                    out.println("""
-                        |            ${elseWord}if (obj is ${it.name}) {     
+                    out.println(
+                        """
+                        |            ${elseWord}if (obj is ${it.returnType.className}) {     
                         |                val feature = obj.eClass().eAllStructuralFeatures.firstOrNull { it.name == "name" } 
                         |                descriptions.add(ObjectDescriptionImpl(it, it.eGet(feature) as String))
                         |            }     
@@ -211,7 +212,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
     }
 
     private fun generateScopeFile() {
-        val file = createFile("${capitalizedExtension}Scope.kt", myGenDir + "/emf/scope")
+        val file = createOrFindFile("${capitalizedExtension}Scope.kt", myGenDir + "/emf/scope")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """
@@ -227,7 +228,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
     }
 
     private fun generateBridgeFile() {
-        val file = createFile("${capitalizedExtension}EmfBridge.kt", myGenDir + "/emf")
+        val file = createOrFindFile("${capitalizedExtension}EmfBridge.kt", myGenDir + "/emf")
         val out = PrintWriter(FileOutputStream(file))
         val rootRuleName = context.rules.first().name
         out.print(

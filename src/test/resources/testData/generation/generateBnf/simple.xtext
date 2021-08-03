@@ -1,4 +1,4 @@
-grammar org.xtext.example.simple.Simple with Terminals
+grammar org.xtext.example.simple.Simple with org.eclipse.xtext.common.Terminals
 
 import "http://www.xtext.org/example/simple/Simple"
 import "http://www.eclipse.org/emf/2002/Ecore" as ecore

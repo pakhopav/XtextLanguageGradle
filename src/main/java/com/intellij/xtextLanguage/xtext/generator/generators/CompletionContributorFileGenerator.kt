@@ -5,7 +5,7 @@ import java.io.PrintWriter
 
 class CompletionContributorFileGenerator(extension: String, rootPath: String) : AbstractGenerator(extension, rootPath) {
     fun generateCompletionContributorFile() {
-        val file = createFile(extension.capitalize() + "CompletionContributor.java", myGenDir)
+        val file = createOrFindFile(extension.capitalize() + "CompletionContributor.java", myGenDir)
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """

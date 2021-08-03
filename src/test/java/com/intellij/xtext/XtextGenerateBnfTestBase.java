@@ -73,8 +73,6 @@ public class XtextGenerateBnfTestBase extends LightPlatformCodeInsightFixtureTes
     private List<XtextFile> findAllFilesRecursively(List<XtextREFERENCEGrammarGrammarID> grammars) {
         ArrayList<XtextFile> listOfFiles = new ArrayList<>();
         if (grammars != null) {
-            String a = "dsas";
-            String b = " sa";
             for (XtextREFERENCEGrammarGrammarID name : grammars) {
                 XtextFile file = getXtextFileByName(name.getText());
                 listOfFiles.add(file);
