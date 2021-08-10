@@ -1,10 +1,10 @@
 package com.intellij.xtext.metamodel.elements.tree.impl
 
 import com.intellij.xtext.language.psi.XtextParserRule
-import com.intellij.xtext.metamodel.model.elements.emf.EmfClassDescriptor
-import com.intellij.xtext.metamodel.model.elements.tree.TreeLeaf
-import com.intellij.xtext.metamodel.model.elements.tree.TreeNode.Companion.filterNodesInSubtree
-import com.intellij.xtext.metamodel.model.elements.tree.TreeParserRule
+import com.intellij.xtext.metamodel.elements.emf.EmfClassDescriptor
+import com.intellij.xtext.metamodel.elements.tree.TreeLeaf
+import com.intellij.xtext.metamodel.elements.tree.TreeNode.Companion.filterNodesInSubtree
+import com.intellij.xtext.metamodel.elements.tree.TreeParserRule
 
 
 open class TreeParserRuleImpl : TreeAbstractRule, TreeParserRule {

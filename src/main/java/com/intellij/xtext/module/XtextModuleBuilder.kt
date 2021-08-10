@@ -13,12 +13,12 @@ import com.intellij.openapi.roots.ModifiableRootModel
 import com.intellij.openapi.roots.ui.configuration.ModulesProvider
 import com.intellij.openapi.util.Disposer
 import com.intellij.openapi.vfs.LocalFileSystem
-import com.intellij.xtext.generator.generators.MainGenerator
+import com.intellij.xtext.generator.MainGenerator
 import com.intellij.xtext.language.EcorePackageRegistry
 import com.intellij.xtext.language.XtextIcon
 import com.intellij.xtext.language.psi.XtextFile
-import com.intellij.xtext.metamodel.model.MetaContext
-import com.intellij.xtext.metamodel.model.MetaContextImpl
+import com.intellij.xtext.metamodel.MetaContext
+import com.intellij.xtext.metamodel.MetaContextImpl
 import com.intellij.xtext.module.wizard.EcoreModelJarInfo
 import com.intellij.xtext.module.wizard.XtextGrammarFileInfo
 import com.intellij.xtext.module.wizard.XtextSecondWizardStep

@@ -1,8 +1,8 @@
 package com.intellij.xtext.generator
 
-import com.intellij.xtext.metamodel.model.MetaContext
-import com.intellij.xtext.metamodel.model.elements.tree.TreeParserRule
-import com.intellij.xtext.metamodel.model.elements.tree.TreeRule
+import com.intellij.xtext.metamodel.MetaContext
+import com.intellij.xtext.metamodel.elements.tree.TreeParserRule
+import com.intellij.xtext.metamodel.elements.tree.TreeRule
 import java.io.FileOutputStream
 import java.io.PrintWriter
 

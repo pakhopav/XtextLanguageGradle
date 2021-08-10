@@ -4,7 +4,7 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.xtext.language.EcorePackageRegistry
 import com.intellij.xtext.language.psi.XtextFile
 import com.intellij.xtext.language.psi.XtextReferencedMetamodel
-import com.intellij.xtext.metamodel.model.elements.emf.EmfClassDescriptor
+import com.intellij.xtext.metamodel.elements.emf.EmfClassDescriptor
 import org.eclipse.emf.ecore.EPackage
 
 class EmfModelRegistry() {

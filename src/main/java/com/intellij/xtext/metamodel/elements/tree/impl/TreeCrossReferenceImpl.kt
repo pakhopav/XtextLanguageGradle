@@ -1,12 +1,12 @@
 package com.intellij.xtext.metamodel.elements.tree.impl
 
 import com.intellij.xtext.language.psi.XtextCrossReference
-import com.intellij.xtext.metamodel.model.elements.Cardinality
-import com.intellij.xtext.metamodel.model.elements.emf.Assignment
-import com.intellij.xtext.metamodel.model.elements.emf.EmfClassDescriptor
-import com.intellij.xtext.metamodel.model.elements.names.NameGenerator
-import com.intellij.xtext.metamodel.model.elements.tree.TreeCrossReference
-import com.intellij.xtext.metamodel.model.elements.tree.TreeNode
+import com.intellij.xtext.metamodel.elements.Cardinality
+import com.intellij.xtext.metamodel.elements.emf.Assignment
+import com.intellij.xtext.metamodel.elements.emf.EmfClassDescriptor
+import com.intellij.xtext.metamodel.elements.names.NameGenerator
+import com.intellij.xtext.metamodel.elements.tree.TreeCrossReference
+import com.intellij.xtext.metamodel.elements.tree.TreeNode
 
 
 class TreeCrossReferenceImpl(psiCrossReference: XtextCrossReference,

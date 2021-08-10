@@ -3,10 +3,10 @@ package com.intellij.xtext.metamodel.elements.tree.impl
 import com.intellij.xtext.language.psi.XtextEnumRule
 import com.intellij.xtext.language.psi.XtextParserRule
 import com.intellij.xtext.language.psi.XtextTerminalRule
-import com.intellij.xtext.metamodel.model.elements.Cardinality
-import com.intellij.xtext.metamodel.model.elements.emf.EmfClassDescriptor
-import com.intellij.xtext.metamodel.model.elements.tree.TreeRule
-import com.intellij.xtext.metamodel.model.elements.tree.eliminateCaret
+import com.intellij.xtext.metamodel.elements.Cardinality
+import com.intellij.xtext.metamodel.elements.emf.EmfClassDescriptor
+import com.intellij.xtext.metamodel.elements.tree.TreeRule
+import com.intellij.xtext.metamodel.elements.tree.eliminateCaret
 
 abstract class TreeAbstractRule : TreeNodeImpl, TreeRule {
     protected var _returnType: EmfClassDescriptor

@@ -3,13 +3,13 @@ package com.intellij.xtext.metamodel
 import com.intellij.psi.PsiElement
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.xtext.language.psi.*
-import com.intellij.xtext.metamodel.model.elements.Cardinality
-import com.intellij.xtext.metamodel.model.elements.Keyword
-import com.intellij.xtext.metamodel.model.elements.emf.EmfClassDescriptor
-import com.intellij.xtext.metamodel.model.elements.tree.*
-import com.intellij.xtext.metamodel.model.elements.tree.TreeNode.Companion.filterNodesInSubtree
-import com.intellij.xtext.metamodel.model.elements.tree.TreeNode.Companion.filterNodesIsInstance
-import com.intellij.xtext.metamodel.model.elements.tree.impl.*
+import com.intellij.xtext.metamodel.elements.Cardinality
+import com.intellij.xtext.metamodel.elements.Keyword
+import com.intellij.xtext.metamodel.elements.emf.EmfClassDescriptor
+import com.intellij.xtext.metamodel.elements.tree.*
+import com.intellij.xtext.metamodel.elements.tree.TreeNode.Companion.filterNodesInSubtree
+import com.intellij.xtext.metamodel.elements.tree.TreeNode.Companion.filterNodesIsInstance
+import com.intellij.xtext.metamodel.elements.tree.impl.*
 import java.util.*
 import kotlin.test.assertNotNull
 

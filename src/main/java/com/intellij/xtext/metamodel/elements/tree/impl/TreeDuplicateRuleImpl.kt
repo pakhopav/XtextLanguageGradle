@@ -1,8 +1,8 @@
 package com.intellij.xtext.metamodel.elements.tree.impl
 
 import com.intellij.xtext.language.psi.XtextParserRule
-import com.intellij.xtext.metamodel.model.elements.emf.EmfClassDescriptor
-import com.intellij.xtext.metamodel.model.elements.tree.TreeDuplicateRule
+import com.intellij.xtext.metamodel.elements.emf.EmfClassDescriptor
+import com.intellij.xtext.metamodel.elements.tree.TreeDuplicateRule
 
 class TreeDuplicateRuleImpl : TreeParserRuleImpl, TreeDuplicateRule {
     override val originRuleName: String

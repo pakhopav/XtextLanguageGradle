@@ -1,12 +1,12 @@
 package com.intellij.xtext.generator
 
-import com.intellij.xtext.metamodel.model.MetaContext
-import com.intellij.xtext.metamodel.model.elements.Cardinality
-import com.intellij.xtext.metamodel.model.elements.names.NameGenerator
-import com.intellij.xtext.metamodel.model.elements.tree.TreeLeaf
-import com.intellij.xtext.metamodel.model.elements.tree.TreeNode.Companion.filterNodesInSubtree
-import com.intellij.xtext.metamodel.model.elements.tree.TreeParserRule
-import com.intellij.xtext.metamodel.model.elements.tree.TreeRuleCall
+import com.intellij.xtext.metamodel.MetaContext
+import com.intellij.xtext.metamodel.elements.Cardinality
+import com.intellij.xtext.metamodel.elements.names.NameGenerator
+import com.intellij.xtext.metamodel.elements.tree.TreeLeaf
+import com.intellij.xtext.metamodel.elements.tree.TreeNode.Companion.filterNodesInSubtree
+import com.intellij.xtext.metamodel.elements.tree.TreeParserRule
+import com.intellij.xtext.metamodel.elements.tree.TreeRuleCall
 import java.io.FileOutputStream
 import java.io.PrintWriter
 

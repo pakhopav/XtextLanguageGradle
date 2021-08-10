@@ -1,12 +1,12 @@
 package com.intellij.xtext.metamodel.elements.tree.impl
 
 import com.intellij.psi.PsiElement
-import com.intellij.xtext.metamodel.model.elements.Cardinality
-import com.intellij.xtext.metamodel.model.elements.emf.Assignment
-import com.intellij.xtext.metamodel.model.elements.emf.EmfClassDescriptor
-import com.intellij.xtext.metamodel.model.elements.emf.TreeRewrite
-import com.intellij.xtext.metamodel.model.elements.tree.TreeLeaf
-import com.intellij.xtext.metamodel.model.elements.tree.TreeNode
+import com.intellij.xtext.metamodel.elements.Cardinality
+import com.intellij.xtext.metamodel.elements.emf.Assignment
+import com.intellij.xtext.metamodel.elements.emf.EmfClassDescriptor
+import com.intellij.xtext.metamodel.elements.emf.TreeRewrite
+import com.intellij.xtext.metamodel.elements.tree.TreeLeaf
+import com.intellij.xtext.metamodel.elements.tree.TreeNode
 
 abstract class TreeLeafImpl(protected val psiElement: PsiElement, parent: TreeNode, cardinality: Cardinality, assignment: Assignment? = null) : TreeNodeImpl(parent, cardinality), TreeLeaf {
     override val assignment = assignment

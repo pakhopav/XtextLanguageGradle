@@ -1,8 +1,8 @@
 package com.intellij.xtext.metamodel.elements.tree.impl
 
 import com.intellij.xtext.language.psi.XtextTerminalRule
-import com.intellij.xtext.metamodel.model.elements.emf.EmfClassDescriptor
-import com.intellij.xtext.metamodel.model.elements.tree.TreeTerminalRule
+import com.intellij.xtext.metamodel.elements.emf.EmfClassDescriptor
+import com.intellij.xtext.metamodel.elements.tree.TreeTerminalRule
 
 class TreeTerminalRuleImpl : TreeAbstractRule, TreeTerminalRule {
 

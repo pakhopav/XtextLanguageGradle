@@ -2,7 +2,7 @@ package com.intellij.xtext.metamodel
 
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.xtext.language.psi.*
-import com.intellij.xtext.metamodel.model.elements.Keyword
+import com.intellij.xtext.metamodel.elements.Keyword
 
 class KeywordsCreator() {
 

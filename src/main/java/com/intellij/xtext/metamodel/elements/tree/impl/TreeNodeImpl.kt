@@ -1,7 +1,7 @@
 package com.intellij.xtext.metamodel.elements.tree.impl
 
-import com.intellij.xtext.metamodel.model.elements.Cardinality
-import com.intellij.xtext.metamodel.model.elements.tree.TreeNode
+import com.intellij.xtext.metamodel.elements.Cardinality
+import com.intellij.xtext.metamodel.elements.tree.TreeNode
 
 abstract class TreeNodeImpl(open var parent: TreeNode?, override val cardinality: Cardinality) : TreeNode {
 

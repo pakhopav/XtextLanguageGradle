@@ -9,11 +9,11 @@ import com.intellij.openapi.vfs.LocalFileSystem
 import com.intellij.psi.PsiDocumentManager
 import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.util.PsiErrorElementUtil
-import com.intellij.xtext.generator.generators.MainGenerator
+import com.intellij.xtext.generator.MainGenerator
 import com.intellij.xtext.language.psi.XtextFile
 import com.intellij.xtext.language.psi.XtextREFERENCEGrammarGrammarID
 import com.intellij.xtext.language.reference.XtextReferenceUtil
-import com.intellij.xtext.metamodel.model.MetaContextImpl
+import com.intellij.xtext.metamodel.MetaContextImpl
 import com.intellij.xtext.module.GrammarKitGenerator
 import com.intellij.xtext.persistence.XtextLanguageInfoManager
 import org.apache.commons.io.FileUtils

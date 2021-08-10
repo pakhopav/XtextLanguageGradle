@@ -21,11 +21,11 @@ import com.intellij.psi.xml.XmlTag
 import com.intellij.util.IncorrectOperationException
 import com.intellij.util.download.DownloadableFileDescription
 import com.intellij.util.download.DownloadableFileService
-import com.intellij.xtext.metamodel.model.MetaContext
-import com.intellij.xtext.metamodel.model.elements.names.NameGenerator
-import com.intellij.xtext.metamodel.model.elements.tree.TreeCrossReference
-import com.intellij.xtext.metamodel.model.elements.tree.TreeNode.Companion.filterNodesIsInstance
-import com.intellij.xtext.metamodel.model.elements.tree.TreeParserRule
+import com.intellij.xtext.metamodel.MetaContext
+import com.intellij.xtext.metamodel.elements.names.NameGenerator
+import com.intellij.xtext.metamodel.elements.tree.TreeCrossReference
+import com.intellij.xtext.metamodel.elements.tree.TreeNode.Companion.filterNodesIsInstance
+import com.intellij.xtext.metamodel.elements.tree.TreeParserRule
 import org.apache.commons.io.FileUtils
 import org.intellij.grammar.actions.BnfRunJFlexAction
 import org.intellij.grammar.actions.GenerateAction

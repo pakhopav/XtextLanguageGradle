@@ -1,6 +1,6 @@
 package com.intellij.xtext.metamodel.elements.tree
 
-import com.intellij.xtext.metamodel.model.elements.Cardinality
+import com.intellij.xtext.metamodel.elements.Cardinality
 
 interface TreeNode {
     val children: List<TreeNode>

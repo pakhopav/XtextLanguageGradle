@@ -4,8 +4,8 @@ import com.intellij.psi.util.PsiTreeUtil
 import com.intellij.xtext.language.psi.XtextCharacterRange
 import com.intellij.xtext.language.psi.XtextNegatedToken
 import com.intellij.xtext.language.psi.XtextParenthesizedTerminalElement
-import com.intellij.xtext.metamodel.model.elements.Cardinality
-import com.intellij.xtext.metamodel.model.elements.tree.TreeNode
+import com.intellij.xtext.metamodel.elements.Cardinality
+import com.intellij.xtext.metamodel.elements.tree.TreeNode
 import kotlin.test.assertTrue
 
 class TreeTerminalNegatedToken(psiElement: XtextNegatedToken, parent: TreeNode, cardinality: Cardinality) :

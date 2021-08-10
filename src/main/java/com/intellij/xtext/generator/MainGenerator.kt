@@ -1,6 +1,6 @@
 package com.intellij.xtext.generator
 
-import com.intellij.xtext.metamodel.model.MetaContext
+import com.intellij.xtext.metamodel.MetaContext
 import java.io.File
 import java.io.IOException
 

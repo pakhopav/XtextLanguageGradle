@@ -1,8 +1,8 @@
 package com.intellij.xtext.metamodel.elements.tree.impl
 
-import com.intellij.xtext.metamodel.model.elements.Cardinality
-import com.intellij.xtext.metamodel.model.elements.tree.TreeGroup
-import com.intellij.xtext.metamodel.model.elements.tree.TreeNode
+import com.intellij.xtext.metamodel.elements.Cardinality
+import com.intellij.xtext.metamodel.elements.tree.TreeGroup
+import com.intellij.xtext.metamodel.elements.tree.TreeNode
 
 class TreeSyntheticGroup(parent: TreeNode, cardinality: Cardinality, private val withBrackets: Boolean) : TreeNodeImpl(parent, cardinality), TreeGroup {
 

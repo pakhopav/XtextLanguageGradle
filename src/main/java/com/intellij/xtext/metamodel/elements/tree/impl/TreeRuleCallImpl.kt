@@ -2,13 +2,13 @@ package com.intellij.xtext.metamodel.elements.tree.impl
 
 import com.intellij.xtext.language.psi.XtextPredicatedRuleCall
 import com.intellij.xtext.language.psi.XtextRuleCall
-import com.intellij.xtext.metamodel.model.elements.Cardinality
-import com.intellij.xtext.metamodel.model.elements.emf.Assignment
-import com.intellij.xtext.metamodel.model.elements.names.NameGenerator
-import com.intellij.xtext.metamodel.model.elements.tree.TreeNode
-import com.intellij.xtext.metamodel.model.elements.tree.TreeRule
-import com.intellij.xtext.metamodel.model.elements.tree.TreeRuleCall
-import com.intellij.xtext.metamodel.model.elements.tree.eliminateCaret
+import com.intellij.xtext.metamodel.elements.Cardinality
+import com.intellij.xtext.metamodel.elements.emf.Assignment
+import com.intellij.xtext.metamodel.elements.names.NameGenerator
+import com.intellij.xtext.metamodel.elements.tree.TreeNode
+import com.intellij.xtext.metamodel.elements.tree.TreeRule
+import com.intellij.xtext.metamodel.elements.tree.TreeRuleCall
+import com.intellij.xtext.metamodel.elements.tree.eliminateCaret
 
 
 class TreeRuleCallImpl : TreeLeafImpl, TreeRuleCall {
