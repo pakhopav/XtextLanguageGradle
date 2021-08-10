@@ -1,4 +1,4 @@
-grammar org.xtext.example.entity.Entity with org.xtext.example.simple.Simple
+grammar org.xtext.example.entity.Entity with org.eclipse.xtext.common.Terminals
 
 import "http://www.xtext.org/example/entity/Entity"
 
@@ -6,7 +6,7 @@ Domainmodel :
     (elements+=Type)*;
 
 Type:
-    DataType | Entity;
+    DataType | Entity | DataEntity;
 
 DataType:
     'datatype' name=ID;
@@ -18,3 +18,11 @@ Entity:
 
 Feature:
     (many?='many')? name=ID ':' type=[Type];
+
+DataEntity returns Entity:
+    'dataEntity' name=ID '{'
+        (features+=DataFeature)*
+    '}';
+
+DataFeature returns Feature:
+    (many?='many')? name=ID ':' type=[DataType];

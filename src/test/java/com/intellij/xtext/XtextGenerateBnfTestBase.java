@@ -7,8 +7,8 @@ import com.intellij.psi.PsiFile;
 import com.intellij.psi.PsiRecursiveElementVisitor;
 import com.intellij.psi.util.PsiTreeUtil;
 import com.intellij.testFramework.fixtures.LightPlatformCodeInsightFixtureTestCase;
-import com.intellij.xtextLanguage.xtext.psi.XtextFile;
-import com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEGrammarGrammarID;
+import com.intellij.xtext.language.psi.XtextFile;
+import com.intellij.xtext.language.psi.XtextREFERENCEGrammarGrammarID;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;

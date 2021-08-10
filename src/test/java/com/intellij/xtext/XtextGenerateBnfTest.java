@@ -4,10 +4,10 @@ package com.intellij.xtext;
 
 import com.intellij.psi.PsiFile;
 import com.intellij.testFramework.TestDataPath;
-import com.intellij.xtextLanguage.xtext.generator.generators.MainGenerator;
-import com.intellij.xtextLanguage.xtext.generator.models.MetaContext;
-import com.intellij.xtextLanguage.xtext.generator.models.MetaContextImpl;
-import com.intellij.xtextLanguage.xtext.psi.XtextFile;
+import com.intellij.xtext.generator.generators.MainGenerator;
+import com.intellij.xtext.language.psi.XtextFile;
+import com.intellij.xtext.metamodel.model.MetaContext;
+import com.intellij.xtext.metamodel.model.MetaContextImpl;
 
 import java.io.File;
 import java.io.IOException;

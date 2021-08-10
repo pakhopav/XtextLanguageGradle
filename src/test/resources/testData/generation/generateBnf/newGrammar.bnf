@@ -10,19 +10,19 @@
       INT ="regexp:[0-9]([0-9]|_)*"
       DECIMAL ="regexp:[0-9]([0-9]|_)*((e|E)(\+|-)?[0-9]([0-9]|_)*)?((b|B)(i|I|d|D)|(l|L|d|D|f|F))?"
     ]
-    parserClass="com.intellij.xtextLanguage.xtext.parser.XtextParser"
+    parserClass="com.intellij.xtext.language.parser.XtextParser"
         
-    extends="com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiCompositeElementImpl"
+    extends="com.intellij.xtext.language.psi.impl.XtextPsiCompositeElementImpl"
     psiClassPrefix="Xtext"
     psiImplClassSuffix="Impl"
-    psiPackage="com.intellij.xtextLanguage.xtext.psi"
-    psiImplPackage="com.intellij.xtextLanguage.xtext.impl"
+    psiPackage="com.intellij.xtext.language.psi"
+    psiImplPackage="com.intellij.xtext.language.impl"
 
-    elementTypeHolderClass="com.intellij.xtextLanguage.xtext.psi.XtextTypes"
-    elementTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextElementType"
-    tokenTypeClass="com.intellij.xtextLanguage.xtext.psi.XtextTokenType"
-    psiImplUtilClass="com.intellij.xtextLanguage.xtext.psi.impl.XtextPsiImplUtil"
-    parserUtilClass= "com.intellij.xtextLanguage.xtext.parserUtilBase.GeneratedParserUtilBaseCopy"
+    elementTypeHolderClass="com.intellij.xtext.language.psi.XtextTypes"
+    elementTypeClass="com.intellij.xtext.language.psi.XtextElementType"
+    tokenTypeClass="com.intellij.xtext.language.psi.XtextTokenType"
+    psiImplUtilClass="com.intellij.xtext.language.psi.impl.XtextPsiImplUtil"
+    parserUtilClass= "com.intellij.xtext.language.parserUtilBase.GeneratedParserUtilBaseCopy"
     generateTokenAccessors=true
     generateTokens=true
 }

@@ -31,56 +31,56 @@
   <extensions defaultExtensionNs="com.intellij">
 
 
-    <braceMatcher filetype="Xtext" implementationClass="com.intellij.xtextLanguage.xtext.XtextBraceMatcher"/>
+    <braceMatcher filetype="Xtext" implementationClass="com.intellij.xtext.language.XtextBraceMatcher"/>
     <lang.braceMatcher language="Xtext"
-                       implementationClass="com.intellij.xtextLanguage.xtext.XtextPairedBraceMatcher"/>
-    <fileTypeFactory implementation="com.intellij.xtextLanguage.xtext.XtextFileTypeFactory"/>
+                       implementationClass="com.intellij.xtext.language.XtextPairedBraceMatcher"/>
+    <fileTypeFactory implementation="com.intellij.xtext.language.XtextFileTypeFactory"/>
     <lang.parserDefinition language="Xtext"
-                           implementationClass="com.intellij.xtextLanguage.xtext.XtextParserDefinition"/>
+                           implementationClass="com.intellij.xtext.language.XtextParserDefinition"/>
     <lang.syntaxHighlighterFactory language="Xtext"
-                                   implementationClass="com.intellij.xtextLanguage.xtext.XtextSyntaxHighlighterFactory"/>
+                                   implementationClass="com.intellij.xtext.language.XtextSyntaxHighlighterFactory"/>
     <completion.contributor language="Xtext"
-                            implementationClass="com.intellij.xtextLanguage.xtext.XtextCompletionContributor"/>
+                            implementationClass="com.intellij.xtext.language.XtextCompletionContributor"/>
     <psi.referenceContributor language="Xtext"
-                              implementation="com.intellij.xtextLanguage.xtext.XtextReferenceContributor"/>
+                              implementation="com.intellij.xtext.language.reference.XtextReferenceContributor"/>
     <lang.refactoringSupport language="Xtext"
-                             implementationClass="com.intellij.xtextLanguage.xtext.XtextRefactoringSupportProvider"/>
+                             implementationClass="com.intellij.xtext.language.XtextRefactoringSupportProvider"/>
     <lang.findUsagesProvider language="Xtext"
-                             implementationClass="com.intellij.xtextLanguage.xtext.XtextFindUsagesProvider"/>
-    <lang.elementManipulator forClass="com.intellij.xtextLanguage.xtext.impl.XtextREFERENCEGrammarGrammarIDImpl"
-                             implementationClass="com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEGrammarGrammarIDManipulator"/>
-    <lang.elementManipulator forClass="com.intellij.xtextLanguage.xtext.impl.XtextREFERENCEAbstractRuleRuleIDImpl"
-                             implementationClass="com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEAbstractRuleRuleIDManipulator"/>
-    <lang.elementManipulator forClass="com.intellij.xtextLanguage.xtext.impl.XtextREFERENCEEPackageSTRINGImpl"
-                             implementationClass="com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEEPackageSTRINGManipulator"/>
+                             implementationClass="com.intellij.xtext.language.XtextFindUsagesProvider"/>
+    <lang.elementManipulator forClass="com.intellij.xtext.language.impl.XtextREFERENCEGrammarGrammarIDImpl"
+                             implementationClass="com.intellij.xtext.language.psi.XtextREFERENCEGrammarGrammarIDManipulator"/>
+    <lang.elementManipulator forClass="com.intellij.xtext.language.impl.XtextREFERENCEAbstractRuleRuleIDImpl"
+                             implementationClass="com.intellij.xtext.language.psi.XtextREFERENCEAbstractRuleRuleIDManipulator"/>
+    <lang.elementManipulator forClass="com.intellij.xtext.language.impl.XtextREFERENCEEPackageSTRINGImpl"
+                             implementationClass="com.intellij.xtext.language.psi.XtextREFERENCEEPackageSTRINGManipulator"/>
     <lang.elementManipulator
-            forClass="com.intellij.xtextLanguage.xtext.impl.XtextREFERENCEAbstractMetamodelDeclarationIDImpl"
-            implementationClass="com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEAbstractMetamodelDeclarationIDManipulator"/>
-    <lang.elementManipulator forClass="com.intellij.xtextLanguage.xtext.impl.XtextREFERENCEEClassifierIDImpl"
-                             implementationClass="com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEEClassifierIDManipulator"/>
-    <lang.elementManipulator forClass="com.intellij.xtextLanguage.xtext.impl.XtextREFERENCEParameterIDImpl"
-                             implementationClass="com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEParameterIDManipulator"/>
-    <lang.elementManipulator forClass="com.intellij.xtextLanguage.xtext.impl.XtextREFERENCEEEnumLiteralIDImpl"
-                             implementationClass="com.intellij.xtextLanguage.xtext.psi.XtextREFERENCEEEnumLiteralIDManipulator"/>
+            forClass="com.intellij.xtext.language.impl.XtextREFERENCEAbstractMetamodelDeclarationIDImpl"
+            implementationClass="com.intellij.xtext.language.psi.XtextREFERENCEAbstractMetamodelDeclarationIDManipulator"/>
+    <lang.elementManipulator forClass="com.intellij.xtext.language.impl.XtextREFERENCEEClassifierIDImpl"
+                             implementationClass="com.intellij.xtext.language.psi.XtextREFERENCEEClassifierIDManipulator"/>
+    <lang.elementManipulator forClass="com.intellij.xtext.language.impl.XtextREFERENCEParameterIDImpl"
+                             implementationClass="com.intellij.xtext.language.psi.XtextREFERENCEParameterIDManipulator"/>
+    <lang.elementManipulator forClass="com.intellij.xtext.language.impl.XtextREFERENCEEEnumLiteralIDImpl"
+                             implementationClass="com.intellij.xtext.language.psi.XtextREFERENCEEEnumLiteralIDManipulator"/>
     <localInspection groupName="Xtext" language="Xtext" shortName="XtextInspection" displayName="Xtext inspection"
                      enabledByDefault="true"
-                     implementationClass="com.intellij.xtextLanguage.xtext.inspection.XtextInspection"/>
+                     implementationClass="com.intellij.xtext.language.validation.XtextInspection"/>
     <localInspection groupName="Xtext" language="Xtext" shortName="XtextReferenceInspection"
                      displayName="Xtext reference inspection" enabledByDefault="true"
                      level="ERROR"
-                     implementationClass="com.intellij.xtextLanguage.xtext.inspection.XtextReferencesInspection"/>
+                     implementationClass="com.intellij.xtext.language.validation.XtextReferencesInspection"/>
 
 
-    <moduleType id="XTEXT_MODULE" implementationClass="com.intellij.module.XtextModuleType"/>
-    <applicationService serviceInterface="com.intellij.xtextLanguage.xtext.EcorePackageRegistry"
-                        serviceImplementation="com.intellij.xtextLanguage.xtext.EcorePackageRegistry$ListBasedRegistry"/>
+    <moduleType id="XTEXT_MODULE" implementationClass="com.intellij.xtext.module.XtextModuleType"/>
+    <applicationService serviceInterface="com.intellij.xtext.language.EcorePackageRegistry"
+                        serviceImplementation="com.intellij.xtext.language.EcorePackageRegistry$ListBasedRegistry"/>
 
-    <externalProjectDataService implementation="com.intellij.module.OnSuccessImportGrammarKitLauncher"/>
+    <externalProjectDataService implementation="com.intellij.xtext.module.OnSuccessImportGrammarKitLauncher"/>
   </extensions>
 
 
   <actions>
-    <action id="Xtext.Generate.Action" class="com.intellij.action.GenerateAction"
+    <action id="Xtext.Generate.Action" class="com.intellij.xtext.action.GenerateAction"
             text="Generate fragments" description="Generate language support code">
       <add-to-group group-id="EditorPopupMenu" anchor="last"/>
     </action>
