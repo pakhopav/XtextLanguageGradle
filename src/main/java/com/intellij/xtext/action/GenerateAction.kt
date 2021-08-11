@@ -3,6 +3,7 @@ package com.intellij.xtext.action
 import com.intellij.openapi.actionSystem.AnAction
 import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.actionSystem.CommonDataKeys
+import com.intellij.openapi.application.WriteAction
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.LocalFileSystem
@@ -48,23 +49,23 @@ class GenerateAction : AnAction() {
             var targetPath = project.basePath ?: return
             //Can use RootManager???
             targetPath += "${separator}src${separator}main${separator}java${separator}"
-            cleanPsiAndEmfDirectories(targetPath, extension)
             val generator = MainGenerator(extension, context, targetPath)
-
-            saveAll(project)
-            generator.generate()
-            LocalFileSystem.getInstance().refresh(false)
-
             val gKitGenerator = GrammarKitGenerator(extension, context, project)
-            gKitGenerator.launchGrammarKitGeneration(true)
-            gKitGenerator.updatePluginXml()
 
-            LocalFileSystem.getInstance().findFileByIoFile(File(project.basePath))?.refresh(false, true)
+            WriteAction.run<Exception> {
+                cleanPsiAndEmfDirectories(targetPath, extension)
+                saveAll(project)
+                generator.generate()
+                LocalFileSystem.getInstance().refresh(false)
+                gKitGenerator.launchGrammarKitGeneration(true)
+                gKitGenerator.updatePluginXml()
+                LocalFileSystem.getInstance().findFileByIoFile(File(project.basePath))?.refresh(false, true)
+            }
         }
     }
 
     private fun cleanPsiAndEmfDirectories(sourceRootPath: String, extension: String) {
-        val emfDir = File("$sourceRootPath${extension}Language${separator}${extension}${separator}emf")
+        val emfDir = File("$sourceRootPath${extension}Language${separator}${extension}${separator}bridge")
         if (emfDir.exists()) {
             FileUtils.cleanDirectory(emfDir)
         }

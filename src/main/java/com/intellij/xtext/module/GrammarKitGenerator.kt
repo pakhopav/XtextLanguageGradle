@@ -124,13 +124,13 @@ class GrammarKitGenerator(
                 )
                 addOrReplaceChildTagForSpecificLanguageAndShortName(
                     extensionsTag,
-                    factory.createTagFromText("<localInspection groupName=\"$extensionCapitalized\" language=\"$extensionCapitalized\" shortName=\"${extensionCapitalized}Inspection\" displayName=\"$extensionCapitalized inspection\" enabledByDefault=\"true\" implementationClass=\"${packageDir}.inspection.${extensionCapitalized}Inspection\"/>"),
+                    factory.createTagFromText("<localInspection groupName=\"$extensionCapitalized\" language=\"$extensionCapitalized\" shortName=\"${extensionCapitalized}Inspection\" displayName=\"$extensionCapitalized inspection\" enabledByDefault=\"true\" implementationClass=\"${packageDir}.validation.${extensionCapitalized}Inspection\"/>"),
                     extensionCapitalized,
                     "${extensionCapitalized}Inspection"
                 )
                 addOrReplaceChildTagForSpecificLanguageAndShortName(
                     extensionsTag,
-                    factory.createTagFromText("<localInspection groupName=\"$extensionCapitalized\" language=\"$extensionCapitalized\" shortName=\"${extensionCapitalized}ReferencesInspection\" displayName=\"$extensionCapitalized reference inspection\" enabledByDefault=\"true\" level=\"ERROR\" implementationClass=\"${packageDir}.inspection.${extensionCapitalized}ReferencesInspection\"/>"),
+                    factory.createTagFromText("<localInspection groupName=\"$extensionCapitalized\" language=\"$extensionCapitalized\" shortName=\"${extensionCapitalized}ReferencesInspection\" displayName=\"$extensionCapitalized reference inspection\" enabledByDefault=\"true\" level=\"ERROR\" implementationClass=\"${packageDir}.validation.${extensionCapitalized}ReferencesInspection\"/>"),
                     extensionCapitalized,
                     "${extensionCapitalized}ReferencesInspection"
                 )

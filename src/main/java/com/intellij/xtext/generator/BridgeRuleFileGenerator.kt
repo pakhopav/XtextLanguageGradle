@@ -18,9 +18,9 @@ class BridgeRuleFileGenerator(extension: String, val context: MetaContext, rootP
 
 
     fun generateEmfBridgeRuleFile(treeRule: TreeParserRule) {
-        val file = createOrFindFile("$extensionCapitalized${treeRule.name}BridgeRule.kt", myGenDir + "/emf/rules")
+        val file = createOrFindFile("$extensionCapitalized${treeRule.name}BridgeRule.kt", myGenDir + "/bridge/rules")
         val out = PrintWriter(FileOutputStream(file))
-        out.println("package $packageDir.emf.rules")
+        out.println("package $packageDir.bridge.rules")
 
         out.println(
             """

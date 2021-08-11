@@ -35,7 +35,7 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
     }
 
     private fun generateEmfCreator() {
-        val file = createOrFindFile("${capitalizedExtension}EmfCreator.kt", myGenDir + "/emf")
+        val file = createOrFindFile("${capitalizedExtension}EmfCreator.kt", myGenDir + "/bridge")
         val out = PrintWriter(FileOutputStream(file))
         generateEmfCreatorImports(out)
         out.println("class ${capitalizedExtension}EmfCreator : EmfCreator() {")
@@ -71,11 +71,11 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
     private fun generateEmfCreatorImports(out: PrintWriter) {
         out.println(
             """
-            package ${packageDir}.emf
+            package ${packageDir}.bridge
             
-            import $packageDir.emf.rules.*
+            import $packageDir.bridge.rules.*
             import $packageDir.psi.*
-            import $packageDir.emf.scope.${capitalizedExtension}Scope
+            import $packageDir.bridge.scope.${capitalizedExtension}Scope
             import com.intellij.psi.PsiElement
             import com.intellij.xtextLanguage.xtext.bridge.*
             import com.intellij.xtextLanguage.xtext.bridge.impl.ObjectDescriptionImpl
@@ -212,11 +212,11 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
     }
 
     private fun generateScopeFile() {
-        val file = createOrFindFile("${capitalizedExtension}Scope.kt", myGenDir + "/emf/scope")
+        val file = createOrFindFile("${capitalizedExtension}Scope.kt", myGenDir + "/bridge/scope")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """
-            |package ${packageDir}.emf.scope
+            |package ${packageDir}.bridge.scope
             |
             |import com.intellij.xtextLanguage.xtext.bridge.ObjectDescription
             |import com.intellij.xtextLanguage.xtext.bridge.impl.ScopeImpl
@@ -228,12 +228,12 @@ class EmfBridgeGenerator(extension: String, val context: MetaContext, rootPath: 
     }
 
     private fun generateBridgeFile() {
-        val file = createOrFindFile("${capitalizedExtension}EmfBridge.kt", myGenDir + "/emf")
+        val file = createOrFindFile("${capitalizedExtension}EmfBridge.kt", myGenDir + "/bridge")
         val out = PrintWriter(FileOutputStream(file))
         val rootRuleName = context.rules.first().name
         out.print(
             """
-            |package $packageDir.emf
+            |package $packageDir.bridge
             |
             |import $packageDir.psi.${capitalizedExtension}File
             |import $packageDir.psi.${capitalizedExtension}${rootRuleName}

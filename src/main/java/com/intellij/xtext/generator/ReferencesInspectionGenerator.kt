@@ -6,11 +6,11 @@ import java.io.PrintWriter
 class ReferencesInspectionGenerator(extension: String, rootPath: String) :
     com.intellij.xtext.generator.AbstractGenerator(extension, rootPath) {
     fun generateReferencesInspection() {
-        val file = createOrFindFile(extension.capitalize() + "ReferencesInspection.java", myGenDir + "/inspection")
+        val file = createOrFindFile(extension.capitalize() + "ReferencesInspection.java", myGenDir + "/validation")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """
-            package $packageDir.inspection;
+            package $packageDir.validation;
             
             import com.intellij.codeInspection.LocalInspectionTool;
             import com.intellij.codeInspection.ProblemDescriptor;

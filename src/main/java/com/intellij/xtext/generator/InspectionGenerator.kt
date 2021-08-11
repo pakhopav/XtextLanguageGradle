@@ -6,11 +6,11 @@ import java.io.PrintWriter
 class InspectionGenerator(extension: String, rootPath: String) :
     com.intellij.xtext.generator.AbstractGenerator(extension, rootPath) {
     fun generateInspection() {
-        val file = createOrFindFile(extension.capitalize() + "Inspection.java", myGenDir + "/inspection")
+        val file = createOrFindFile(extension.capitalize() + "Inspection.java", myGenDir + "/validation")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """
-            package $packageDir.inspection;
+            package $packageDir.validation;
             
             import com.intellij.codeInspection.LocalInspectionTool;
             import com.intellij.codeInspection.ProblemsHolder;

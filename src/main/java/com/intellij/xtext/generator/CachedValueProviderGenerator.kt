@@ -6,15 +6,15 @@ import java.io.PrintWriter
 class CachedValueProviderGenerator(extension: String, rootPath: String) :
     com.intellij.xtext.generator.AbstractGenerator(extension, rootPath) {
     fun generateCachedValueProvider() {
-        val file = createOrFindFile(extension.capitalize() + "CachedValueProvider.kt", myGenDir + "/inspection")
+        val file = createOrFindFile(extension.capitalize() + "CachedValueProvider.kt", myGenDir + "/validation")
         val out = PrintWriter(FileOutputStream(file))
         out.print(
             """
-            |package $packageDir.inspection
+            |package $packageDir.validation
             |
             |import com.intellij.psi.PsiFile
             |import com.intellij.psi.util.CachedValueProvider
-            |import $packageDir.emf.${extensionCapitalized}EmfCreator
+            |import $packageDir.bridge.${extensionCapitalized}EmfCreator
             |import com.intellij.xtextLanguage.xtext.bridge.BridgeResult
             |
             |class ${extensionCapitalized}CachedValueProvider(val psiFile: PsiFile) : CachedValueProvider<BridgeResult> {
